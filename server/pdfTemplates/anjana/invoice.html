@@ -40,6 +40,7 @@
             width: 100%;
             border-bottom: 2px solid black;
             border-collapse: collapse;
+            margin-top: -8px;
         }
 
         .table2 {
@@ -102,7 +103,7 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td rowspan="7" scope="row">
+                        <td rowspan="8" scope="row">
                             <b>
                                 <p> SRI ANJANA TRANSPORT</p>
                             </b> <br>
@@ -122,11 +123,19 @@
                             <p style="text-align: center;">Dated</p>
                         </th>
                     </tr>
-                    <tr>
-                        <td style="text-align: center;"></td>
+
+
+                    <tr >
+                        <td style="text-align: center; font-size: 10px ">{{invoicesCount}}</td>
                         <td>
                             <p style="text-align: center;">{{invoiceDate}}</p>
                         </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <p style="text-align: center;">Temparature Cargo</p>
+                        </th>
+                        <td> <p style="text-align: center;">{{invoiceDetails.temparatureCargo}}</p></td>
                     </tr>
                     <tr>
                         <th>
@@ -174,9 +183,10 @@
                             <p> <b>
                             <p>{{partyName}}</p>
                             </b>
-                            {{#each invoiceDetails.trip}}
-                            <p>{{this.to}}</p>
-                            {{/each}}
+                            <p>{{partyAddress}}</p>
+                            <!--{{#each invoiceDetails.trip}}-->
+
+                            <!--{{/each}}-->
                             <p> <b>GSTIN: {{gstNo}}</b></p>
                         </td>
                         <td>
@@ -196,7 +206,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">13</p>
+                            <p style="text-align: center;">{{invoiceDetails.pallets}}</p>
                         </td>
                         <td>
                             <p style="text-align: center;">By Road</p>
@@ -212,7 +222,9 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">APL-III</p>
+                            {{#each invoiceDetails.trip}}
+                            <p style="text-align: center;">{{this.from}}</p>
+                            {{/each}}
                         </td>
                         <td>
                             {{#each invoiceDetails.trip}}
@@ -224,7 +236,7 @@
                         <td>
                             <p style="text-align: center;"><b>Eway Bill</b></p>
                         </td>
-                        <td></td>
+                        <td style="font-size: 10px">{{invoiceDetails.ewaybill}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -246,23 +258,21 @@
                             <p><b>Vehicle No:{{this.vehicleNo}}</b></p>
                             {{/each}}
                             <p> Reefer </p>
-                            <p> 13 Pallets </p>
+                            <p> {{invoiceDetails.pallets}} Pallets</p>
                             {{#each invoiceDetails.trip}}
                             <p>Loading Date:{{this.loadedOn}}</p>
                             {{/each}}
                             {{#each invoiceDetails.trip}}
                             <p>Unloading Date:{{this.unloadedOn}}</p>
                             {{/each}}
-                            <p> APL-3,<b>To</b>{{#each invoiceDetails.trip}}
+                            <p> {{#each invoiceDetails.trip}}{{this.from}}{{/each}},<b>To</b>{{#each invoiceDetails.trip}}
                                 {{this.to}}
                                 {{/each}}</p>
                         </td>
-                        <td><p style="font-size:12px;text-align: center">{{#each invoiceDetails.trip}}
-                            {{this.tonnage}}
-                            {{/each}}</p></td>
-                        <td><p style="font-size:12px;text-align: center">{{#each invoiceDetails.trip}}
-                            {{this.ratePerTonne}}
-                            {{/each}}</p></td>
+                        <td><p style="font-size:12px;text-align: center">{{invoiceDetails.quantity}}</p></td>
+                        <td><p style="font-size:12px;text-align: center">{{ invoiceDetails.amount}}
+                            <!--{{this.ratePerTonne}}-->
+                            </p></td>
                     </tr>
                     <tr>
                         <td scope="row"><p style="font-size:12px;text-align: center">2</p></td>
@@ -270,7 +280,7 @@
                             <p>Detention Charges</p>
                         </td>
                         <td colspan="">
-                            <table style="width: 103%;border-collapse: collapse;margin: -2px;">
+                            <table style="width: 102.5%;border-collapse: collapse;margin: -2px;">
                                 <tr>
                                     <td>
                                         <p>No. Days</p>
@@ -280,19 +290,20 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>{{invoiceDetails.noOfDays}}</td>
-                                    <td>&nbsp;{{invoiceDetails.amount}}</td>
+                                    <td style="font-size: 10px">{{invoiceDetails.noOfDays}}</td>
+                                    <td style="font-size: 10px">&nbsp;{{invoiceDetails.DCamount}}</td>
                                 </tr>
                             </table>
                         </td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td colspan="3" style="text-align: right;font-size: 13px">Total</td>
-                        <td><p style="font-size:12px;text-align: center">
-                            {{#each invoiceDetails.trip}}
-                            {{this.amountPerTonne}}
-                            {{/each}}</p>
+                        <td colspan="3" style="text-align: right;font-size: 10px">Total</td>
+                        <td><p style="font-size:10px;text-align: center">
+                            {{invoiceDetails.pdfTotalAmount }}
+                            <!--{{#each invoiceDetails.trip}}-->
+                            <!--{{this.amountPerTonne}}-->
+                            <!--{{/each}}</p>-->
                         </td>
                     </tr>
                     </tbody>
@@ -323,11 +334,11 @@
                     <p>IFSC:<b>HDFC0001639</b></p>
                     <p>Branch:<b>Vivekananda nagar</b></p>
                     <div style="border: 1px solid black; margin-right: -2px; margin-top: 10px; margin-bottom: -3px; ">
-                        <p style="margin-right: 40px; text-align: center;">for<b></b> SRI ANJANA TRANSPORT </b></h6>
+                        <p style="margin-right: 20px; text-align: center;">for<b></b> SRI ANJANA TRANSPORT </b></h6>
                             <br>
                             <br>
                             <br>
-                        <p><b>Authorised Signature</b></p>
+                        <p style="margin-right: 20px; text-align: center;"><b>Authorised Signature</b></p>
                     </div>
 
 

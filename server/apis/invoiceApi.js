@@ -258,178 +258,126 @@ function nanToZero(value) {
         return value;
     }
 }
-Invoices.prototype.generatePDF = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
+Invoices.prototype.generatePDF = function(req,callback){
+    var retObj={
+        status:false,
+        messages:[]
     };
-    if (!req.params.invoiceId || !ObjectId.isValid(req.params.invoiceId)) {
-        retObj.messages.push('Provide Invoice Details');
+    if(!req.params.invoiceId || !ObjectId.isValid(req.params.invoiceId)){
+        retObj.messages.push("Provide Invoice Details");
     }
-    if (retObj.messages.length > 0) {
+    if(retObj.messages.length>0){
         callback(retObj);
-    } else {
+    }else{
         async.parallel({
-                invoiceDetails: function (invoiceCallback) {
-                    InvoicesColl.findOne({
-                            _id: req.params.invoiceId
-                        })
-                        .lean()
-                        .exec(function (err, doc) {
-                            if (err) {
-                                retObj.messages.push(
-                                    'error in fetching record' + JSON.stringify(err)
-                                );
-                                invoiceCallback(retObj, null);
-                            } else if (doc) {
-                                invoiceCallback(false, doc);
-                            } else {
-                                retObj.messages.push('Please try again');
-                                invoiceCallback(retObj, '');
-                            }
-                        });
-                },
-                accountDetails: function (accCallback) {
-                    AccountsColl.findOne({
-                            _id: req.jwt.accountId
-                        },
-                        function (err, doc) {
-                            if (err) {
-                                retObj.messages.push(
-                                    'Internal server error,' + JSON.stringify(err.message)
-                                );
-                                accCallback(retObj, '');
-                            } else if (doc) {
-                                accCallback(false, doc);
-                            } else {
-                                retObj.messages.push('Please try again');
-                                accCallback(retObj, '');
-                            }
+            invoiceDetails:function(invoiceCallback){
+                InvoicesColl.findOne({_id:req.params.invoiceId}).lean().exec(function (err,doc){
+                    if(err){
+                        retObj.messages.push("error in fetching record"+JSON.stringify(err));
+                        invoiceCallback(retObj,null);
+                    } else if(doc){
+                        if(doc.lrDate){
+                            doc.lrDate=  dateFormat(doc.lrDate,"dd/mm/yyyy");
                         }
-                    );
-                },
-                invoicesCount: function (countCallback) {
-                    InvoicesColl.count({
-                            accountId: req.jwt.accountId
-                        },
-                        function (err, count) {
-                            if (err) {
-                                retObj.messages.push(
-                                    'Internal server error,' + JSON.stringify(err.message)
-                                );
-                                countCallback(retObj, '');
-                            } else if (count) {
-                                countCallback(false, count);
-                            } else {
-                                retObj.messages.push('Please try again');
-                                countCallback(retObj, '');
-                            }
+                        if(doc.consignorInvoiceDate){
+                            doc.consignorInvoiceDate=  dateFormat(doc.consignorInvoiceDate,"dd/mm/yyyy");
                         }
-                    );
-                }
-            },
-            function (err, result) {
-                var totalAmountByTonne = 0;
-                if (err) {
-                    callback(err);
-                } else {
-                    if (result.invoiceDetails.addTrip) {
-                        for (var i = 0; i < result.invoiceDetails.trip.length; i++) {
-                            result.invoiceDetails.trip[i].index = i + 1;
-                            var tripDate = new Date(result.invoiceDetails.trip[i].date);
-                            result.invoiceDetails.trip[i].date =
-                                tripDate.getDate() +
-                                '-' +
-                                (tripDate.getMonth() + 1) +
-                                '-' +
-                                tripDate.getFullYear();
-                            totalAmountByTonne +=
-                                result.invoiceDetails.trip[i].amountPerTonne;
+                        if(doc.gatePassDate){
+                            doc.gatePassDate=  dateFormat(doc.gatePassDate,"dd/mm/yyyy");
                         }
-                        result.totalAmountByTonne = nanToZero(totalAmountByTonne);
-                    } else {
-                        for (var i = 0; i < result.invoiceDetails.trip.length; i++) {
-                            result.invoiceDetails.trip[i].index = i + 1;
-                            result.invoiceDetails.trip[i].ratePerTonne =
-                                result.invoiceDetails.ratePerTonne;
-                            result.invoiceDetails.trip[i].tonnage =
-                                result.invoiceDetails.tonnage;
-                            result.invoiceDetails.trip[i].amountPerTonne = nanToZero(
-                                result.invoiceDetails.trip[i].ratePerTonne *
-                                result.invoiceDetails.trip[i].tonnage
-                            );
-                            totalAmountByTonne +=
-                                result.invoiceDetails.trip[i].amountPerTonne;
-                            var loadedOn = new Date(result.invoiceDetails.trip[i].loadedOn);
-                            result.invoiceDetails.trip[i].loadedOn =
-                                loadedOn.getDate() +
-                                '-' +
-                                (loadedOn.getMonth() + 1) +
-                                '-' +
-                                loadedOn.getFullYear();
-                            var unloadedOn = new Date(
-                                result.invoiceDetails.trip[i].unloadedOn
-                            );
-                            result.invoiceDetails.trip[i].unloadedOn =
-                                unloadedOn.getDate() +
-                                '-' +
-                                (unloadedOn.getMonth() + 1) +
-                                '-' +
-                                unloadedOn.getFullYear();
-                            result.invoiceDetails.trip[i].date =
-                                loadedOn.getDate() +
-                                '-' +
-                                (loadedOn.getMonth() + 1) +
-                                '-' +
-                                loadedOn.getFullYear();
+                        doc.pdfTotalAmount=nanToZero(doc.amount)+nanToZero(doc.DCamount);
+                        doc.amount=nanToZero(doc.amount);
+                        if(doc.temparatureCargo) {
+                            doc.temparatureCargo ="Yes"
+                        }else{
+                            doc.temparatureCargo="No"
                         }
-                        result.totalAmountByTonne = nanToZero(totalAmountByTonne);
+                        invoiceCallback(false,doc);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        invoiceCallback(retObj,'');
                     }
-                    PartiesColl.findOne({
-                            _id: result.invoiceDetails.partyId
-                        },
-                        function (err, party) {
-                            if (err) {
-                                retObj.messages.push(
-                                    'error in finding party details' + JSON.stringify(err)
-                                );
-                            } else {
-                                result.invoicesCount = 500 + result.invoicesCount;
-                                result.invoiceDate = dateToStringFormat(new Date());
-                                result.partyName = party.name;
-                                result.partyAddress = party.city;
-                                result.gstNo = party.gstNo;
-                                if (
-                                    result.accountDetails.cgst &&
-                                    result.accountDetails.sgst &&
-                                    result.accountDetails.igst
-                                ) {
-                                    result.cgstAmount =
-                                        (result.accountDetails.cgst / 100) *
-                                        result.invoiceDetails.totalAmount;
-                                    result.sgstAmount =
-                                        (result.accountDetails.sgst / 100) *
-                                        result.invoiceDetails.totalAmount;
-                                    result.totalAmount =
-                                        result.cgstAmount +
-                                        result.sgstAmount +
-                                        result.invoiceDetails.totalAmount;
-                                }
-                                pdfGenerator.createPdf(
-                                    result.accountDetails.templatePath,
-                                    'invoice.html',
-                                    'landscape',
-                                    result,
-                                    function (resp) {
-                                        callback(resp);
-                                    }
-                                );
-                            }
-                        }
-                    );
-                }
+                });
+            },accountDetails:function(accCallback){
+                AccountsColl.findOne({_id:req.jwt.accountId},function (err,doc) {
+                    if(err){
+                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                        accCallback(retObj,'');
+                    }else if(doc){
+                        accCallback(false,doc);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        accCallback(retObj,'');
+                    }
+                })
+            },invoicesCount:function(countCallback){
+                InvoicesColl.count({accountId:req.jwt.accountId},function(err,count){
+                    if(err){
+                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                        countCallback(retObj,'');
+                    }else if(count){
+                        countCallback(false,count);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        countCallback(retObj,'');
+                    }
+                });
             }
-        );
+        },function(err,result){
+            var totalAmountByTonne = 0;
+            if(err){
+                callback(err);
+            }else{
+                if(result.invoiceDetails.addTrip){
+                    for(var i=0;i<result.invoiceDetails.trip.length;i++){
+                        result.invoiceDetails.trip[i].index = i+1;
+                        var tripDate = new Date(result.invoiceDetails.trip[i].date);
+                        result.invoiceDetails.trip[i].date = tripDate.getDate()+"-"+(tripDate.getMonth()+1)+"-"+tripDate.getFullYear();
+                        totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne;
+                    }
+                    result.totalAmountByTonne = nanToZero(totalAmountByTonne);
+                }else{
+                    for(var i = 0;i < result.invoiceDetails.trip.length;i++){
+                        result.invoiceDetails.trip[i].index = i+1;
+                        result.invoiceDetails.trip[i].ratePerTonne = result.invoiceDetails.ratePerTonne;
+                        result.invoiceDetails.trip[i].tonnage = result.invoiceDetails.tonnage;
+                        result.invoiceDetails.trip[i].amountPerTonne = nanToZero(result.invoiceDetails.trip[i].ratePerTonne*result.invoiceDetails.trip[i].tonnage);
+                        totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne ;
+                        if(result.invoiceDetails.trip[i].loadedOn !== undefined){
+                            var loadedOn = new Date(result.invoiceDetails.trip[i].loadedOn);
+                            result.invoiceDetails.trip[i].date = loadedOn.getDate()+"-"+(loadedOn.getMonth()+1)+"-"+loadedOn.getFullYear();
+                            result.invoiceDetails.trip[i].loadedOn = loadedOn.getDate()+"-"+(loadedOn.getMonth()+1)+"-"+loadedOn.getFullYear();
+
+                        }
+                        if(result.invoiceDetails.trip[i].unloadedOn !== undefined){
+                            var unloadedOn = new Date(result.invoiceDetails.trip[i].unloadedOn);
+                            result.invoiceDetails.trip[i].unloadedOn = unloadedOn.getDate()+"-"+(unloadedOn.getMonth()+1)+"-"+unloadedOn.getFullYear();
+
+                        }
+                    }
+                    result.totalAmountByTonne = nanToZero(totalAmountByTonne);
+                }
+                PartiesColl.findOne({_id:result.invoiceDetails.partyId},function(err,party){
+                    if(err){
+                        retObj.messages.push("error in finding party details"+JSON.stringify(err));
+                    }else{
+                        result.invoicesCount = 500+result.invoicesCount;
+                        result.invoiceDate = dateToStringFormat(new Date());
+                        result.partyName = party.name;
+                        result.partyAddress = party.city;
+                        result.gstNo = party.gstNo;
+                        if(result.accountDetails.cgst && result.accountDetails.sgst && result.accountDetails.igst){
+                            result.cgstAmount = (result.accountDetails.cgst/100)*result.invoiceDetails.totalAmount;
+                            result.sgstAmount = (result.accountDetails.sgst/100)*result.invoiceDetails.totalAmount;
+                            result.totalAmount = result.cgstAmount + result.sgstAmount + result.invoiceDetails.totalAmount;
+                        }
+                        pdfGenerator.createPdf(result.accountDetails.templatePath,'invoice.html','landscape',result,function (resp) {
+                            callback(resp);
+                        })
+                    }
+                });
+            }
+        });
     }
 };
 
