@@ -45,6 +45,16 @@ AuthRouter.get('/tripSheetReport', function (req, res) {
     });
 });
 
+AuthRouter.get('/downloadTripSheetDate',function(req,res){
+    Api.downloadTripSheetData(req,function(result){
+        if(result.status){
+            res.xls('Tripsheet details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+        }else{
+            res.send(result);
+        }
+    });
+});
+
 
 AuthRouter.post('/addTrip', function (req, res) {
     Trips.addTrip(req.jwt, req.body, req, function (result) {

@@ -223,12 +223,14 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         messages: []
     };
     var condition = {accountId: req.jwt.accountId};
+
     if(req.query.toDate && req.query.fromDate){
         condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
     }
     if(req.query.truckId !== undefined){
         condition.truckId = req.query.truckId;
     }
+
     TripSheetsColl.find(condition,function(err,tripSheets){
         if (err) {
             retObj.status = false;
@@ -242,5 +244,49 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         }
     });
 };
+
+TripSheets.prototype.downloadTripSheetData = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {accountId: req.jwt.accountId};
+
+    if((req.query.toDate && req.query.fromDate) !== 'undefined'){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+    }
+    if(req.query.truckId !== 'undefined'){
+        condition.truckId = req.query.truckId;
+    }
+   TripSheetsColl.find(condition,function(err,data){
+       if (err) {
+           retObj.status = false;
+           retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+           callback(retObj);
+       } else if(data.length>0) {
+           // console.log("data....",data);
+           var output =[];
+            for(var i=0;i<data.length;i++){
+                var obj = {
+                    registrationNo:data[i].registrationNo,
+                    date:data[i].date,
+                    loadingPoint:data[i].loadingPoint,
+                    partyId:data[i].partyId,
+                    unloadingPoint:data[i].unloadingPoint
+                };
+                output.push(obj);
+            }
+           retObj.data = output;
+           retObj.status = true;
+           retObj.messages.push("successful..");
+           callback(retObj);
+       }else{
+           retObj.status = false;
+           retObj.messages.push("No data");
+           callback(retObj);
+       }
+   });
+};
+
 
 module.exports = new TripSheets();

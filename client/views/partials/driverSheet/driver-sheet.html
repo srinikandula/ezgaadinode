@@ -5,7 +5,7 @@
         </div>
         <div class="col-sm-8">
             <div class="col-sm-4">
-                <ui-select ng-model="driversList.driver" theme="select2"
+                <ui-select ng-model="driversList.driverName" theme="select2"
                            title="Choose a Driver" append-to-body="true">
                     <ui-select-match class="form-control" placeholder="Select a Driver">
                         {{$select.selected.fullName || driverName}}
@@ -29,25 +29,21 @@
                                      class="'textfield'" placeholder="'to date'"></date-picker>
                     </li>
                     <li class="pall-zero">
-                        <button type="submit" ng-click="showDriverReport(driversList.driver._id, fromDate, toDate );"
-                                class="btn go">
+                        <button type="submit"
+                                ng-click="showDriverReports(driversList.driverName._id, fromDate, toDate );"
+                                class="btn go" data-toggle="modal" data-target="#myModal">
                             <i class="fa fa-search sear" aria-hidden="true"></i>
-                        </button>
-                    </li>
-                    <li class="pall-zero">
-                        <button type="submit" ng-click="downloadDriverReport(driversList.driver._id, fromDate, toDate );"
-                                class="btn go">
-                            <i class="fa fa-download" aria-hidden="true"></i>
                         </button>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="col-sm-12 pall-zero mb-10" ng-show="!validateTable">
+    <div class="col-sm-12 pall-zero mb-10">
         <div class=" mt-20">
             <div class="col-sm-1">
-                <button type="button" class="btn btn-default" ng-click="previousDay()"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                <button type="button" class="btn btn-default" ng-click="previousDay()"><i
+                        class="glyphicon glyphicon-chevron-left"></i></button>
             </div>
 
             <div class="col-sm-3 mb-10 pall-zero">
@@ -56,13 +52,15 @@
                            datepicker-options="dateOptions" ng-required="true" close-text="Close"
                            style="height: 34px !important;" ng-change="getAllDriversAttendance(dt)"/>
                     <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+                           <button type="button" class="btn btn-default" ng-click="open2()">
+                               <i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
                 </p>
             </div>
 
             <div class="col-sm-1">
-                <button type="button" class="btn btn-default" ng-click="nextDay()"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                <button type="button" class="btn btn-default" ng-click="nextDay()">
+                    <i class="glyphicon glyphicon-chevron-right"></i></button>
             </div>
             <div class="col-sm-1">
                 <button type="button" class="btn btn-default" ng-click="createDriverSheet(dt)"><span class="glyphicon glyphicon-refresh"></span></button>
@@ -75,53 +73,76 @@
     </div>
 
 
-    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="!validateTable">
+    <table class="table table-bordered table-striped table-condensed table-hover">
         <tr>
             <th>S No</th>
             <th>Driver Name</th>
             <th>Mobile Number</th>
             <th>Attendance</th>
         </tr>
-        <tr ng-repeat="driver in driverSheets" style="text-align: center;">
+        <tr ng-repeat="driver in driverSheets | filter:{fullName: driversList.driverName.driverName}"
+            style="text-align: center;">
             <td class="col-sm-1">{{$index+1}}</td>
-            <td class="col-sm-1">{{driver.driverName | uppercase}}</td>
+            <td class="col-sm-1">{{driver.driverName}}</td>
             <td class="col-sm-2">{{driver.contactPhone}}</td>
             <td class="col-sm-1">
-            <label>  Yes <input type="radio" name="{{$index}}" ng-value="true" ng-model="driver.isPresent">&nbsp;&nbsp;&nbsp;&nbsp;</label>
-            <label>No <input type="radio" name="{{$index}}" ng-value="false" ng-model="driver.isPresent"></label>
+                <label> Yes <input type="radio" name="{{$index}}" ng-value="true" ng-model="driver.isPresent">&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <label>No <input type="radio" name="{{$index}}" ng-value="false" ng-model="driver.isPresent"></label>
             </td>
-
         </tr>
     </table>
-    <div class="col-sm-12 pall-zero" ng-show="!validateTable">
+    <div class="col-sm-12 pall-zero">
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
-<!--<div class="center-block" style="width: 60%;">-->
-    <!--<div class="alert alert-danger" role="alert" ng-show="errors.length">-->
-        <!--<ul>-->
-            <!--<li ng-repeat="error in errors">{{error}}</li>-->
-        <!--</ul>-->
-    <!--</div>-->
-<!--</div>-->
 
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-show="validateTable">
-        <tr>
-            <th>S No</th>
-            <th>Driver Name</th>
-            <th>Mobile Number</th>
-            <th>Status</th>
-            <th>Date</th>
-        </tr>
-        <tr ng-repeat="driver in showDriverReport" style="text-align: center;">
-            <td class="col-sm-1">{{$index+1}}</td>
-            <td class="col-sm-1">{{driver.driverName | uppercase}}</td>
-            <td class="col-sm-2">{{driver.contactPhone}}</td>
-            <td class="col-sm-1">{{driver.isPresent}}</td>
-            <td class="col-sm-1">{{driver.date}}</td>
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog modal-lg">
 
-        </tr>
-    </table>
+            <!-- Modal content-->
+            <div class="modal-content sheet-content">
+                <div class="modal-header">
+                    <div class="row">
+                        <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
 
+                        <h4 class="modal-title col-sm-5"><b>Driver Sheet Report</b></h4>
+                        <div class="pall-zero col-sm-5">
+                            <b>
+                                <a href="#"
+                                   ng-click="downloadDriverReport(driversList.driverName._id, fromDate, toDate );">Download
+                                Report</a>
+                            </b>
+                        </div>
+                        <div class="col-sm-2 pull-right">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body" style="height: 450px;overflow: auto;">
+                    <table class="table table-bordered table-striped table-condensed table-hover mt-20">
+                        <tr>
+                            <th>S No</th>
+                            <th>Driver Name</th>
+                            <th>Mobile Number</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                        <tr ng-repeat="driver in showDriverReport" style="text-align: center;">
+                            <td class="col-sm-1">{{$index+1}}</td>
+                            <td class="col-sm-1">{{driver.driverName}}</td>
+                            <td class="col-sm-2">{{driver.contactPhone}}</td>
+                            <td class="col-sm-1">{{driver.isPresent}}</td>
+                            <td class="col-sm-1">{{driver.date}}</td>
+
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

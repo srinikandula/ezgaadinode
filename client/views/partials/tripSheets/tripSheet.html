@@ -28,8 +28,9 @@
                                      class="'textfield'" placeholder="'to date'"></date-picker>
                     </li>
                     <li class="col-sm-1 pall-zero">
-                        <button type="submit" ng-click="validateFilters(tripSheets.registrationNo._id, fromDate, toDate );"
-                                class="btn go">
+                        <button type="submit"
+                                ng-click="validateFilters(tripSheets.registrationNo._id, fromDate, toDate );"
+                                class="btn go" data-toggle="modal" data-target="#myModal">
                             <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </li>
@@ -37,7 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 mt-20" ng-show="!validateTable">
+    <div class="col-sm-12 mt-20">
         <div class="col-sm-1">
             <button type="button" class="btn btn-default" ng-click="previousDay()"><i
                     class="glyphicon glyphicon-chevron-left"></i></button>
@@ -59,7 +60,8 @@
                     class="glyphicon glyphicon-chevron-right"></i></button>
         </div>
         <div class="col-sm-1">
-            <button type="button" class="btn btn-default" ng-click="createTripSheet(dt)"><span class="glyphicon glyphicon-refresh"></span></button>
+            <button type="button" class="btn btn-default" ng-click="createTripSheet(dt)"><span
+                    class="glyphicon glyphicon-refresh"></span></button>
         </div>
         <div class="col-sm-6">
             <ul class="list-inline add-load">
@@ -72,7 +74,7 @@
         </div>
     </div>
 
-    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="!validateTable">
+    <table class="table table-bordered table-striped table-condensed table-hover">
         <tr>
             <th>S No</th>
             <th>Registration No</th>
@@ -113,15 +115,16 @@
                             {{unloadingPoint.unloadingPoint}}
                         </option>
                     </select>
-                   <!-- <select class="form-control" ng-model="sheet.unloadingPoint"
-                            ng-options="unloading._id as unloading.unloadingPoint for unloading in unloadingPoints" >
-                    </select>-->
+                    <!-- <select class="form-control" ng-model="sheet.unloadingPoint"
+                             ng-options="unloading._id as unloading.unloadingPoint for unloading in unloadingPoints" >
+                     </select>-->
 
                 </div>
             </td>
             <td class="col-sm-2">
                 <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
-                           append-to-body="true" style="width: 250px;" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
+                           append-to-body="true" style="width: 250px;"
+                           ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
                     <ui-select-match placeholder=" Select a Party" class="form-control"
                                      style="height: 42px;text-align: left;">
                         {{$select.selected.name || sheet.partyName}}
@@ -142,36 +145,66 @@
         </div>
     </div>
 
-    <div class="col-sm-12" ng-show="!validateTable">
+    <div class="col-sm-12">
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
 
 
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-show="validateTable">
-        <tr>
-            <th>S No</th>
-            <th>Registration No</th>
-            <th>loading Point</th>
-            <th>Unloading Point</th>
-            <th>Party Name</th>
-        </tr>
-        <tr ng-repeat="report in tripSheetReports"
-            style="text-align: center;">
-            <td class="col-sm-1">{{$index+1}}</td>
-            <td class="col-sm-1">{{report.registrationNo | uppercase}}</td>
-            <td class="col-sm-2">
-               {{report.loadingPoint || '---'}}
-            </td>
-            <td class="col-sm-2">
-                {{report.unloadingPoint || '---'}}
-            </td>
-            <td class="col-sm-2">
-                {{report.partyName || '---'}}
-            </td>
-        </tr>
-    </table>
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content sheet-content">
+                <div class="modal-header">
+                    <div class="row">
+                        <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+
+                        <h4 class="modal-title col-sm-5"><b>Trip Sheet Report</b></h4>
+                        <div class="pall-zero col-sm-5">
+                            <b> <a href="#"
+                                   ng-click="downloadTripSheetReport(tripSheets.registrationNo._id, fromDate, toDate );">Download
+                                Report</a></b>
+                        </div>
+                        <div class="col-sm-2 pull-right">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body" style="height: 450px;overflow: auto;">
+                    <table class="table table-bordered table-striped table-condensed table-hover mt-20"
+                           ng-show="validateTable">
+                        <tr>
+                            <th>S No</th>
+                            <th>Registration No</th>
+                            <th>loading Point</th>
+                            <th>Unloading Point</th>
+                            <th>Party Name</th>
+                        </tr>
+                        <tr ng-repeat="report in tripSheetReports"
+                            style="text-align: center;">
+                            <td class="col-sm-1">{{$index+1}}</td>
+                            <td class="col-sm-1">{{report.registrationNo | uppercase}}</td>
+                            <td class="col-sm-2">
+                                {{report.loadingPoint || '---'}}
+                            </td>
+                            <td class="col-sm-2">
+                                {{report.unloadingPoint || '---'}}
+                            </td>
+                            <td class="col-sm-2">
+                                {{report.partyName || '---'}}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 
     <div class="print-invoice" style="display: none">
