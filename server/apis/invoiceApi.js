@@ -19,6 +19,7 @@ function dateToStringFormat(date) {
         return '--';
     }
 }
+
 Invoices.prototype.getCount = function (jwt, params, callback) {
     var retObj = {
         status: false,
@@ -75,6 +76,9 @@ Invoices.prototype.updateInvoice = function (jwt, invoiceDetails, callback) {
         status: false,
         messages: []
     };
+    if(invoiceDetails.tripSheetId){
+        invoiceDetails.status = '';
+    }
     InvoicesColl.findOneAndUpdate({
             _id: invoiceDetails._id
         }, {
