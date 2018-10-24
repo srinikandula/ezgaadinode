@@ -70,6 +70,12 @@ app.factory('DriverService', ['$http', function ($http) {
                 method: "GET",
             }).then(success, error)
         },
+        createDriverSheet:function (date, success, error) {
+            $http({
+                url: '/v1/drivers/createDriverSheet/' + date,
+                method: "GET"
+            }).then(success, error)
+        },
         updateDriverSheet: function (params, success, error) {
             $http({
                 url: '/v1/drivers/updateDriverSheet',
@@ -489,7 +495,17 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
         $scope.dt = new Date($scope.dt);
         $scope.getAllDriversAttendance($scope.dt);
     };
-
+    $scope.createDriverSheet = function(date){
+        DriverService.createDriverSheet(date,function(successCallback){
+            if(successCallback.data.status){
+                $scope.getAllDriversAttendance(date);
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        },function(errorCallback){});
+    };
     $scope.getAllDriversAttendance = function (date) {
         if (date) {
             $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();

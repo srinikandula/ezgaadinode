@@ -31,8 +31,17 @@ AuthRouter.put('/updateDriverSheet',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/createDriverSheet/:date',function(req,res){
+    var date = new Date(req.params.date);
+    date = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+    Api.createDriversAttendance(date,function (result) {
+        res.send(result);
+    });
+});
 var DriversAttendance = cronjob.schedule('0 1 * * *', function() {
-    Api.createDriversAttendance(function (result) {
+    var date = new Date();
+    date = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+    Api.createDriversAttendance(date,function (result) {
     });
 });
 DriversAttendance.start();

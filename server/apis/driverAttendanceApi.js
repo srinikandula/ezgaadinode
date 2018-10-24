@@ -7,13 +7,11 @@ var async = require('async');
 var Drivers = function(){
 
 };
-function createDriverAttendance(account,callback){
+function createDriverAttendance(account,today,callback){
     var retObj = {
       status:false,
       messages:[]
     };
-    var today = new Date();
-    today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     DriversAttendanceColl.find({accountId:account._id,date:today},function(err,data){
         if(err){
             retObj.status = false;
@@ -66,12 +64,12 @@ function createDriverAttendance(account,callback){
         }
     });
 };
-Drivers.prototype.createDriversAttendance = function(callback){
+Drivers.prototype.createDriversAttendance = function(today,callback){
   var retObj = {
       status:false,
       messages:[]
   };
-  AccountsColl.find({},function(err,accounts){
+  AccountsColl.find({driverSheetEnabled:true},function(err,accounts){
       if(err){
           retObj.status = false;
           retObj.messages.push("Error in finding data"+JSON.stringify(err));
@@ -79,7 +77,7 @@ Drivers.prototype.createDriversAttendance = function(callback){
       } else{
           async.each(accounts,function (account,asyncAccCallback) {
               if(account.driverSheetEnabled === true){
-                  createDriverAttendance(account,function(createCallback){
+                  createDriverAttendance(account,today,function(createCallback){
                       if(createCallback.status){
                           asyncAccCallback(false);
                       }else{
@@ -109,7 +107,7 @@ Drivers.prototype.getDriversAttendance = function(req,callback){
       status:false,
       messages:[]
   };
-  DriversAttendanceColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,data){
+  DriversAttendanceColl.find({accountId:req.jwt.accountId,date:req.params.date}).exec(function(err,data){
       if(err){
           retObj.status = false;
           retObj.messages.push("Error in finding data"+JSON.stringify(err));
@@ -166,7 +164,7 @@ Drivers.prototype.getDriversDataByDateRange = function(req,callback){
     if(!isNaN(new Date(req.query.fromDate)) && !isNaN(new Date(req.query.toDate))){
         condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)}
     }
-    DriversAttendanceColl.find(condition,function(err,data){
+    DriversAttendanceColl.find(condition).sort({date:1}).exec(function(err,data){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in finding data",JSON.stringify(err));
