@@ -23,14 +23,18 @@ AuthRouter.get('/getTripSheets/:date', function (req, res) {
     });
 });
 
-AuthRouter.get('/createTripSheet', function (req, res) {
-    Api.createTripSheet(req, function (result) {
+AuthRouter.get('/createTripSheet/:date', function (req, res) {
+    var today = new Date(req.params.date);
+    today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    Api.createTripSheet(today,function (result) {
         res.send(result);
     });
 });
 
 var createTripSheet = cronjob.schedule('0 1 * * *', function() {
-    Api.createTripSheet(function (result) {
+    var today = new Date();
+    today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    Api.createTripSheet(today,function (result) {
     });
 });
 createTripSheet.start();

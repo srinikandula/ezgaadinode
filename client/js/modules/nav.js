@@ -29,6 +29,8 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
     $scope.isLoggedIn = function () {
         $scope.displayName=$cookies.get('userName');
         $scope.routeConfigEnabled = $cookies.get('routeConfigEnabled');
+        $scope.tripSheetEnabled = $cookies.get('tripSheetEnabled');
+        $scope.driverSheetEnabled = $cookies.get('driverSheetEnabled');
         return $cookies.get('token') != undefined;
 
     };

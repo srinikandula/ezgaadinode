@@ -117,6 +117,12 @@ app.factory('TripServices', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        createTripSheet:function (date,success, error) {
+            $http({
+                url: '/v1/trips/createTripSheet/'+date,
+                method: "GET"
+            }).then(success, error)
+        },
         updateTripSheet: function (params, success, error) {
             $http({
                 url: '/v1/trips/updateTripSheet',
@@ -1103,17 +1109,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         $scope.getAllTripssheets($scope.dt);
     };
 
-
-    // $scope.createTripSheet = function () {
-    //     TripServices.createTripSheets(function (success) {
-    //         if (success.data.status) {
-    //             console.log("Sucssssss", success);
-    //         }
-    //     })
-    // };
-    //
-    // $scope.createTripSheet();
-
     $scope.getAllLoadingPoints = function () {
         TripServices.getAllLoadingPoints(function (success) {
             if (success.data.status) {
@@ -1134,6 +1129,13 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     };
 
     $scope.getAllUnloadingPoints();
+    $scope.createTripSheet = function(date){
+      TripServices.createTripSheet(date,function (successCallback) {
+          if (successCallback.data.status) {
+              $scope.getAllTripssheets(date);
+          }
+          },function(errorCallback){})
+    };
 
     $scope.getAllTripssheets = function (date) {
         var date = new Date(date);
