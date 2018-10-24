@@ -7,7 +7,7 @@ var pageLimits = require('./../config/pagination');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
-var userLogins=require('./../models/schemas').userLogins;
+var userLoginsColl=require('./../models/schemas').userLogins;
 var keysColl = require('./../models/schemas').keysColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
@@ -339,6 +339,23 @@ Accounts.prototype.addAccount = function (req, callback) {
             } else {
                 accountInfo.userId = newId.userId;
                 delete accountInfo.__v;
+                userLoginsColl.findOneAndUpdate({"accountId":accountInfo._id},
+                    {$set:{ userName:accountInfo.userName,
+                            contactPhone:accountInfo.contactPhone,
+                            password:accountInfo.password,
+                            role:accountInfo.role}},function(err,updateResult){
+                        if (err) {
+                            retObj.messages.push('Error saving account');
+                            analyticsService.create(req, serviceActions.add_account_err, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                });
                 AccountsColl.update(query, accountInfo, {upsert: true},
                     function (errSaved, saved) {
                     if (errSaved) {
