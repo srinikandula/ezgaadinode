@@ -297,6 +297,7 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
 }]);
 app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceService', '$state', 'NgTableParams', 'PartyService', function ($scope, $rootScope, InvoiceService, $state, NgTableParams, PartyService) {
 
+    $scope.date = new Date();
     $scope.partyName = {
         party: ''
     };

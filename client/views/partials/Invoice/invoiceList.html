@@ -90,14 +90,17 @@
     </div>
 
 
-    <div class="report_left_inner" style="margin: 10px 0px; display: none;">
+    <div class="report_left_inner" style="margin: 10px 0px; display:none;">
         <table class="table" style="border: 1px solid #000000; border-collapse: collapse;">
             <thead>
                 <tr class="print-style">
                     <th colspan="7" style="text-align: center; border: 1px solid #000000">
-                        <h4 style="margin-bottom: 0rem !important;"><b>SRI SAI PACKAGING WORKS, BACHUPALLY</b></h4>
+                        <h4 style="margin-bottom: 0rem !important;">
+                            <b> {{partyName.party.name}}</b>
+                        </h4>
                     </th>
-                </tr class="print-style">
+                </tr class="
+                            print-style">
                 <tr class="print-style">
                     <th style="border: none"></th>
                     <th style="border: none"></th>
@@ -105,9 +108,7 @@
                     <th style="border: none"></th>
                     <th style="border: none"></th>
                     <th style="text-align:right; border: none">Date:</th>
-                    <th style="text-align: center; border: 1px solid #000000" ng-repeat="invoice in invoices track by $index"
-                        ng-show="$index<=0">{{invoice.trip[0].date
-                        | date: "dd.MM.y"}}</th>
+                    <th style="text-align: center; border: 1px solid #000000">{{date | date:'dd.MM.yyyy'}}</th>
                 </tr class="print-style">
                 <tr class="print-style" style="text-align: center;border: 1px solid #ccc;">
                     <th style="border: 1px solid #000000">S.No</th>

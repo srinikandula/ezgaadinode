@@ -4,7 +4,8 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var async = require('async');
 var invoiceColl = require('./../models/schemas').invoicesCollection;
 var partyColl = require('./../models/schemas').PartyCollection;
-
+var CounterCollection = require('./../models/schemas').CounterCollection;
+var Invoices = require('./../apis/invoiceApi');
 
 
 var TripSheets = function () {
@@ -22,35 +23,28 @@ function createTripSheet(account,today,callback){
             retObj.messages.push("Error in finding trucks"+JSON.stringify(err));
             callback(retObj);
         }else if(trucks.length>0){
-            async.each(trucks,function(truck,asyncCallback){
-                TripSheetsColl.find({accountId:account._id,date : today},function(err,tripSheet){
-                    if(err || tripSheet.length>0){
+            console.log("trucks length...",trucks.length);
+            async.map(trucks,function(truck,asyncCallback){
+                var tripSheetObj = {
+                    truckId : truck._id,
+                    registrationNo : truck.registrationNo,
+                    accountId:account._id,
+                    date : today
+                };
+                var tripSheetDoc = new TripSheetsColl(tripSheetObj);
+                tripSheetDoc.save(function(err,result){
+                    if(err){
                         asyncCallback(true);
                     }else{
-                        var tripSheetObj = {
-                            truckId : truck._id,
-                            registrationNo : truck.registrationNo,
-                            accountId:account._id,
-                            date : today
-                        };
-                        var tripSheetDoc = new TripSheetsColl(tripSheetObj);
-                        tripSheetDoc.save(function(err,result){
-                            if(err){
-                                asyncCallback(true);
-                            }else{
-                                asyncCallback(false);
-                            }
-                        });
+                        asyncCallback(false);
                     }
                 });
-            },function(err){
+                },function(err){
                 if(err){
                     retObj.status = false;
-                    retObj.messages.push("Error in saving trip sheet");
                     callback(retObj);
                 } else{
                     retObj.status = true;
-                    retObj.messages.push("Saved successfully");
                     callback(retObj);
                 }
             });
@@ -73,26 +67,30 @@ TripSheets.prototype.createTripSheet = function (today,callback) {
             retObj.messages.push("Error in finding data"+JSON.stringify(err));
             callback(retObj);
         } else{
-            async.each(accounts,function (account,asyncAccCallback) {
-                if(account.tripSheetEnabled === true){
-                    createTripSheet(account,today,function(tripSheetCallback){
-                        if(tripSheetCallback.status){
-                            asyncAccCallback(false);
-                        }else{
-                            asyncAccCallback(true);
-                        }
-                    });
-                }else{
-                    asyncAccCallback(false);
-                }
+            async.map(accounts,function (account,asyncAccCallback) {
+                TripSheetsColl.find({accountId:account._id,date:today},function(err,data){
+                    if(err){
+                        asyncAccCallback(true);
+                    }else if(!data.length){
+                        createTripSheet(account,today,function(tripSheetCallback){
+                            if(tripSheetCallback.status){
+                                asyncAccCallback(false);
+                            }else{
+                                asyncAccCallback(true);
+                            }
+                        });
+                    }else{
+                        asyncAccCallback(false);
+                    }
+                });
                 },function(err){
                 if(err){
                     retObj.status = false;
-                    retObj.messages.push("Error in saving trip sheet");
+                    retObj.messages.push("Error in saving trip sheet...."+JSON.stringify(err));
                     callback(retObj);
                 } else{
                     retObj.status = true;
-                    retObj.messages.push("Saved successfully");
+                    retObj.messages.push("Success");
                     callback(retObj);
                 }
             });
@@ -174,35 +172,34 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
             }
         }
         if(tripSheet.partyId){
-                if(tripSheet.partyId._id !== undefined){
-                    tripSheet.partyId = tripSheet.partyId._id;
-                    invoiceObj.partyId = tripSheet.partyId;
-                }
-                invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
-                    if(err){
-                        asyncCallback(true);
-                    }else if(!invoices.length){
-                        invoiceObj.status = 'pending';
-                        invoiceObj.tripSheetId = tripSheet._id;
-                        invoiceObj.accountId = req.jwt.accountId;
-                        invoiceObj.trip.push({
-                            vehicleNo:tripSheet.registrationNo,
-                            from:tripSheet.loadingPoint,
-                            to:tripSheet.unloadingPoint
-                        });
-                        var invoiceDoc = new invoiceColl(invoiceObj);
-                        invoiceDoc.save(function(err,result){});
-                    }
-                });
+            if(tripSheet.partyId._id !== undefined){
+                tripSheet.partyId = tripSheet.partyId._id;
+                invoiceObj.partyId = tripSheet.partyId;
             }
-            TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
+            invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
                 if(err){
                     asyncCallback(true);
-                }else{
-                    asyncCallback(false);
+                }else if(!invoices.length){
+                    invoiceObj.status = 'pending';
+                    invoiceObj.tripSheetId = tripSheet._id;
+                    invoiceObj.accountId = req.jwt.accountId;
+                    invoiceObj.trip.push({
+                        vehicleNo:tripSheet.registrationNo,
+                        from:tripSheet.loadingPoint,
+                        to:tripSheet.unloadingPoint
+                    });
+                    Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
                 }
             });
-        },function(err){
+        }
+        TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
+            if(err){
+                asyncCallback(true);
+            }else{
+                asyncCallback(false);
+            }
+        });
+    },function(err){
         if(retObj.errors.length>0){
             retObj.status = false;
             callback(retObj);
@@ -223,12 +220,14 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         messages: []
     };
     var condition = {accountId: req.jwt.accountId};
+
     if(req.query.toDate && req.query.fromDate){
         condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
     }
     if(req.query.truckId !== undefined){
         condition.truckId = req.query.truckId;
     }
+
     TripSheetsColl.find(condition,function(err,tripSheets){
         if (err) {
             retObj.status = false;
@@ -242,5 +241,73 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         }
     });
 };
+
+TripSheets.prototype.downloadTripSheetData = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {accountId: req.jwt.accountId};
+
+    if((req.query.toDate && req.query.fromDate) !== 'undefined'){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+    }
+    if(req.query.truckId !== 'undefined'){
+        condition.truckId = req.query.truckId;
+    }
+   TripSheetsColl.find(condition,function(err,data){
+       if (err) {
+           retObj.status = false;
+           retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+           callback(retObj);
+       } else if(data.length>0) {
+           // console.log("data....",data);
+           var output =[];
+           let party;
+           var partyIds = _.pluck(data);
+
+           partyColl.find({_id: {$in : partyIds}},{name:1}, function(err,partyNames){
+               var namesMap = {};
+               for(p in partyNames) {
+                   namesMap[partyNames[p]._id] = partyNames[p].name;
+               }
+
+               async.each(data,function (tripSheet,asyncCallback) {
+                   tripSheet.attrs.partyName = partyNames[tripSheet.partyId];
+                   var obj = {
+                       registrationNo:tripSheet.registrationNo,
+                       date:tripSheet.date,
+                       loadingPoint:tripSheet.loadingPoint,
+                       unloadingPoint:tripSheet.unloadingPoint,
+                       party:party
+                   };
+                   output.push(obj);
+
+                   asyncCallback(false);
+               },function (err) {
+                   if(err){
+                       retObj.status = false;
+                       retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+                       callback(retObj);
+                   }else{
+                       retObj.data = output;
+                       retObj.status = true;
+                       retObj.messages.push("successful..");
+                       callback(retObj);
+                   }
+               });
+
+
+           });
+
+
+       }else{
+           retObj.status = false;
+           retObj.messages.push("No data");
+           callback(retObj);
+       }
+   });
+};
+
 
 module.exports = new TripSheets();

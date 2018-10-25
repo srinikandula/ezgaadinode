@@ -11,6 +11,7 @@ var TripCollection = require('./../models/schemas').TripCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var dateFormat=require('dateformat');
 var converter= require('number-to-words');
+var CounterCollection = require('./../models/schemas').CounterCollection;
 
 var Invoices = function () {};
 
@@ -54,12 +55,11 @@ Invoices.prototype.getCount = function (jwt, params, callback) {
         }
     });
 };
-Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
+function saveInvoice(invoiceDetails,callback){
     var retObj = {
         status: false,
         messages: []
     };
-    invoiceDetails.accountId = jwt.accountId;
     var invoiceDoc = new InvoicesColl(invoiceDetails);
     invoiceDoc.save(function (err, result) {
         if (err) {
@@ -70,6 +70,45 @@ Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
             retObj.status = true;
             retObj.messages.push('saved successfully');
             callback(retObj);
+        }
+    });
+};
+
+Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    invoiceDetails.accountId = jwt.accountId;
+    CounterCollection.find({},function(err,doc){
+        if(err){
+            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+            callback(retObj,'');
+        }else if(!doc.length){
+            var obj = {
+                count:100
+            };
+            var countObj =  new CounterCollection(obj);
+            countObj.save(function(err,result){
+                var invoiceNo = result.count;
+                invoiceDetails.invoiceNo = "IN-"+invoiceNo;
+                saveInvoice(invoiceDetails,function(saveCallback){
+                    callback(saveCallback);
+                });
+            });
+        }else{
+            var count = doc[doc.length-1].count+1;
+            var obj = {
+                count:count
+            };
+            var countObj =  new CounterCollection(obj);
+            countObj.save(function(err,result){
+               var invoiceNo = result.count;
+                invoiceDetails.invoiceNo = "IN-"+invoiceNo;
+                saveInvoice(invoiceDetails,function(saveCallback){
+                    callback(saveCallback);
+                });
+            });
         }
     });
 };
@@ -317,18 +356,6 @@ Invoices.prototype.generatePDF = function(req,callback){
                         accCallback(retObj,'');
                     }
                 })
-            },invoicesCount:function(countCallback){
-                InvoicesColl.count({accountId:req.jwt.accountId},function(err,count){
-                    if(err){
-                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-                        countCallback(retObj,'');
-                    }else if(count){
-                        countCallback(false,count);
-                    }else{
-                        retObj.messages.push("Please try again");
-                        countCallback(retObj,'');
-                    }
-                });
             }
         },function(err,result){
             console.log("resultttttttttttttt",result);
@@ -336,6 +363,7 @@ Invoices.prototype.generatePDF = function(req,callback){
             if(err){
                 callback(err);
             }else{
+                result.invoiceNo = result.invoiceDetails.invoiceNo;
                 if(result.invoiceDetails.addTrip){
                     for(var i=0;i<result.invoiceDetails.trip.length;i++){
                         result.invoiceDetails.trip[i].index = i+1;
@@ -369,7 +397,6 @@ Invoices.prototype.generatePDF = function(req,callback){
                     if(err){
                         retObj.messages.push("error in finding party details"+JSON.stringify(err));
                     }else{
-                        result.invoicesCount = 500+result.invoicesCount;
                         result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;
                         result.partyAddress = party.city;
@@ -394,8 +421,6 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
         status: false,
         messages: []
     };
-    console.log('params  ', params);
-    console.log('params  ' + JSON.stringify(params));
     if (params.fromDate && params.toDate && params._id) {
         q = {
             accountId: jwt.accountId,
@@ -420,22 +445,12 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
         };
 
     }
-    // console.log('getinvoice called ' + JSON.stringify(q));
-    // console.log("qqqqqqqqqqqqqqqq", q);
     InvoicesColl.find(q, function (err, invoices) {
         if (err) {
             retObj.status = false;
-            // console.log('errrrrrrrrrr', err);
             retObj.messages.push('error while getting invoives' + JSON.stringify(err));
             callback(retObj);
         } else {
-            // console.log('invoices11111111', invoices);
-            // console.log("invoices", invoices.length);
-            // retObj.status = true;
-            // retObj.message.push("success");
-            // retObj.invoices = invoices;
-            // callback(retObj);
-            // console.log("invoicessssssssssss", invoices);
             var partyIds = _.pluck(invoices, 'partyId');
             PartiesColl.find({
                     _id: {
@@ -445,7 +460,6 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
                     name: 1
                 },
                 function (err, parties) {
-                    // console.log('partiessssssss', parties);
                     async.each(
                         invoices,
                         function (invoice, asyncCallback) {
@@ -481,7 +495,6 @@ Invoices.prototype.downloadDetails = function (jwt, req, callback) {
         status: false,
         messages: []
     };
-    console.log("paramsssssssssss", req.query);
     var params = {};
     if (req.query.fromDate) {
         params.fromDate = req.query.fromDate;
@@ -490,9 +503,7 @@ Invoices.prototype.downloadDetails = function (jwt, req, callback) {
     } else if (req.query.partyId) {
         params._id = req.query.partyId;
     }
-    console.log('123456', params);
     Invoices.prototype.invoiceByParty(jwt, params, function (response) {
-        console.log("response....", response);
         if (response.status) {
             var output = [];
             for (var i = 0; i < response.data.length; i++) {

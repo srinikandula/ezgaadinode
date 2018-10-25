@@ -555,8 +555,8 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
         window.open('/v1/drivers/downloadDriversData?driverId='+driverId+'&fromDate='+fromDate+'&toDate='+toDate);
     };
 
-    $scope.showDriverReport = function (driverId, fromDate, toDate) {
-        $scope.errors = [];
+    $scope.showDriverReports = function (driverId, fromDate, toDate) {
+        console.log("Driver", driverId);
         DriverService.showDriversReport(driverId, fromDate, toDate, function (success) {
             if (success.data.status) {
                 $scope.showDriverReport = success.data.data;
@@ -567,5 +567,6 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
                 });
             }
         },function(error){});
-    }
+    };
+
 }]);
