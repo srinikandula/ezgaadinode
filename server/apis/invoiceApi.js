@@ -10,6 +10,7 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var TripCollection = require('./../models/schemas').TripCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var dateFormat=require('dateformat');
+var converter= require('number-to-words');
 
 var Invoices = function () {};
 
@@ -291,6 +292,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                             doc.gatePassDate=  dateFormat(doc.gatePassDate,"dd/mm/yyyy");
                         }
                         doc.pdfTotalAmount=nanToZero(doc.amount)+nanToZero(doc.DCamount);
+                        doc.pdfTotalAmountWords=converter.toWords(doc.pdfTotalAmount);
                         doc.amount=nanToZero(doc.amount);
                         if(doc.temparatureCargo) {
                             doc.temparatureCargo ="Yes"
@@ -329,6 +331,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                 });
             }
         },function(err,result){
+            console.log("resultttttttttttttt",result);
             var totalAmountByTonne = 0;
             if(err){
                 callback(err);
