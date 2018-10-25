@@ -7,7 +7,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'login',
         url: '/login',
         templateUrl: 'views/partials/login.html',
-        data: {activeTab: 'import-students'},
+        data: {
+            activeTab: 'import-students'
+        },
         params: {
             access: 'open'
         }
@@ -15,10 +17,12 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'livetracking',
         url: '/live-tracking/:truckNo',
         templateUrl: 'views/partials/liveTracking.html',
-        data: {activeTab: 'import-students'},
+        data: {
+            activeTab: 'import-students'
+        },
         params: {
             access: 'open',
-            truckNo:null
+            truckNo: null
         }
     }).state({
         name: 'home',
@@ -31,7 +35,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'forgotPassword',
         url: '/forgotPassword',
         templateUrl: 'views/partials/forgotPassword.html',
-        data: {activeTab: 'null'},
+        data: {
+            activeTab: 'null'
+        },
         params: {
             access: 'null'
         }
@@ -113,7 +119,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         },
         params: {
             access: 'open',
-            id:null
+            id: null
         }
     }).state({
         name: 'reminders',
@@ -154,7 +160,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'myProfile',
         url: '/myProfile',
         templateUrl: 'views/partials/userProfile/myProfile.html',
-        data: {activeTab: 'myProfile'},
+        data: {
+            activeTab: 'myProfile'
+        },
         params: {
             access: 'auth'
         }
@@ -162,7 +170,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'myGroup',
         url: '/myGroup',
         templateUrl: 'views/partials/userProfile/myGroup.html',
-        data: {activeTab: 'myGroup'},
+        data: {
+            activeTab: 'myGroup'
+        },
         params: {
             access: 'auth'
         }
@@ -170,7 +180,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'addGroup',
         url: '/addGroup',
         templateUrl: 'views/partials/userProfile/addingGroup.html',
-        data: {activeTab: 'addGroup'},
+        data: {
+            activeTab: 'addGroup'
+        },
         params: {
             access: 'auth',
             accountGroupId: null
@@ -202,7 +214,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'groups',
         url: '/groups',
         templateUrl: 'views/partials/groups/show-groups.html',
-        data: {activeTab: 'groups'},
+        data: {
+            activeTab: 'groups'
+        },
         params: {
             access: 'open'
         }
@@ -210,7 +224,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'groupsEdit',
         url: '/groupsEdit/:groupId',
         templateUrl: 'views/partials/groups/groupsEdit.html',
-        data: {activeTab: 'groups'},
+        data: {
+            activeTab: 'groups'
+        },
         params: {
             access: 'open',
             groupId: null
@@ -306,7 +322,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         },
         params: {
             access: 'open',
-            id:null
+            id: null
         }
     }).state({
         name: 'uploadTrips',
@@ -330,7 +346,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         params: {
             access: 'auth',
             tripId: null,
-            partyId:null
+            partyId: null
         }
     }).state({
         name: 'parties',
@@ -410,7 +426,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         },
         params: {
             access: 'open',
-            id:null
+            id: null
         }
     }).state({
         name: 'editParty',
@@ -428,7 +444,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'trackMap',
         url: '/trackMap',
         templateUrl: 'views/partials/trackMap.html',
-        data: {activeTab: 'trackMap'},
+        data: {
+            activeTab: 'trackMap'
+        },
         params: {
             access: 'open'
         }
@@ -538,7 +556,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'gpsReports',
         url: '/gps/gpsReports',
         templateUrl: 'views/partials/gps/gpsReports.html',
-        data: {activeTab: 'gpsReports'},
+        data: {
+            activeTab: 'gpsReports'
+        },
         params: {
             access: 'open',
             paymentsId: null
@@ -570,7 +590,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'gpsSettings',
         url: '/gpsSettings',
         templateUrl: 'views/partials/settings/gpsSettings.html',
-        data: {activeTab: 'settings'},
+        data: {
+            activeTab: 'settings'
+        },
         params: {
             access: 'open',
         }
@@ -578,7 +600,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'reportsSettings',
         url: '/reportsSettings',
         templateUrl: 'views/partials/settings/reportsSettings.html',
-        data: {activeTab: 'settings'},
+        data: {
+            activeTab: 'settings'
+        },
         params: {
             access: 'open',
         }
@@ -586,7 +610,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'mapView',
         url: '/gps/mapView',
         templateUrl: 'views/partials/gps/mapView.html',
-        data: {activeTab: 'gpsReports'},
+        data: {
+            activeTab: 'gpsReports'
+        },
         params: {
             access: 'open',
             paymentsId: null
@@ -595,7 +621,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'listView',
         url: '/gps/listView',
         templateUrl: 'views/partials/gps/listView.html',
-        data: {activeTab: 'gpsReports'},
+        data: {
+            activeTab: 'gpsReports'
+        },
         params: {
             access: 'open',
             paymentsId: null
@@ -604,7 +632,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'trackView',
         url: '/gps/trackView/:truckNo',
         templateUrl: 'views/partials/gps/trackView.html',
-        data: {activeTab: 'gpsReports'},
+        data: {
+            activeTab: 'gpsReports'
+        },
         params: {
             truckNo: null,
             access: 'open',
@@ -614,7 +644,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'tripView',
         url: '/gps/trackView/:startDate/:endDate/:regNo',
         templateUrl: 'views/partials/gps/trackView.html',
-        data: {activeTab: 'gpsReports'},
+        data: {
+            activeTab: 'gpsReports'
+        },
         params: {
             startDate: null,
             access: 'open',
@@ -625,7 +657,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'groupMap',
         url: '/groupMap',
         templateUrl: 'views/partials/groupMap.html',
-        data: {activeTab: 'gpsReports'},
+        data: {
+            activeTab: 'gpsReports'
+        },
         params: {
             access: 'auth'
         }
@@ -651,7 +685,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         },
         params: {
             access: 'auth',
-            vehicleId: null, id: null
+            vehicleId: null,
+            id: null
         }
     }).state({
         name: 'expenseByVehicles',
@@ -674,7 +709,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         },
         params: {
             access: 'auth',
-            vehicleId: null, id: null
+            vehicleId: null,
+            id: null
         }
     }).state({
         name: 'receivableByParty',
@@ -691,10 +727,14 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'receivableByPartyName',
         url: '/reports/receivableByPartyName/:partyId/:name',
         templateUrl: 'views/partials/reports/receivableByPartyName.html',
-        data: {activeTab: 'ERP', subTab: 'ERP'},
+        data: {
+            activeTab: 'ERP',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth',
-            partyId: null, name: null
+            partyId: null,
+            name: null
         }
     }).state({
         name: 'payableByParty',
@@ -711,10 +751,14 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         name: 'payableByPartyName',
         url: '/reports/payableByPartyName/:partyId/:name',
         templateUrl: 'views/partials/reports/payableByPartyName.html',
-        data: {activeTab: 'ERP', subTab: 'ERP'},
+        data: {
+            activeTab: 'ERP',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth',
-            partyId: null, name: null
+            partyId: null,
+            name: null
         }
     }).state({
         name: 'listOfExpireTrucks',
@@ -748,7 +792,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         },
         params: {
             access: 'auth',
-            receiptId: null, name: null
+            receiptId: null,
+            name: null
         }
     }).state({
         name: 'secretKeys',
@@ -890,8 +935,8 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
                     console.log('found error');
                     $cookies.remove('token');
 
-                    console.log("$location.url()",$location.url());
-                    if(!$location.url().startsWith('/live-tracking')){
+                    console.log("$location.url()", $location.url());
+                    if (!$location.url().startsWith('/live-tracking')) {
                         $location.path('/login');
                         return;
                     }
@@ -903,7 +948,9 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
 }]);
 
 app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transitions, $rootScope, $cookies, $state, $location) {
-    $transitions.onSuccess({to: '*'}, function (to) {
+    $transitions.onSuccess({
+        to: '*'
+    }, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
         $rootScope.createGroup = $cookies.get('createGroup');
@@ -948,3 +995,66 @@ app.filter('propsFilter', function () {
         return out;
     };
 });
+
+app.filter('words', function () {
+    function isInteger(x) {
+        return x % 1 === 0;
+    }
+
+
+    return function (value) {
+        if (value && isInteger(value))
+            return toWords(value);
+
+        return value;
+    };
+
+});
+
+var th = ['', 'thousand', 'million', 'billion', 'trillion'];
+var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+var tn = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+var tw = ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+
+function toWords(s) {
+    s = s.toString();
+    s = s.replace(/[\, ]/g, '');
+    if (s != parseFloat(s)) return 'not a number';
+    var x = s.indexOf('.');
+    if (x == -1) x = s.length;
+    if (x > 15) return 'too big';
+    var n = s.split('');
+    var str = '';
+    var sk = 0;
+    for (var i = 0; i < x; i++) {
+        if ((x - i) % 3 == 2) {
+            if (n[i] == '1') {
+                str += tn[Number(n[i + 1])] + ' ';
+                i++;
+                sk = 1;
+            } else if (n[i] != 0) {
+                str += tw[n[i] - 2] + ' ';
+                sk = 1;
+            }
+        } else if (n[i] != 0) {
+            str += dg[n[i]] + ' ';
+            if ((x - i) % 3 == 0) str += 'hundred ';
+            sk = 1;
+        }
+
+
+        if ((x - i) % 3 == 1) {
+            if (sk) str += th[(x - i - 1) / 3] + ' ';
+            sk = 0;
+        }
+    }
+    if (x != s.length) {
+        var y = s.length;
+        str += 'point ';
+        for (var i = x + 1; i < y; i++) str += dg[n[i]] + ' ';
+    }
+    return str.replace(/\s+/g, ' ');
+}
+
+window.toWords = toWords;

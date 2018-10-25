@@ -429,7 +429,8 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         window.open('/v1/expense/downloadDetails');
     };
     $scope.partyId = null;
-    $scope.getInvoice = function (party) {
+    $scope.
+     = function (party) {
         $scope.partyId = party._id;
         // alert("hiii");
         console.log('partyyyyyyyyyyyyyyyyyy', party);

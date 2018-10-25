@@ -90,7 +90,7 @@
     </div>
 
 
-    <div class="report_left_inner" style="margin: 10px 0px; display:none;">
+    <div class="report_left_inner" style="margin: 10px 0px;">
         <table class="table" style="border: 1px solid #000000; border-collapse: collapse;">
             <thead>
                 <tr class="print-style">
@@ -130,15 +130,16 @@
                         invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
                     <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
                     <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
-                    <td style="border: 1px solid #000000">10,000.00</td>
+                    <!-- <td style="border: 1px solid #000000">{{invoice.totalAmount}}</td> -->
+                    <td style="border: 1px solid #000000" ng-init="$parent.total = $parent.total + (invoice.totalAmount)">{{invoice.totalAmount}}</td>
                 </tr class="print-style">
                 <tr class="print-style">
                     <th colspan="6" style="text-align:right; border: 1px solid #000000">Total:</th>
-                    <th style="text-align: center; border: 1px solid #000000;">13,000.00</th>
+                    <th style="text-align: center; border: 1px solid #000000;">{{ total }}</th>
                 </tr class="print-style">
                 <tr class="print-style">
                     <th colspan="7" style="text-align: left; border: 1px solid #000000">
-                        <b>Ruppees Only:</b>
+                        <b>Ruppees Only:</b> {{ total | words}}
                     </th>
                 </tr class="print-style">
                 <tr class="print-style">
