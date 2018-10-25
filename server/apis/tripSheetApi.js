@@ -1,529 +1,246 @@
-var InvoicesColl = require('./../models/schemas').invoicesCollection;
-var PartiesColl = require('./../models/schemas').PartyCollection;
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
-var _ = require('underscore');
-var async = require('async');
-var math = require('mathjs');
-var pdfGenerator = require('./../apis/pdfGenerator');
-var AccountsColl = require('./../models/schemas').AccountsColl;
-var TripCollection = require('./../models/schemas').TripCollection;
+var TripSheetsColl = require('./../models/schemas').tripSheetsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
-var dateFormat = require('dateformat');
+var AccountsColl = require('./../models/schemas').AccountsColl;
+var async = require('async');
+var invoiceColl = require('./../models/schemas').invoicesCollection;
+var partyColl = require('./../models/schemas').PartyCollection;
 var CounterCollection = require('./../models/schemas').CounterCollection;
+var Invoices = require('./../apis/invoiceApi');
 
-var Invoices = function () {};
 
-function dateToStringFormat(date) {
-    if (date instanceof Date) {
-        return date.toLocaleDateString();
-    } else {
-        return '--';
-    }
-}
+var TripSheets = function () {
 
-Invoices.prototype.getCount = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var condition = {};
-    if (params.fromDate && params.toDate) {
-        condition = {
-            accountId: jwt.accountId,
-            createdAt: {
-                $gte: new Date(params.fromDate),
-                $lte: new Date(params.toDate)
-            }
-        };
-    } else {
-        condition = {
-            accountId: jwt.accountId
-        };
-    }
-    InvoicesColl.count(condition, function (err, count) {
-        if (err) {
-            retObj.status = false;
-            retObj.messages.push('error in getting count' + JSON.stringify(err));
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('success');
-            retObj.data = count;
-            callback(retObj);
-        }
-    });
-};
-function saveInvoice(invoiceDetails,callback){
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var invoiceDoc = new InvoicesColl(invoiceDetails);
-    invoiceDoc.save(function (err, result) {
-        if (err) {
-            retObj.status = false;
-            retObj.messages.push('error in saving invoice' + JSON.stringify(err));
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('saved successfully');
-            callback(retObj);
-        }
-    });
 };
 
-Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
+function createTripSheet(account,today,callback){
     var retObj = {
-        status: false,
-        messages: []
-    };
-    invoiceDetails.accountId = jwt.accountId;
-    CounterCollection.find({},function(err,doc){
-        if(err){
-            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-            callback(retObj,'');
-        }else if(!doc.length){
-            var obj = {
-                count:100
-            };
-            var countObj =  new CounterCollection(obj);
-            countObj.save(function(err,result){
-                var invoiceNo = result.count;
-                invoiceDetails.invoiceNo = "IN-"+invoiceNo;
-                saveInvoice(invoiceDetails,function(saveCallback){
-                    callback(saveCallback);
-                });
-            });
-        }else{
-            var count = doc[doc.length-1].count+1;
-            var obj = {
-                count:count
-            };
-            var countObj =  new CounterCollection(obj);
-            countObj.save(function(err,result){
-                var invoiceNo = result.count;
-                invoiceDetails.invoiceNo = "IN-"+invoiceNo;
-                saveInvoice(invoiceDetails,function(saveCallback){
-                    callback(saveCallback);
-                });
-            });
-        }
-    });
-};
-Invoices.prototype.updateInvoice = function (jwt, invoiceDetails, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    if(invoiceDetails.tripSheetId){
-        invoiceDetails.status = '';
-    }
-    InvoicesColl.findOneAndUpdate({
-            _id: invoiceDetails._id
-        }, {
-            $set: invoiceDetails
-        },
-        function (err, result) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push('error in updating' + JSON.stringify(err));
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push('Successfully updated');
-                retObj.data = result;
-                callback(retObj);
-            }
-        }
-    );
-};
-Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var condition = {};
-    if (params.fromDate && params.toDate) {
-        condition = {
-            accountId: jwt.accountId,
-            createdAt: {
-                $gte: new Date(params.fromDate),
-                $lte: new Date(params.toDate)
-            }
-        };
-    } else {
-        condition = {
-            accountId: jwt.accountId
-        };
-    }
-    var skipNumber = params.page ? (params.page - 1) * params.size : 0;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ?
-        JSON.parse(params.sort) : {
-            createdAt: -1
-        };
-    InvoicesColl.find(condition)
-        .sort(sort)
-        .skip(skipNumber)
-        .limit(limit)
-        .lean()
-        .exec(function (err, invoices) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push('error in fetching records' + JSON.stringify(err));
-                callback(retObj);
-            } else {
-                // console.log('invoices222222222', invoices);
-                var partyIds = _.pluck(invoices, 'partyId');
-                PartiesColl.find({
-                        _id: {
-                            $in: partyIds
-                        }
-                    }, {
-                        name: 1
-                    },
-                    function (err, parties) {
-                        async.each(
-                            invoices,
-                            function (invoice, asyncCallback) {
-                                // console.log('invoices3333333', invoices);
-                                if (invoice.partyId) {
-                                    var party = _.find(parties, function (party) {
-                                        return party._id.toString() === invoice.partyId;
-                                    });
-                                    invoice.partyId = party.name;
-                                    asyncCallback(false);
-                                }
-                            },
-                            function (err) {
-                                if (err) {
-                                    retObj.status = false;
-                                    retObj.messages.push(
-                                        'error in fetching records' + JSON.stringify(err)
-                                    );
-                                    callback(retObj);
-                                } else {
-                                    retObj.status = true;
-                                    retObj.messages.push('Success');
-                                    retObj.data = invoices;
-                                    callback(retObj);
-                                }
-                            }
-                        );
-                    }
-                );
-            }
-        });
-};
-Invoices.prototype.deleteInvoice = function (params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    InvoicesColl.remove({
-            _id: params.id
-        },
-        function (err, result) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push('error in deleting invoice' + JSON.stringify(err));
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push('successfull');
-                callback(retObj);
-            }
-        }
-    );
-};
-Invoices.prototype.getInvoice = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    InvoicesColl.findOne({
-            _id: params.id
-        },
-        function (err, invoice) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push('error in deleting invoice' + JSON.stringify(err));
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push('successfull');
-                retObj.data = invoice;
-                callback(retObj);
-            }
-        }
-    );
-};
-Invoices.prototype.getTrip = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        message: []
-    };
-    TripCollection.findOne({
-            tripId: params.tripId
-        },
-        function (err, trip) {
-            if (err) {
-                retObj.status = false;
-                retObj.message.push('error' + JSON.stringify(err));
-                callback(retObj);
-            } else {
-                TrucksColl.findOne({
-                        _id: trip.truckId
-                    },
-                    function (err, truck) {
-                        if (err) {
-                            retObj.status = false;
-                            retObj.message.push('error' + JSON.stringify(err));
-                            callback(retObj);
-                        } else {
-                            retObj.truckName = truck.registrationNo;
-                            retObj.message.push('success');
-                            retObj.status = true;
-                            retObj.data = trip;
-                            callback(retObj);
-                        }
-                    }
-                );
-            }
-        }
-    );
-};
-
-function nanToZero(value) {
-    if (isNaN(value)) {
-        return 0;
-    } else {
-        return value;
-    }
-}
-Invoices.prototype.generatePDF = function(req,callback){
-    var retObj={
         status:false,
         messages:[]
     };
-    if(!req.params.invoiceId || !ObjectId.isValid(req.params.invoiceId)){
-        retObj.messages.push("Provide Invoice Details");
-    }
-    if(retObj.messages.length>0){
-        callback(retObj);
-    }else{
-        async.parallel({
-            invoiceDetails:function(invoiceCallback){
-                InvoicesColl.findOne({_id:req.params.invoiceId}).lean().exec(function (err,doc){
-                    if(err){
-                        retObj.messages.push("error in fetching record"+JSON.stringify(err));
-                        invoiceCallback(retObj,null);
-                    } else if(doc){
-                        if(doc.lrDate){
-                            doc.lrDate=  dateFormat(doc.lrDate,"dd/mm/yyyy");
-                        }
-                        if(doc.consignorInvoiceDate){
-                            doc.consignorInvoiceDate=  dateFormat(doc.consignorInvoiceDate,"dd/mm/yyyy");
-                        }
-                        if(doc.gatePassDate){
-                            doc.gatePassDate=  dateFormat(doc.gatePassDate,"dd/mm/yyyy");
-                        }
-                        doc.pdfTotalAmount=nanToZero(doc.amount)+nanToZero(doc.DCamount);
-                        doc.amount=nanToZero(doc.amount);
-                        if(doc.temparatureCargo) {
-                            doc.temparatureCargo ="Yes"
-                        }else{
-                            doc.temparatureCargo="No"
-                        }
-                        invoiceCallback(false,doc);
-                    }else{
-                        retObj.messages.push("Please try again");
-                        invoiceCallback(retObj,'');
-                    }
-                });
-            },accountDetails:function(accCallback){
-                AccountsColl.findOne({_id:req.jwt.accountId},function (err,doc) {
-                    if(err){
-                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-                        accCallback(retObj,'');
-                    }else if(doc){
-                        accCallback(false,doc);
-                    }else{
-                        retObj.messages.push("Please try again");
-                        accCallback(retObj,'');
-                    }
-                })
-            }
-        },function(err,result){
-            var totalAmountByTonne = 0;
-            if(err){
-                callback(err);
-            }else{
-                result.invoiceNo = result.invoiceDetails.invoiceNo;
-                if(result.invoiceDetails.addTrip){
-                    for(var i=0;i<result.invoiceDetails.trip.length;i++){
-                        result.invoiceDetails.trip[i].index = i+1;
-                        var tripDate = new Date(result.invoiceDetails.trip[i].date);
-                        result.invoiceDetails.trip[i].date = tripDate.getDate()+"-"+(tripDate.getMonth()+1)+"-"+tripDate.getFullYear();
-                        totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne;
-                    }
-                    result.totalAmountByTonne = nanToZero(totalAmountByTonne);
-                }else{
-                    for(var i = 0;i < result.invoiceDetails.trip.length;i++){
-                        result.invoiceDetails.trip[i].index = i+1;
-                        result.invoiceDetails.trip[i].ratePerTonne = result.invoiceDetails.ratePerTonne;
-                        result.invoiceDetails.trip[i].tonnage = result.invoiceDetails.tonnage;
-                        result.invoiceDetails.trip[i].amountPerTonne = nanToZero(result.invoiceDetails.trip[i].ratePerTonne*result.invoiceDetails.trip[i].tonnage);
-                        totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne ;
-                        if(result.invoiceDetails.trip[i].loadedOn !== undefined){
-                            var loadedOn = new Date(result.invoiceDetails.trip[i].loadedOn);
-                            result.invoiceDetails.trip[i].date = loadedOn.getDate()+"-"+(loadedOn.getMonth()+1)+"-"+loadedOn.getFullYear();
-                            result.invoiceDetails.trip[i].loadedOn = loadedOn.getDate()+"-"+(loadedOn.getMonth()+1)+"-"+loadedOn.getFullYear();
-
-                        }
-                        if(result.invoiceDetails.trip[i].unloadedOn !== undefined){
-                            var unloadedOn = new Date(result.invoiceDetails.trip[i].unloadedOn);
-                            result.invoiceDetails.trip[i].unloadedOn = unloadedOn.getDate()+"-"+(unloadedOn.getMonth()+1)+"-"+unloadedOn.getFullYear();
-
-                        }
-                    }
-                    result.totalAmountByTonne = nanToZero(totalAmountByTonne);
-                }
-                PartiesColl.findOne({_id:result.invoiceDetails.partyId},function(err,party){
-                    if(err){
-                        retObj.messages.push("error in finding party details"+JSON.stringify(err));
-                    }else{
-                        result.invoiceDate = dateToStringFormat(new Date());
-                        result.partyName = party.name;
-                        result.partyAddress = party.city;
-                        result.gstNo = party.gstNo;
-                        if(result.accountDetails.cgst && result.accountDetails.sgst && result.accountDetails.igst){
-                            result.cgstAmount = (result.accountDetails.cgst/100)*result.invoiceDetails.totalAmount;
-                            result.sgstAmount = (result.accountDetails.sgst/100)*result.invoiceDetails.totalAmount;
-                            result.totalAmount = result.cgstAmount + result.sgstAmount + result.invoiceDetails.totalAmount;
-                        }
-                        pdfGenerator.createPdf(result.accountDetails.templatePath,'invoice.html','landscape',result,function (resp) {
-                            callback(resp);
-                        })
-                    }
-                });
-            }
-        });
-    }
-};
-
-Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    if (params.fromDate && params.toDate && params._id) {
-        q = {
-            accountId: jwt.accountId,
-            createdAt: {
-                $gte: params.fromDate,
-                $lte: params.toDate
-            },
-            partyId: params._id
-        };
-    } else if (params.fromDate && params.toDate) {
-        q = {
-            accountId: jwt.accountId,
-            createdAt: {
-                $gte: params.fromDate,
-                $lte: params.toDate
-            }
-        };
-    } else {
-        q = {
-            accountId: jwt.accountId,
-            partyId: params._id
-        };
-
-    }
-    InvoicesColl.find(q, function (err, invoices) {
-        if (err) {
+    TrucksColl.find({accountId:account._id},function(err,trucks){
+        if(err){
             retObj.status = false;
-            retObj.messages.push('error while getting invoives' + JSON.stringify(err));
+            retObj.messages.push("Error in finding trucks"+JSON.stringify(err));
             callback(retObj);
-        } else {
-            var partyIds = _.pluck(invoices, 'partyId');
-            PartiesColl.find({
-                    _id: {
-                        $in: partyIds
-                    }
-                }, {
-                    name: 1
-                },
-                function (err, parties) {
-                    async.each(
-                        invoices,
-                        function (invoice, asyncCallback) {
-                            if (invoice.partyId) {
-                                var party = _.find(parties, function (party) {
-                                    return party._id.toString() === invoice.partyId;
-                                });
-                                invoice.partyId = party.name;
+        }else if(trucks.length>0){
+            async.each(trucks,function(truck,asyncCallback){
+                TripSheetsColl.find({accountId:account._id,date : today},function(err,tripSheet){
+                    if(err || tripSheet.length>0){
+                        asyncCallback(true);
+                    }else{
+                        var tripSheetObj = {
+                            truckId : truck._id,
+                            registrationNo : truck.registrationNo,
+                            accountId:account._id,
+                            date : today
+                        };
+                        var tripSheetDoc = new TripSheetsColl(tripSheetObj);
+                        tripSheetDoc.save(function(err,result){
+                            if(err){
+                                asyncCallback(true);
+                            }else{
                                 asyncCallback(false);
                             }
-                        },
-                        function (err) {
-                            if (err) {
-                                retObj.status = false;
-                                retObj.messages.push(
-                                    'error in fetching records' + JSON.stringify(err)
-                                );
-                                callback(retObj);
-                            } else {
-                                retObj.status = true;
-                                retObj.messages.push('Success');
-                                retObj.data = invoices;
-                                callback(retObj);
-                            }
                         });
+                    }
                 });
+            },function(err){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("Error in saving trip sheet");
+                    callback(retObj);
+                } else{
+                    retObj.status = true;
+                    retObj.messages.push("Saved successfully");
+                    callback(retObj);
+                }
+            });
+        }else{
+            retObj.status = false;
+            retObj.messages.push("No trucks found");
+            callback(retObj);
         }
     });
 };
 
-Invoices.prototype.downloadDetails = function (jwt, req, callback) {
+TripSheets.prototype.createTripSheet = function (today,callback) {
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    AccountsColl.find({tripSheetEnabled:true},function(err,accounts){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("Error in finding data"+JSON.stringify(err));
+            callback(retObj);
+        } else{
+            async.each(accounts,function (account,asyncAccCallback) {
+                if(account.tripSheetEnabled === true){
+                    createTripSheet(account,today,function(tripSheetCallback){
+                        if(tripSheetCallback.status){
+                            asyncAccCallback(false);
+                        }else{
+                            asyncAccCallback(true);
+                        }
+                    });
+                }else{
+                    asyncAccCallback(false);
+                }
+            },function(err){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("Error in saving trip sheet");
+                    callback(retObj);
+                } else{
+                    retObj.status = true;
+                    retObj.messages.push("Saved successfully");
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+TripSheets.prototype.getTripSheets = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var params = {};
-    if (req.query.fromDate) {
-        params.fromDate = req.query.fromDate;
-    } else if (req.query.toDate) {
-        params.toDate = req.query.toDate;
-    } else if (req.query.partyId) {
-        params._id = req.query.partyId;
-    }
-    Invoices.prototype.invoiceByParty(jwt, params, function (response) {
-        if (response.status) {
-            var output = [];
-            for (var i = 0; i < response.data.length; i++) {
-                output.push({
-                    PartyName: response.data[i].partyId,
-                    Date: response.data[i].createdAt,
-                    TruckNo: response.data[i].vehicleNo,
-                    From: response.data[i].trip[0].from,
-                    To: response.data[i].trip[0].to,
-                    RatePerTrip: response.data[i].rate,
-                    NoOfTrips: response.data[i].quantity
-                });
-            }
-
-            retObj.data = output;
-            retObj.status = true;
-            retObj.messages.push("successful..");
+    TripSheetsColl.find({accountId: req.jwt.accountId, date: req.params.date}, function (err, tripSheets) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
             callback(retObj);
         } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = tripSheets;
             callback(retObj);
         }
-    })
+    });
+
 };
 
+/*
+TripSheets.prototype.getTripSheets = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var today = new Date();
+    today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    var condition = {accountId: req.jwt.accountId};
+    if(isNaN(new Date(req.query.date))){
+        if(req.query.truckId && req.query.fromDate && req.query.toDate){
+            condition.truckId = req.query.truckId;
+            condition.createdAt = condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+        }else if(req.query.fromDate && req.query.toDate){
+            condition.createdAt = condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+        }else if(req.query.truckId){
+            condition.truckId = req.query.truckId;
+        }else{
+            condition.date = today;
+        }
+    }else{
+        condition.date = req.query.date;
+    }
+    TripSheetsColl.find(condition, function (err, tripSheets) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = tripSheets;
+            callback(retObj);
+        }
+    });
 
-module.exports = new Invoices();
+};
+*/
+
+TripSheets.prototype.updateTripSheet = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: [],
+        errors:[]
+    };
+    var tripSheets = req.body;
+    var invoiceObj = {trip:[],partyId:''};
+    async.each(tripSheets,function(tripSheet,asyncCallback){
+        if((tripSheet.unloadingPoint && tripSheet.loadingPoint) !== undefined){
+            if(tripSheet.partyId){
+                retObj.errors.push("Select party");
+            }
+        }
+        if(tripSheet.partyId){
+            if(tripSheet.partyId._id !== undefined){
+                tripSheet.partyId = tripSheet.partyId._id;
+                invoiceObj.partyId = tripSheet.partyId;
+            }
+            invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
+                if(err){
+                    asyncCallback(true);
+                }else if(!invoices.length){
+                    invoiceObj.status = 'pending';
+                    invoiceObj.tripSheetId = tripSheet._id;
+                    invoiceObj.accountId = req.jwt.accountId;
+                    invoiceObj.trip.push({
+                        vehicleNo:tripSheet.registrationNo,
+                        from:tripSheet.loadingPoint,
+                        to:tripSheet.unloadingPoint
+                    });
+                    Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
+                }
+            });
+        }
+        TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
+            if(err){
+                asyncCallback(true);
+            }else{
+                asyncCallback(false);
+            }
+        });
+    },function(err){
+        if(retObj.errors.length>0){
+            retObj.status = false;
+            callback(retObj);
+        }else if (err) {
+            retObj.status = false;
+            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            callback(retObj);
+        }
+    });
+};
+TripSheets.prototype.getTripSheetsByParams = function(req,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {accountId: req.jwt.accountId};
+    if(req.query.toDate && req.query.fromDate){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+    }
+    if(req.query.truckId !== undefined){
+        condition.truckId = req.query.truckId;
+    }
+    TripSheetsColl.find(condition,function(err,tripSheets){
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = tripSheets;
+            callback(retObj);
+        }
+    });
+};
+
+module.exports = new TripSheets();
