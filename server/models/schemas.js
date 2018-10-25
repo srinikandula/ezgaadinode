@@ -1197,7 +1197,8 @@ var invoicesSchema=new mongoose.Schema({
     ratePerTonne:String,
     tripSheetId:String,
     status:String,
-    trip:[]
+    trip:[],
+    invoiceNo:String
 },{timestamps: true});
 
 var tripSettlementsSchema=new mongoose.Schema({
@@ -1275,9 +1276,12 @@ var driversAttendanceSchema = new mongoose.Schema({
     isPresent:{type:Boolean,default:false}
 }, {timestamps: true});
 
-
+var counterSchema = new mongoose.Schema({
+    count: Number
+}, {timestamps: true});
 
 module.exports = {
+    CounterCollection:mongoose.model('counter', counterSchema, 'counter'),
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     tripSettlementsColl:mongoose.model('tripSettlements', tripSettlementsSchema, 'tripSettlements'),
     userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
