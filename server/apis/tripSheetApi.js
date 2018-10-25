@@ -23,35 +23,28 @@ function createTripSheet(account,today,callback){
             retObj.messages.push("Error in finding trucks"+JSON.stringify(err));
             callback(retObj);
         }else if(trucks.length>0){
-            async.each(trucks,function(truck,asyncCallback){
-                TripSheetsColl.find({accountId:account._id,date : today},function(err,tripSheet){
-                    if(err || tripSheet.length>0){
+            console.log("trucks length...",trucks.length);
+            async.map(trucks,function(truck,asyncCallback){
+                var tripSheetObj = {
+                    truckId : truck._id,
+                    registrationNo : truck.registrationNo,
+                    accountId:account._id,
+                    date : today
+                };
+                var tripSheetDoc = new TripSheetsColl(tripSheetObj);
+                tripSheetDoc.save(function(err,result){
+                    if(err){
                         asyncCallback(true);
                     }else{
-                        var tripSheetObj = {
-                            truckId : truck._id,
-                            registrationNo : truck.registrationNo,
-                            accountId:account._id,
-                            date : today
-                        };
-                        var tripSheetDoc = new TripSheetsColl(tripSheetObj);
-                        tripSheetDoc.save(function(err,result){
-                            if(err){
-                                asyncCallback(true);
-                            }else{
-                                asyncCallback(false);
-                            }
-                        });
+                        asyncCallback(false);
                     }
                 });
-            },function(err){
+                },function(err){
                 if(err){
                     retObj.status = false;
-                    retObj.messages.push("Error in saving trip sheet");
                     callback(retObj);
                 } else{
                     retObj.status = true;
-                    retObj.messages.push("Saved successfully");
                     callback(retObj);
                 }
             });
@@ -74,26 +67,30 @@ TripSheets.prototype.createTripSheet = function (today,callback) {
             retObj.messages.push("Error in finding data"+JSON.stringify(err));
             callback(retObj);
         } else{
-            async.each(accounts,function (account,asyncAccCallback) {
-                if(account.tripSheetEnabled === true){
-                    createTripSheet(account,today,function(tripSheetCallback){
-                        if(tripSheetCallback.status){
-                            asyncAccCallback(false);
-                        }else{
-                            asyncAccCallback(true);
-                        }
-                    });
-                }else{
-                    asyncAccCallback(false);
-                }
-            },function(err){
+            async.map(accounts,function (account,asyncAccCallback) {
+                TripSheetsColl.find({accountId:account._id,date:today},function(err,data){
+                    if(err){
+                        asyncAccCallback(true);
+                    }else if(!data.length){
+                        createTripSheet(account,today,function(tripSheetCallback){
+                            if(tripSheetCallback.status){
+                                asyncAccCallback(false);
+                            }else{
+                                asyncAccCallback(true);
+                            }
+                        });
+                    }else{
+                        asyncAccCallback(false);
+                    }
+                });
+                },function(err){
                 if(err){
                     retObj.status = false;
-                    retObj.messages.push("Error in saving trip sheet");
+                    retObj.messages.push("Error in saving trip sheet...."+JSON.stringify(err));
                     callback(retObj);
                 } else{
                     retObj.status = true;
-                    retObj.messages.push("Saved successfully");
+                    retObj.messages.push("Success");
                     callback(retObj);
                 }
             });
