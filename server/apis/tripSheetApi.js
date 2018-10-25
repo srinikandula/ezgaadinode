@@ -4,7 +4,8 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var async = require('async');
 var invoiceColl = require('./../models/schemas').invoicesCollection;
 var partyColl = require('./../models/schemas').PartyCollection;
-
+var CounterCollection = require('./../models/schemas').CounterCollection;
+var Invoices = require('./../apis/invoiceApi');
 
 
 var TripSheets = function () {
@@ -85,7 +86,7 @@ TripSheets.prototype.createTripSheet = function (today,callback) {
                 }else{
                     asyncAccCallback(false);
                 }
-                },function(err){
+            },function(err){
                 if(err){
                     retObj.status = false;
                     retObj.messages.push("Error in saving trip sheet");
@@ -174,35 +175,34 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
             }
         }
         if(tripSheet.partyId){
-                if(tripSheet.partyId._id !== undefined){
-                    tripSheet.partyId = tripSheet.partyId._id;
-                    invoiceObj.partyId = tripSheet.partyId;
-                }
-                invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
-                    if(err){
-                        asyncCallback(true);
-                    }else if(!invoices.length){
-                        invoiceObj.status = 'pending';
-                        invoiceObj.tripSheetId = tripSheet._id;
-                        invoiceObj.accountId = req.jwt.accountId;
-                        invoiceObj.trip.push({
-                            vehicleNo:tripSheet.registrationNo,
-                            from:tripSheet.loadingPoint,
-                            to:tripSheet.unloadingPoint
-                        });
-                        var invoiceDoc = new invoiceColl(invoiceObj);
-                        invoiceDoc.save(function(err,result){});
-                    }
-                });
+            if(tripSheet.partyId._id !== undefined){
+                tripSheet.partyId = tripSheet.partyId._id;
+                invoiceObj.partyId = tripSheet.partyId;
             }
-            TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
+            invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
                 if(err){
                     asyncCallback(true);
-                }else{
-                    asyncCallback(false);
+                }else if(!invoices.length){
+                    invoiceObj.status = 'pending';
+                    invoiceObj.tripSheetId = tripSheet._id;
+                    invoiceObj.accountId = req.jwt.accountId;
+                    invoiceObj.trip.push({
+                        vehicleNo:tripSheet.registrationNo,
+                        from:tripSheet.loadingPoint,
+                        to:tripSheet.unloadingPoint
+                    });
+                    Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
                 }
             });
-        },function(err){
+        }
+        TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
+            if(err){
+                asyncCallback(true);
+            }else{
+                asyncCallback(false);
+            }
+        });
+    },function(err){
         if(retObj.errors.length>0){
             retObj.status = false;
             callback(retObj);
