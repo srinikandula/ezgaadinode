@@ -223,12 +223,14 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         messages: []
     };
     var condition = {accountId: req.jwt.accountId};
+
     if(req.query.toDate && req.query.fromDate){
         condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
     }
     if(req.query.truckId !== undefined){
         condition.truckId = req.query.truckId;
     }
+
     TripSheetsColl.find(condition,function(err,tripSheets){
         if (err) {
             retObj.status = false;
@@ -242,5 +244,73 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         }
     });
 };
+
+TripSheets.prototype.downloadTripSheetData = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {accountId: req.jwt.accountId};
+
+    if((req.query.toDate && req.query.fromDate) !== 'undefined'){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+    }
+    if(req.query.truckId !== 'undefined'){
+        condition.truckId = req.query.truckId;
+    }
+   TripSheetsColl.find(condition,function(err,data){
+       if (err) {
+           retObj.status = false;
+           retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+           callback(retObj);
+       } else if(data.length>0) {
+           // console.log("data....",data);
+           var output =[];
+           let party;
+           var partyIds = _.pluck(data);
+
+           partyColl.find({_id: {$in : partyIds}},{name:1}, function(err,partyNames){
+               var namesMap = {};
+               for(p in partyNames) {
+                   namesMap[partyNames[p]._id] = partyNames[p].name;
+               }
+
+               async.each(data,function (tripSheet,asyncCallback) {
+                   tripSheet.attrs.partyName = partyNames[tripSheet.partyId];
+                   var obj = {
+                       registrationNo:tripSheet.registrationNo,
+                       date:tripSheet.date,
+                       loadingPoint:tripSheet.loadingPoint,
+                       unloadingPoint:tripSheet.unloadingPoint,
+                       party:party
+                   };
+                   output.push(obj);
+
+                   asyncCallback(false);
+               },function (err) {
+                   if(err){
+                       retObj.status = false;
+                       retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+                       callback(retObj);
+                   }else{
+                       retObj.data = output;
+                       retObj.status = true;
+                       retObj.messages.push("successful..");
+                       callback(retObj);
+                   }
+               });
+
+
+           });
+
+
+       }else{
+           retObj.status = false;
+           retObj.messages.push("No data");
+           callback(retObj);
+       }
+   });
+};
+
 
 module.exports = new TripSheets();

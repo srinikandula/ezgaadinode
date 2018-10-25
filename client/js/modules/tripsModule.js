@@ -1113,6 +1113,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.getAllLoadingPoints(function (success) {
             if (success.data.status) {
                 $scope.loadingPoints = success.data.data;
+                $scope
             }
         })
     };
@@ -1251,6 +1252,10 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             }
         })
     }
+
+    $scope.downloadTripSheetReport = function (truckId, fromDate, toDate) {
+        window.open('/v1/trips/downloadTripSheetDate?truckId='+truckId+'&fromDate='+fromDate+'&toDate='+toDate);
+    };
 
 
 }]);

@@ -3413,3 +3413,6 @@ textarea.form-control {
     width: 12%;
     display: inline-block;
 }
+.sheet-content{
+    border-radius: 15px;
+}
