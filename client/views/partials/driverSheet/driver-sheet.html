@@ -80,7 +80,7 @@
             <th>Mobile Number</th>
             <th>Attendance</th>
         </tr>
-        <tr ng-repeat="driver in driverSheets | filter:{fullName: driversList.driverName.driverName}"
+        <tr ng-repeat="driver in driverSheets | filter: driversList.driverName.fullName"
             style="text-align: center;">
             <td class="col-sm-1">{{$index+1}}</td>
             <td class="col-sm-1">{{driver.driverName}}</td>
