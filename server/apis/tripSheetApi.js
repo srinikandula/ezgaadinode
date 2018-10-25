@@ -6,7 +6,7 @@ var invoiceColl = require('./../models/schemas').invoicesCollection;
 var partyColl = require('./../models/schemas').PartyCollection;
 var CounterCollection = require('./../models/schemas').CounterCollection;
 var Invoices = require('./../apis/invoiceApi');
-
+var _ = require('underscore');
 
 var TripSheets = function () {
 
@@ -261,28 +261,26 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
            callback(retObj);
        } else if(data.length>0) {
-           // console.log("data....",data);
            var output =[];
            let party;
-           var partyIds = _.pluck(data);
-
+           var partyIds = _.pluck(data,"partyId");
            partyColl.find({_id: {$in : partyIds}},{name:1}, function(err,partyNames){
-               var namesMap = {};
-               for(p in partyNames) {
-                   namesMap[partyNames[p]._id] = partyNames[p].name;
-               }
-
                async.each(data,function (tripSheet,asyncCallback) {
-                   tripSheet.attrs.partyName = partyNames[tripSheet.partyId];
                    var obj = {
                        registrationNo:tripSheet.registrationNo,
                        date:tripSheet.date,
                        loadingPoint:tripSheet.loadingPoint,
-                       unloadingPoint:tripSheet.unloadingPoint,
-                       party:party
+                       unloadingPoint:tripSheet.unloadingPoint
                    };
+                   if(tripSheet.partyId !== undefined){
+                       party = _.find(partyNames, function (party) {
+                           return party._id.toString() === tripSheet.partyId;
+                       });
+                       obj.party = party.name;
+                   }else{
+                       obj.party = '';
+                   }
                    output.push(obj);
-
                    asyncCallback(false);
                },function (err) {
                    if(err){
@@ -296,11 +294,7 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
                        callback(retObj);
                    }
                });
-
-
            });
-
-
        }else{
            retObj.status = false;
            retObj.messages.push("No data");
