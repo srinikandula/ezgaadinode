@@ -9,12 +9,8 @@ var pdfGenerator = require('./../apis/pdfGenerator');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var TripCollection = require('./../models/schemas').TripCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
-<<<<<<< f644560939f2fc3c75320e1258d5746a567c6f34
-var dateFormat=require('dateformat');
-=======
 var dateFormat = require('dateformat');
 var CounterCollection = require('./../models/schemas').CounterCollection;
->>>>>>> InvoiceNumberAddedInInvoices
 
 var Invoices = function () {};
 
