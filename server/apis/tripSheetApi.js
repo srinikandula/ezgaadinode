@@ -7,7 +7,7 @@ var partyColl = require('./../models/schemas').PartyCollection;
 var CounterCollection = require('./../models/schemas').CounterCollection;
 var Invoices = require('./../apis/invoiceApi');
 var _ = require('underscore');
-
+var ExpensesSheetColl = require('./../models/schemas').ExpensesSheetColl;
 var TripSheets = function () {
 
 };
@@ -23,7 +23,6 @@ function createTripSheet(account,today,callback){
             retObj.messages.push("Error in finding trucks"+JSON.stringify(err));
             callback(retObj);
         }else if(trucks.length>0){
-            console.log("trucks length...",trucks.length);
             async.map(trucks,function(truck,asyncCallback){
                 var tripSheetObj = {
                     truckId : truck._id,
@@ -165,9 +164,10 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
     };
     var tripSheets = req.body;
     var invoiceObj = {trip:[],partyId:''};
+    var expenseObj = {partyId:'',accountId:req.jwt.accountId};
     async.each(tripSheets,function(tripSheet,asyncCallback){
         if((tripSheet.unloadingPoint && tripSheet.loadingPoint) !== undefined){
-            if(tripSheet.partyId){
+            if(!tripSheet.partyId){
                 retObj.errors.push("Select party");
             }
         }
@@ -175,6 +175,7 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
             if(tripSheet.partyId._id !== undefined){
                 tripSheet.partyId = tripSheet.partyId._id;
                 invoiceObj.partyId = tripSheet.partyId;
+                expenseObj.partyId = tripSheet.partyId;
             }
             invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
                 if(err){
@@ -190,6 +191,19 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                         driverName:tripSheet.driverName
                     });
                     Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
+                }
+            });
+            ExpensesSheetColl.find({tripSheetId:tripSheet._id},function(err,expenses){
+                if(err){
+                    asyncCallback(true);
+                }else if(!expenses.length){
+                    expenseObj.from = tripSheet.loadingPoint;
+                    expenseObj.to = tripSheet.unloadingPoint;
+                    expenseObj.vehicleNo = tripSheet.registrationNo;
+                    expenseObj.tripSheetId = tripSheet._id;
+                    expenseObj.date = tripSheet.date;
+                    var doc = new ExpensesSheetColl(expenseObj);
+                    doc.save(function(err,result){});
                 }
             });
         }
