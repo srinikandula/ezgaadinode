@@ -1251,6 +1251,7 @@ var tripSheetsSchema =  new mongoose.Schema({
     date:String,
     loadingPoint:String,
     unloadingPoint:String,
+    driverName:String,
     partyId:String
 }, {timestamps: true});
 

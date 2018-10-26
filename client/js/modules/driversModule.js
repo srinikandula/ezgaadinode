@@ -506,6 +506,7 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
             }
         },function(errorCallback){});
     };
+
     $scope.getAllDriversAttendance = function (date) {
         if (date) {
             $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
@@ -526,10 +527,11 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
 
     $scope.saveAll = function () {
         var params = $scope.driverSheets;
-        console.log("params", params);
         DriverService.updateDriverSheet(params, function (success) {
             if (success.data.status) {
-                console.log("success");
+                swal("Good job!", "Drier Sheet Updated Successfully!", "success");
+            }else{
+                swal( "Error!", "error");
             }
         })
     }

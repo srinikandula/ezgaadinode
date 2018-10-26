@@ -857,6 +857,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'expensesSheet',
+        url: '/expensesSheet',
+        templateUrl: 'views/partials/expenses/expensesSheet.html',
+        data: {
+            activeTab: 'expensesSheet',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
     });
     // agentReports
     $urlRouterProvider.otherwise('/login');
