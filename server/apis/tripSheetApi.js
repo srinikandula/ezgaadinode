@@ -186,7 +186,8 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                     invoiceObj.trip.push({
                         vehicleNo:tripSheet.registrationNo,
                         from:tripSheet.loadingPoint,
-                        to:tripSheet.unloadingPoint
+                        to:tripSheet.unloadingPoint,
+                        driverName:tripSheet.driverName
                     });
                     Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
                 }

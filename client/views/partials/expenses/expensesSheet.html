@@ -1,9 +1,9 @@
-<div class="mainRight col-xs-12" ng-controller="TripSheetCtrl">
+<div class="mainRight col-xs-12" ng-controller="expensesSheetController">
     <div class="row">
-        <div class="col-sm-2">
-            <h3>Trip Sheet</h3>
+        <div class="col-sm-3">
+            <h3>Expenses Sheet</h3>
         </div>
-        <div class="col-sm-10">
+        <div class="col-sm-9">
             <div class="col-sm-4">
                 <ui-select ng-model="tripSheets.registrationNo" theme="select2"
                            title="Choose a person" append-to-body="true">
@@ -18,12 +18,12 @@
             </div>
             <div>
                 <ul class="list-inline report-expense">
-                    <li class="filterFromDate">
+                    <li class="filterFromDate" style="width: 29%;">
                         <date-picker ng-model="fromDate" past-present="'pastPresentDate'"
                                      class="'textfield'" placeholder="'from date'">
                         </date-picker>
                     </li>
-                    <li class="filterToDate">
+                    <li class="filterToDate" style="width: 29%;">
                         <date-picker ng-model="toDate" past-present="'pastPresentDate'"
                                      class="'textfield'" placeholder="'to date'"></date-picker>
                     </li>
@@ -63,12 +63,6 @@
             <button type="button" class="btn btn-default" ng-click="createTripSheet(dt)"><span
                     class="glyphicon glyphicon-refresh"></span></button>
         </div>
-        <div class="col-sm-6">
-            <ul class="list-inline add-load">
-                <li><a href="#" ng-click="saveLoadingPoint()">Add Loading Point</a></li>
-                <li><a href="#" ng-click="saveUnloadingPoint()">Add Unloading Point</a></li>
-            </ul>
-        </div>
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
@@ -80,7 +74,6 @@
             <th>Registration No</th>
             <th>loading Point</th>
             <th>Unloading Point</th>
-            <th>Driver</th>
             <th>Party Name</th>
         </tr>
         <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo.registrationNo}"
@@ -93,7 +86,7 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                     <select class="form-control" ng-model="sheet.loadingPoint">
-                        <option value="" selected>--Loading--</option>
+                        <option value="" selected>--Select--</option>
                         <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
                             {{loadingPoint.loadingPoint}}
                         </option>
@@ -111,7 +104,7 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                     <select class="form-control" ng-model="sheet.unloadingPoint" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
-                        <option value="" selected>--Unloading--</option>
+                        <option value="" selected>--Select--</option>
                         <option ng-repeat="unloadingPoint in unloadingPoints" value="{{unloadingPoint.unloadingPoint}}">
                             {{unloadingPoint.unloadingPoint}}
                         </option>
@@ -120,17 +113,6 @@
                              ng-options="unloading._id as unloading.unloadingPoint for unloading in unloadingPoints" >
                      </select>-->
 
-                </div>
-            </td>
-            <td>
-                <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                <select class="form-control" ng-model="sheet.driverName" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
-                    <option value="" selected>--Select Driver--</option>
-                    <option ng-repeat="driver in presentDrivers">{{driver.driverName}}</option>
-                </select>
                 </div>
             </td>
             <td class="col-sm-2">
@@ -174,11 +156,11 @@
                         <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
 
                         <h4 class="modal-title col-sm-5"><b>Trip Sheet Report</b></h4>
-                        <div class="pall-zero col-sm-5">
-                            <b> <a href="#"
-                                   ng-click="downloadTripSheetReport(tripSheets.registrationNo._id, fromDate, toDate );">Download
-                                Report</a></b>
-                        </div>
+                        <!--<div class="pall-zero col-sm-5">-->
+                        <!--<b> <a href="#"-->
+                        <!--ng-click="downloadTripSheetReport(tripSheets.registrationNo._id, fromDate, toDate );">Download-->
+                        <!--Report</a></b>-->
+                        <!--</div>-->
                         <div class="col-sm-2 pull-right">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
@@ -192,7 +174,6 @@
                             <th>Registration No</th>
                             <th>loading Point</th>
                             <th>Unloading Point</th>
-                            <th>Driver</th>
                             <th>Party Name</th>
                         </tr>
                         <tr ng-repeat="report in tripSheetReports"
@@ -204,9 +185,6 @@
                             </td>
                             <td class="col-sm-2">
                                 {{report.unloadingPoint || '---'}}
-                            </td>
-                            <td class="col-sm-2">
-                                {{report.driverName || '---'}}
                             </td>
                             <td class="col-sm-2">
                                 {{report.partyName || '---'}}

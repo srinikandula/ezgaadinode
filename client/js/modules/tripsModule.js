@@ -903,7 +903,14 @@ app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServ
         // console.log("sdasdad", loadingPoint);
         TripServices.saveLoadingPoint({loadingPoint: loadingPoint}, function (success) {
             if (success.data.status) {
+                success.data.messages.forEach(function (messages) {
+                    Notification.success(messages);
+                });
                 $uibModalInstance.close({status: true, message: success.data.message});
+            }else{
+                success.data.messages.forEach(function (messages) {
+                    Notification.success(messages);
+                });
             }
         })
     };
@@ -912,7 +919,14 @@ app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServ
         // console.log("sdasdad", loadingPoint);
         TripServices.saveUnloadingPoint({unloadingPoint: unloadingPoint}, function (success) {
             if (success.data.status) {
+                success.data.messages.forEach(function (messages) {
+                    Notification.success(messages);
+                });
                 $uibModalInstance.close({status: true, message: success.data.message});
+            }else{
+                success.data.messages.forEach(function (messages) {
+                    Notification.error(messages);
+                });
             }
         })
     };
@@ -1073,7 +1087,7 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 }]);
 
 
-app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
+app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', 'DriverService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService, DriverService) {
 
     $scope.validateTable = false;
 
@@ -1100,6 +1114,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         $scope.dt.setTime(dt.getTime());
         $scope.dt = new Date($scope.dt);
         $scope.getAllTripssheets($scope.dt);
+        $scope.getAllDriversAttendance($scope.dt);
     };
 
     $scope.previousDay = function () {
@@ -1107,6 +1122,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
         $scope.dt = new Date($scope.dt);
         $scope.getAllTripssheets($scope.dt);
+        $scope.getAllDriversAttendance($scope.dt);
     };
 
     $scope.getAllLoadingPoints = function () {
@@ -1193,10 +1209,12 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         var params = $scope.tripSheets;
         TripServices.updateTripSheet(params, function (success) {
             if (success.data.status) {
-                console.log("success");
+                swal("Good job!", "Trip Sheet Updated Successfully!", "success");
+            }else{
+                swal("Good job!", "Trip Sheet Updated Successfully!", "success");
             }
         })
-    }
+    };
     $scope.getAllTripssheets(new Date());
 
     $scope.saveLoadingPoint = function () {
@@ -1256,6 +1274,34 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     $scope.downloadTripSheetReport = function (truckId, fromDate, toDate) {
         window.open('/v1/trips/downloadTripSheetDate?truckId='+truckId+'&fromDate='+fromDate+'&toDate='+toDate);
     };
+
+    $scope.getAllDriversAttendance = function (date) {
+        if (date) {
+            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        } else {
+            var today = new Date();
+            $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        DriverService.getAllDriversAttendance($scope.today, function (success) {
+            if (success.data.status) {
+                $scope.driverSheets = success.data.data;
+                console.log("$scope.driverSheets", $scope.driverSheets);
+                $scope.presentDrivers = [];
+                for(var i=0; i<$scope.driverSheets.length;i++){
+                    if($scope.driverSheets[i].isPresent === true){
+                        $scope.presentDrivers.push($scope.driverSheets[i]);
+                    }
+                }
+                console.log("$scope.presentDrivers", $scope.presentDrivers);
+
+            }
+        }, function (error) {
+
+        })
+    };
+    $scope.getAllDriversAttendance(new Date());
+
 
 
 }]);

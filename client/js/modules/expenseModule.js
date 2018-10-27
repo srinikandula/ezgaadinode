@@ -469,6 +469,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         }
     }
 }]);
+
 app.controller('UploadExpanseCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
     $scope.file=undefined;
     $scope.uploadExpenses=function () {
@@ -493,5 +494,56 @@ app.controller('UploadExpanseCtrl', ['$scope','Upload','Notification','$state', 
 
         }
     }
+
+}]);
+
+app.controller('expensesSheetController', ['$scope','Upload','Notification','$state','TrucksService',function ($scope, Upload,Notification,$state, TrucksService) {
+
+    $scope.today = function () {
+        $scope.dt = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function () {
+        $scope.dt = null;
+    };
+
+    $scope.open2 = function () {
+        $scope.popup2.opened = true;
+    };
+
+    $scope.popup2 = {
+        opened: false
+    };
+
+    $scope.nextDay = function () {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
+        $scope.dt.setTime(dt.getTime());
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllTripssheets($scope.dt);
+    };
+
+    $scope.previousDay = function () {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllTripssheets($scope.dt);
+    };
+
+    $scope.getAllTrucks = function () {
+        TrucksService.getAllTrucksForFilter(function (success) {
+            if (success.data.status) {
+                $scope.trucksList = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (error) {
+
+        })
+    };
+    $scope.getAllTrucks();
 
 }]);
