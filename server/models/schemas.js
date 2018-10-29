@@ -1201,6 +1201,11 @@ var invoicesSchema=new mongoose.Schema({
     tripSheetId:String,
     status:String,
     trip:[],
+    attachments: [{
+        fileName: String,
+        key: String,
+        path: String
+    }],
     invoiceNo:String
 },{timestamps: true});
 

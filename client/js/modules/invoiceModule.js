@@ -69,7 +69,7 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
         }
     }
 }]);
-app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices) {
+app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices','$uibModal', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices,$uibModal) {
     $scope.pageTitle = "Add Invoice";
     $scope.partyName = '';
     $scope.getTrip = {};
@@ -217,6 +217,15 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
     };
     $scope.add_editInvoice = function () {
         if ($stateParams.id) {
+            if ($scope.invoice.attachments.length > 0) {
+                $scope.attachments.forEach(function (file) {
+                    if (file.key) {
+                        $scope.invoice.attachments.push(file);
+                    }
+                });
+            } else {
+                $scope.invoice.attachments = $scope.attachments;
+            }
             if ($scope.invoice.tripId) {
                 $scope.invoice.partyId = $scope.invoice.tripId.partyId;
                 for (var i = 0; i < $scope.invoice.trip.length; i++) {
@@ -258,6 +267,7 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
                     $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
                 }
             }
+            $scope.invoice.attachments = $scope.attachments;
             InvoiceService.addInvoice($scope.invoice, function (successCallback) {
                 if (successCallback.data.status) {
                     Notification.success({
@@ -274,6 +284,38 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
             }, function (errorCallback) {});
         }
 
+    };
+    $scope.viewAttachment = function (path) {
+        TripServices.viewTripDocument({filePath: path}, function (success) {
+            if (success.data.status) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'viewS3Image.html',
+                    controller: 'ViewS3ImageCtrl',
+                    size: 'sm',
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        path: function () {
+                            return success.data.data
+                        }
+                    }
+                });
+                modalInstance.result.then(function (path) {
+                    if (path) {
+                        path = path;
+                    }
+                }, function () {
+                });
+
+
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+
+        })
     };
     $scope.cancel = function () {
         $state.go('invoice');
@@ -300,6 +342,12 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
             });
     };
     $scope.getTrips();
+}]);
+app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
+    $scope.path = path;
+    $scope.close = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
 }]);
 app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceService', '$state', 'NgTableParams', 'PartyService', function ($scope, $rootScope, InvoiceService, $state, NgTableParams, PartyService) {
 
