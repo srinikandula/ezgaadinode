@@ -8,10 +8,12 @@ app.directive('customizedFileUpload',['$rootScope', '$http', 'Upload', function 
         },
         template: '<div class="form-group " ng-repeat="f in files">\n' +
             '<input type="file"   class="form-control"  ng-model="f" ngf-select   placeholder="Upload File"  ' +
-            '       ng-change="uploadFile($index,f);"/>\n' +
+            ' />\n' +
             '<h5 style="color: red;" ng-show="$last">{{errMsg}}</h5>' +
             '<div>' +
-            '<button class="btn btn-xs btn-danger" style="float: right ;margin: 2px" ng-show="!$last" ng-click="removeFile($index)">-</button>' +
+        '<button class="btn btn-xs btn-info " style="float: right;margin: 2px" ng-show="$last" ng-click="uploadFile($index,f);">Upload</button>' +
+
+        '<button class="btn btn-xs btn-danger" style="float: right ;margin: 2px" ng-show="!$last" ng-click="removeFile($index)">-</button>' +
             '<button class="btn btn-xs btn-info " style="float: right;margin: 2px" ng-show="$last" ng-click="addFile();">+</button>' +
             '</div>' +
 
@@ -68,6 +70,7 @@ app.directive('customizedFileUpload',['$rootScope', '$http', 'Upload', function 
                         }
                     },
                 }).then(function (success) {
+                    console.log("file upload....",success);
                     if (success.data.status) {
                         scope.ngModel[index] = success.data.data;
                         scope.errMsg = undefined;

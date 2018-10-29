@@ -6,7 +6,7 @@ loading.prototype.addLoadingPoint = function (jwt,loadingPoints, req, callback) 
         status: false,
         messages: []
     };
-    LoadingColl.find({"loadingPoint":loadingPoints.loadingPoint},function(err,loadingPoint){
+    LoadingColl.find({"loadingPoint":loadingPoints.loadingPoint,"accountId":jwt.accountId},function(err,loadingPoint){
         if(err){
             retObj.messages.push("error while comparing Loading Points");
             callback(retObj);
@@ -39,7 +39,7 @@ loading.prototype.getAll=function(jwt,req,callback){
         status: false,
         messages: []
     };
-    LoadingColl.find({},function(err,result){
+    LoadingColl.find({"accountId":jwt.accountId},function(err,result){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting the data");

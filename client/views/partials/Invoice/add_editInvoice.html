@@ -2,9 +2,9 @@
     <div class="col-xs-12 account-edit">
         <h2 class="title-name">{{pageTitle}}</h2>
         <form class="mt-10">
-            <div class="col-sm-12 col-xs-12 mt-10" style="margin-bottom: 10px; margin-right: 15px" >
-                <div class="checkbox" >
-                    <label >
+            <div class="col-sm-12 col-xs-12 mt-10" style="margin-bottom: 10px; margin-right: 15px">
+                <div class="checkbox">
+                    <label>
                         <input ng-model="invoice.addTrip" type="checkbox" ng-disabled="status" checked>
                         <span class="cr">
                             <i class="cr-icon fa fa-check"></i>
@@ -13,10 +13,10 @@
                     </label>
                 </div>
             </div>
-            <span ng-if="invoice.addTrip" >
+            <span ng-if="invoice.addTrip">
             <div class="col-sm-12 col-xs-12 mt-10">
-                    <div class="form-group col-sm-6 col-xs-12" >
-                            <div class="styling-input-list" >
+                    <div class="form-group col-sm-6 col-xs-12">
+                            <div class="styling-input-list">
                                 <ui-select ng-model="invoice.tripId" theme="select2"
                                            title="Choose a Truck" append-to-body="true">
                                     <ui-select-match class="form-control custom-form-control">
@@ -228,14 +228,14 @@
                         </div>
                     </div>
                 </div>
-                 <!--<div class="form-group col-xs-12">-->
-                        <!--<div class="styling-input-list">-->
-                            <!--<label  >Temparature Cargo</label>-->
-                            <!--<input type="radio"  ng-model="invoice.temparatureCargo" ng-value="true">Yes-->
-                             <!--<input type="radio"  ng-model="invoice.temparatureCargo" value="false">No-->
+                <!--<div class="form-group col-xs-12">-->
+                <!--<div class="styling-input-list">-->
+                <!--<label  >Temparature Cargo</label>-->
+                <!--<input type="radio"  ng-model="invoice.temparatureCargo" ng-value="true">Yes-->
+                <!--<input type="radio"  ng-model="invoice.temparatureCargo" value="false">No-->
 
 
-                        <!--</div>-->
+                <!--</div>-->
                 <!--</div>-->
 
             </div>
@@ -243,19 +243,19 @@
                 <!--<div class="form-group col-xs-12">-->
                     <div class=" col-sm-12 form-group col-xs-12">
                         <date-picker id="lrDate" ng-model="invoice.lrDate"
-                                     class="'custom-form-control'" placeholder="'LR Date'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'LR Date'" past-present="'pastPresent'"></date-picker>
                     </div>
                 <!--</div>-->
-                 <!--<div class="form-group col-xs-12">-->
+                <!--<div class="form-group col-xs-12">-->
                     <div class=" col-sm-12 form-group col-xs-12">
                         <date-picker id="consignorDate" ng-model="invoice.consignorInvoiceDate"
-                                     class="'custom-form-control'" placeholder="'Consignor Invoice Date'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'Consignor Invoice Date'" past-present="'pastPresent'"></date-picker>
                     </div>
                 <!--</div>-->
-                 <!--<div class="form-group col-xs-12">-->
+                <!--<div class="form-group col-xs-12">-->
                     <div class=" col-sm-12 form-group col-xs-12">                                                                                                                                                                                                                                                                                                       
                         <date-picker id="gatePassDate" ng-model="invoice.gatePassDate"
-                                     class="'custom-form-control'" placeholder="'Gate Pass Date'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'Gate Pass Date'" past-present="'pastPresent'"></date-picker>
                     </div>
                 <!--</div>-->
                 <div class="form-group col-xs-12">
@@ -294,12 +294,14 @@
                 <div class="form-group col-xs-12">
                         <div style="margin-top:25px">
                              <div class="styling-input-list">
-                               <label  >Temparature Cargo</label>
-                                 <input type="radio"  ng-model="invoice.temparatureCargo" ng-value="true">Yes
-                                <input type="radio"  ng-model="invoice.temparatureCargo" value="false">No
+                               <label>Temparature Cargo</label>
+                                 <input type="radio" ng-model="invoice.temparatureCargo" ng-value="true">Yes
+                                <input type="radio" ng-model="invoice.temparatureCargo" value="false">No
                             </div>
                         </div>
                 </div>
+
+
             </div>
                 <div class="row">
                     <div class="clearfix"></div>
@@ -324,8 +326,52 @@
                 </div>
                 </div>
                 </div>
-            </span>
+                <!--<div class="form-group col-xs-6 col-xs-12">-->
+                <!--<div class=" styling-input-list">-->
+                <!--<p>File Upload :</p>-->
+                <!--<customized-file-upload ng-model="attachments" folder="'invoices'"-->
+                <!--class="'custom-form-control'" >-->
+                <!--</customized-file-upload>-->
+                <!--</div>-->
+                <!--</div>-->
+                <div class="form-group col-sm-6 col-xs-12  ">
+                    <!--<div class=" panel panel-default ">-->
+                      <table class="table panel panel-default" >
+                    <!--<div ng-repeat="attch in invoice.attachments">-->
+
+                              <tr >
+                                  <th style="border: none"><h4><b>FileName<b><h4></th>
+                                  <th style="border: none"><h4><b>Delete<b><h4></th>
+                              </tr>
+                             <tr ng-repeat="attch in invoice.attachments">
+                              <td style="border: none"><label class="cursor-pointer"
+                                         ng-click="viewAttachment(attch.key)">{{attch.fileName}}</label></td>
+                               <td style="border: none" align="center"><button class="btn btn-danger btn-xs"
+                                                          ng-click="deleteImage('license',attch.key,$index);">x
+                              </button></td>
+                            </tr>
+                            <tr>
+                              <td style="border: none " colspan="2">
+                                  <!--<div class="form-group col-sm-6 col-xs-12">-->
+                                  <div class=" styling-input-list">
+                                    <span>File Upload :</span>
+                                    <customized-file-upload ng-model="attachments" folder="'invoices'"
+                                                            class="'custom-form-control'">
+                                   </customized-file-upload>
+                                  </div>
+                                  <!--</div>-->
+                              </td>
+                              <!--<td style="border: none"></td>-->
+                           </tr>
+
+                          <!--</div>-->
+                      </table>
+                    <!--</div>-->
+            <!--</span>-->
+                         </div>
+                         <!--</div>-->
         </form>
+
         <div class="col-xs-12">
             <div class="col-xs-4 mtb-25 sub-can">
                 <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
@@ -334,3 +380,18 @@
         </div>
     </div>
 </div>
+<script type="text/ng-template" id="viewS3Image.html">
+    <div class="modal-header">
+        <h3 class="modal-title"></h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-10 popup-center">
+                <img src="{{path}}" width="100%">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="button" ng-click="close();">Close</button>
+    </div>
+</script>

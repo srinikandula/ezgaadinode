@@ -8,9 +8,9 @@ unloading.prototype.addUnloadingPoint = function (jwt,unloadingPoints, req, call
         status: false,
         messages: []
     };
-    UnloadingColl.find({"unloadingPoint":unloadingPoints.unloadingPoint},function(err,unloadingPoint){
+    UnloadingColl.find({"unloadingPoint":unloadingPoints.unloadingPoint,"accountId":jwt.accountId},function(err,unloadingPoint){
         if(err){
-            retObj.messages.push("error while comparing Unloading Points");
+            retObj.messages.push("error while comparing Unloading Points"+JSON.stringify(err));
             callback(retObj);
         } else if(unloadingPoint && unloadingPoint.length>0){
             retObj.messages.push("unloading Point already exist");
@@ -40,10 +40,9 @@ unloading.prototype.getAll = function (jwt, req, callback) {
         status: false,
         messages: []
     };
-   var accountId=jwt.accountId;
     var query={
         "accountId":jwt.accountId
-    }
+    };
     UnloadingColl.find(query, function (err, unloadingPoints) {
         if (err) {
             retObj.messages.push('error while getting UnLoading point');
