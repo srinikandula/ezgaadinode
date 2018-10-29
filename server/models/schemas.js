@@ -1289,8 +1289,25 @@ var counterSchema = new mongoose.Schema({
     count: Number
 }, {timestamps: true});
 
+var expensesSheetSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    vehicleNo:String,
+    date:String,
+    dieselSlip:String,
+    from:String,
+    to:String,
+    dieselAmount:Number,
+    cash:Number,
+    lrNo:String,
+    unloadingDate:String,
+    driverName:String,
+    remarks:String,
+    tripSheetId:String
+}, {timestamps: true});
+
 module.exports = {
     CounterCollection:mongoose.model('counter', counterSchema, 'counter'),
+    ExpensesSheetColl:mongoose.model('expensesSheet',expensesSheetSchema,'expensesSheet'),
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     tripSettlementsColl:mongoose.model('tripSettlements', tripSettlementsSchema, 'tripSettlements'),
     userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
