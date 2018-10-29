@@ -497,7 +497,7 @@ app.controller('UploadExpanseCtrl', ['$scope','Upload','Notification','$state', 
 
 }]);
 
-app.controller('expensesSheetController', ['$scope','Upload','Notification','$state','TrucksService',function ($scope, Upload,Notification,$state, TrucksService) {
+app.controller('expensesSheetController', ['$scope','Upload','Notification','$state','TrucksService', 'NgTableParams',function ($scope, Upload,Notification,$state, TrucksService, NgTableParams) {
 
     $scope.today = function () {
         $scope.dt = new Date();

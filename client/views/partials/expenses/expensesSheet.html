@@ -5,7 +5,7 @@
         </div>
         <div class="col-sm-9">
             <div class="col-sm-4">
-                <ui-select ng-model="tripSheets.registrationNo" theme="select2"
+                <ui-select ng-model="expensesSheet.registrationNo" theme="select2"
                            title="Choose a person" append-to-body="true">
                     <ui-select-match placeholder=" Select a Truck" class="form-control">
                         {{$select.selected.registrationNo || registrationNo}}
@@ -29,7 +29,7 @@
                     </li>
                     <li class="col-sm-1 pall-zero">
                         <button type="submit"
-                                ng-click="validateFilters(tripSheets.registrationNo._id, fromDate, toDate );"
+                                ng-click="validateFilters(expensesSheet.registrationNo._id, fromDate, toDate );"
                                 class="btn go" data-toggle="modal" data-target="#myModal">
                             <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
@@ -68,75 +68,51 @@
         </div>
     </div>
 
-    <table class="table table-bordered table-striped table-condensed table-hover">
+    <table class="table table-bordered table-striped table-condensed table-hover" >
         <tr>
             <th>S No</th>
-            <th>Registration No</th>
-            <th>loading Point</th>
-            <th>Unloading Point</th>
-            <th>Party Name</th>
+            <th>Vehicle No</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Party</th>
+            <th>Diesel Slip</th>
+            <th>Diesel Amount</th>
+            <th>Cash</th>
+            <th>LR No</th>
+            <th>Unloading Date</th>
+            <th>Driver Name</th>
+            <th>Remarks</th>
         </tr>
-        <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo.registrationNo}"
+        <tr
             style="text-align: center;">
-            <td class="col-sm-1">{{$index+1}}</td>
-            <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
-            <td class="col-sm-2">
-                <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                    <select class="form-control" ng-model="sheet.loadingPoint">
-                        <option value="" selected>--Select--</option>
-                        <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
-                            {{loadingPoint.loadingPoint}}
-                        </option>
-                    </select>
-                    <!--<select class="form-control" ng-model="sheet.loadingPoint"-->
-                    <!--ng-options="loading._id as loading.loadingPoint for loading in loadingPoints">-->
-                    <!--</select>-->
-
-
-                </div>
+            <td class="col-sm-1">1</td>
+            <td class="col-sm-1">AP24AS9987</td>
+            <td class="col-sm-1">Hyderbad</td>
+            <td class="col-sm-1">Warangal</td>
+            <td class="col-sm-1">MYK Latecrete</td>
+            <td class="col-sm-1">
+                <input type="text" class="form-control" ng-model="expensesSheet.dieselSlip">
             </td>
-            <td class="col-sm-2">
-                <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
-                    <select class="form-control" ng-model="sheet.unloadingPoint" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
-                        <option value="" selected>--Select--</option>
-                        <option ng-repeat="unloadingPoint in unloadingPoints" value="{{unloadingPoint.unloadingPoint}}">
-                            {{unloadingPoint.unloadingPoint}}
-                        </option>
-                    </select>
-                    <!-- <select class="form-control" ng-model="sheet.unloadingPoint"
-                             ng-options="unloading._id as unloading.unloadingPoint for unloading in unloadingPoints" >
-                     </select>-->
+            <td>
+                <input type="text" class="form-control" ng-model="expensesSheet.dieselSlip">
+            </td>
+            <td >
+                <input type="text" class="form-control" ng-model="expensesSheet.dieselSlip">
+            </td>
+            <td>
 
-                </div>
             </td>
-            <td class="col-sm-2">
-                <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
-                           append-to-body="true" style="width: 250px;"
-                           ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
-                    <ui-select-match placeholder=" Select a Party" class="form-control"
-                                     style="height: 42px;text-align: left;">
-                        {{$select.selected.name || sheet.partyName}}
-                    </ui-select-match>
-                    <ui-select-choices repeat="party in parties | propsFilter: {name: $select.search}">
-                        <div ng-bind-html="party.name | highlight: $select.search">
-                        </div>
-                    </ui-select-choices>
-                </ui-select>
-            </td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
     <div class="center-block" style="width: 60%;">
-        <div class="alert alert-danger" role="alert" ng-show="errors.length">
-            <ul>
-                <li ng-repeat="error in errors">{{error}}</li>
-            </ul>
-        </div>
+        <!--<div class="alert alert-danger" role="alert" ng-show="errors.length">-->
+            <!--<ul>-->
+                <!--<li ng-repeat="error in errors">{{error}}</li>-->
+            <!--</ul>-->
+        <!--</div>-->
     </div>
 
     <div class="col-sm-12">
@@ -200,166 +176,5 @@
         </div>
     </div>
 
-
-    <div class="print-invoice" style="display: none">
-        <head>
-            <title>Easygaadi Invoice</title>
-            <style>
-                table {
-                    border-collapse: collapse;
-                    text-align: center;
-                    width: 100%;
-
-                }
-
-                table, td, th {
-
-                    border: 1px solid black;
-                }
-
-                td {
-                    padding: 5px 0px 5px 8px;
-                }
-            </style>
-
-        </head>
-        <body>
-        <div class="logo"></div>
-        <div class="container">
-            <table>
-                <tr>
-                    <td colspan="2"><span style="font-size: 20px">{{print.accDetails.userName}}</span></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <span style="font-size: 18px">Address: {{print.accDetails.address1}},{{print.accDetails.address2}}</span>
-                        <span style="font-size: 18px">Phone:{{print.accDetails.contactPhone || 'NA'}}  Email:{{print.accDetails.email || 'NA'}}</span>
-                    </td>
-
-                </tr>
-                <tr>
-                    <td colspan="2"><span style="font-size: 22px"><b>Invoice for trip details</b></span></td>
-                </tr>
-                <tr>
-                    <td>GST No:{{print.accDetails.GST || 'NA'}}</td>
-                    <td>GST Rate:{{print.accDetails.GSTRate || 'NA'}}</td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <span><b>Customer Details</b></span>
-                    </td>
-                </tr>
-                <tr style="text-align: left">
-                    <td colspan="2">
-                        Name:{{print.partyDetails.name}}
-                    </td>
-                </tr>
-                <tr style="text-align: left">
-                    <td colspan="2">
-                        Phone:{{print.partyDetails.contact || 'NA'}}
-                    </td>
-                </tr>
-                <tr style="text-align: left">
-                    <td colspan="2">
-                        Email:{{print.partyDetails.email || 'NA'}}
-                    </td>
-                </tr>
-                <tr style="text-align: left">
-                    <td colspan="2">
-                        Address:{{print.partyDetails.city || 'NA'}}
-                    </td>
-                </tr>
-                <tr style="text-align: left">
-                    <td colspan="2">
-                        GST No:{{print.partyDetails.gstNo || 'NA'}}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"><b>Trip Details</b></td>
-                </tr>
-                <tr style="text-align: left">
-                    <td>Trip ID : {{print.tripDetails.tripId || 'NA'}}</td>
-                    <td>Vechicle No : {{print.tripDetails.registrationNo.registrationNo || 'NA'}}</td>
-                </tr>
-                <tr style="text-align: left">
-                    <td>Source : {{print.tripDetails.sourceAddress || 'NA'}}</td>
-                    <td>Destination : {{print.tripDetails.destinationAddress || 'NA'}}</td>
-                </tr>
-                <tr style="text-align: left">
-                    <td>Tonnes :{{print.tripDetails.tonnage || 'NA'}}</td>
-                    <td>Rate : {{print.tripDetails.rate || 'NA'}}</td>
-                </tr>
-                <tr style="text-align: left">
-                    <td><b>Amount : </b></td>
-                    <td>{{print.tripDetails.freightAmount || 'NA'}}</td>
-
-                </tr>
-                <tr style="text-align: left">
-                    <td><b>Additional Charges : </b></td>
-                    <td>{{print.tripDetails.totalExpense || 0}}</td>
-
-                </tr>
-
-                <tr style="text-align: left">
-                    <td><b>Paid Amount : </b></td>
-                    <td>{{print.tripDetails.advanceAmount || '0'}}</td>
-
-                </tr>
-                <tr style="text-align: left">
-                    <td><b>Total Amount : </b></td>
-                    <td>{{print.tripDetails.totalAmount-print.tripDetails.advanceAmount || 0}}</td>
-
-                </tr>
-            </table>
-
-
-        </div>
-        </body>
-
-    </div>
-
-
-    <script type="text/ng-template" id="addLoadingPoint.html">
-        <div>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" ng-click="close()">&times;</button>
-                    <h4 class="modal-title">Add Loading Point</h4>
-                </div>
-                <div class="modal-body col-sm-10 center-block" style="float: none;">
-                    <input type="text" ng-model="loadingPoint" class="form-control" placeholder="Loading Point">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" ng-click="close()">Close</button>
-                    <button type="button" class="btn btn-primary" ng-click="saveLpoint(loadingPoint)">Save</button>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="clearfix"></div>
-        </div>
-
-
-    </script>
-    <script type="text/ng-template" id="addUnloadingPoint.html">
-        <div>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" ng-click="close()">&times;</button>
-                    <h4 class="modal-title">Add Unloading Point</h4>
-                </div>
-                <div class="modal-body col-sm-10 center-block" style="float: none;">
-                    <input type="text" ng-model="unloadingPoint" class="form-control" placeholder="Unloading Point">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" ng-click="close()">Close</button>
-                    <button type="button" class="btn btn-primary" ng-click="saveUnlpoint(unloadingPoint)">Save</button>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="clearfix"></div>
-        </div>
-
-
-    </script>
 
 </div>
