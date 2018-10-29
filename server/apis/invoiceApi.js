@@ -527,6 +527,23 @@ Invoices.prototype.downloadDetails = function (jwt, req, callback) {
         }
     })
 };
+Invoices.prototype.printInvoice = function(req,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+   Invoices.prototype.generatePDF(req,function (invoiceCallback) {
+      if(invoiceCallback.status){
+         retObj.status = true;
+         retObj.messages.push("success");
+         retObj.data = invoiceCallback.result;
+         callback(retObj);
+      }else{
+          retObj.status = false;
+          retObj.messages.push("Error");
+          callback(retObj);      }
+   });
+};
 
 
 module.exports = new Invoices();

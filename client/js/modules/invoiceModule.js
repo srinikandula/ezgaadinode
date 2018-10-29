@@ -60,6 +60,12 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
                 method: "GET",
                 params: params
             }).then(success, error);
+        },
+        printInvoice:function (invoiceId, success, error) {
+            $http({
+                url: '/v1/invoices/printInvoice/'+invoiceId,
+                method: "GET",
+            }).then(success, error);
         }
     }
 }]);
@@ -301,6 +307,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
     $scope.partyName = {
         party: ''
     };
+    $scope.print = false;
 
     $scope.delete = function (id) {
         swal({
@@ -392,7 +399,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
     // $scope.getAllInvoices();
     $scope.generatePdf = function (invoiceId) {
         window.open('/v1/invoices/generatePDF/' + invoiceId);
-    }
+    };
 
     // PartyService.getAllPartiesForFilter(function (success) {
     //     if (success.data.status) {
@@ -431,26 +438,15 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
     $scope.partyId = null;
     $scope.getInvoice = function (party) {
         $scope.partyId = party._id;
-        // alert("hiii");
-        console.log('partyyyyyyyyyyyyyyyyyy', party);
         var params = {};
         params.fromDate = $scope.fromDate;
         params.toDate = $scope.toDate;
         params._id = party._id;
-        console.log(params, "paramasssssssss");
         InvoiceService.getInnvoiceByParty(params, function (success) {
-                console.log("Success", success);
                 if (success.data.status) {
-                    console.log("success..........");
                     $scope.invoices = success.data.data;
-                    console.log("invoices", success.data.data);
-
-                } else {
-                    console.log("error..........");
-
-                }
+                } else {}
             },
-
             function (error) {
                 if (error) {
                     Notification.error({
@@ -467,26 +463,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         params.fromDate = $scope.fromDate;
         params.toDate = $scope.toDate;
         params._id = $scope.partyId;
-        // window.open(
-        //     $http.get('/v1/invoices/downloadDetails', params).then(function(success,error){
-
-        //     },function(error){
-
-        //     }));
-        console.log("Params", params);
         window.open('/v1/invoices/downloadDetails?start=' + params.fromDate + '&end=' + params.toDate + '&partyId=' + params._id);
-
-        // window.open(InvoiceService.downloadInvoiceByParty);
-        /*   InvoiceService.downloadInvoice(params, function (success) {
-              if (success.data.status) {
-                  console.log("successfully Downloaded");
-              }
-          }, function (error) {
-              if (error) {
-                  console.log("error while downloading the data");
-              }
-          }) */
-
     };
 
     $scope.printArea = function () {
@@ -494,6 +471,22 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         w.document.write(document.getElementsByClassName('report_left_inner')[0].innerHTML);
         w.print();
         w.close();
-    }
+    };
+    $scope.print = function(){
+        console.log("print....");
+        var w = window.open();
+        w.document.write(document.getElementsByClassName('invoice_Container').innerHTML);
+        w.print();
+        w.close();
+    };
+    $scope.printInvoice = function (id) {
+        InvoiceService.printInvoice(id,function(successCallback){
+            if(successCallback.data.status){
+                // $scope.print = true;
+                $scope.invoice = successCallback.data.data;
+            }
+        },function(errorCallback){});
+    };
+
 
 }]);
