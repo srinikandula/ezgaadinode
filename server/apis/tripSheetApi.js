@@ -48,7 +48,7 @@ function createTripSheet(account,today,callback){
                 }
             });
         }else{
-            retObj.status = false;
+            retObj.status = true;
             retObj.messages.push("No trucks found");
             callback(retObj);
         }
