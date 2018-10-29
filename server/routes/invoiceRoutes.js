@@ -70,14 +70,17 @@ AuthRouter.get('/downloadDetails', function (req, res) {
     console.log("req.paramsssssss", req.params);
     invoiceApi.downloadDetails(req.jwt, req, function (result) {
         if (result.status) {
-            // console.log("resulttttttttttttttt", result);
             res.xls('invoice details' + new Date().toLocaleDateString() + '.xlsx', result.data);
         } else {
             res.send(result);
         }
     });
 });
-
+AuthRouter.get('/printInvoice/:invoiceId', function (req, res) {
+    invoiceApi.printInvoice(req,function (result) {
+        res.json(result);
+    });
+});
 
 module.exports = {
     AuthRouter: AuthRouter

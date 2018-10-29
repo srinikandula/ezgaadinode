@@ -23,7 +23,8 @@ var PdfGenerator = function () {
 PdfGenerator.prototype.createPdf=function (folderPath,templateName,orientation,data,callback) {
   var retObj={
       status:false,
-      messages:[]
+      messages:[],
+      result:data
   };
   // console.log("pdf ....",data);
   if(!templateName){

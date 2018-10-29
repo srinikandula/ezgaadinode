@@ -34,7 +34,7 @@
     "json2csv": "^3.11.2",
     "json2xls": "^0.1.2",
     "jsonwebtoken": "^8.2.1",
-    "log4js": "^2.5.3",
+    "log4js": "^3.0.6",
     "mathjs": "^5.0.4",
     "merge-stream": "^1.0.1",
     "moment": "^2.22.0",
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "chai-http": "^3.0.0",
+    "chai-http": "^4.2.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-html-replace": "^1.6.2",
@@ -74,6 +74,7 @@
     "gulp-uglify": "^3.0.0",
     "gulp-uglify-es": "^1.0.1",
     "gulp-usemin": "^0.3.29",
+    "gulp-watch": "^5.0.1",
     "install-peers": "^1.0.2",
     "mocha": "^4.1.0"
   },

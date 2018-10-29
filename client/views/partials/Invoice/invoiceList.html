@@ -33,7 +33,7 @@
                     <img src="images/Reports_Download.png"></button>
             </li>
             <li class="col-sm-1 pall-zero">
-                <button type="button" ng-click="printArea( );" class="btn mailImage">
+                <button type="button" ng-click="printArea( )" class="btn mailImage">
                     <i class="fa fa-print fa-2x" aria-hidden="true"></i>
                 </button>
             </li>
@@ -70,18 +70,22 @@
             </td>
             <td data-title="'Action'" class="col-sm-2">
                 <a href="#" class="btn" ng-click="goToEditPage(invoice._id)">
-                    <span class="glyphicon glyphicon-pencil"></span></a>
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
                 <a href="#" class="btn" ng-click="delete(invoice._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
                 <a href="#" class="btn" ng-click="generatePdf(invoice._id)">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </a>
+                <a href="#" class="btn" ng-click="printInvoice(invoice._id)" >
+                    <i class="fa fa-print fa-2x" aria-hidden="true"></i>
+                </a>
             </td>
-        </tr class="print-style">
+        </tr>
         <tr class="print-style" ng-if="!invoices || invoices.length === 0">
             <td colspan="8"> No Invoices Exist.</td>
-        </tr class="print-style">
+        </tr>
     </table>
     <div class="add-image pull-right">
         <figure>
@@ -99,8 +103,7 @@
                             <b> {{partyName.party.name}}</b>
                         </h4>
                     </th>
-                </tr class="
-                            print-style">
+                </tr>
                 <tr class="print-style">
                     <th style="border: none"></th>
                     <th style="border: none"></th>
@@ -151,5 +154,33 @@
             </tbody>
         </table>
     </div>
+    <div class="invoice_Container">
+        <div class="table1" ng-show="print">
+            <table>
+                <tr class="print-style">
+                    <th style="border:none">
+                        <h3><b>SRI ANJANA TRANSPORT</b></h3>
+                        <p>PLOT NO.506/9, DATATREYA NAGAR COLONY,</p>
+                        <p>YELLAMMA BANDA, KUKATPALLY,</p>
+                        <p>HYDERABAD-72</p>
+                        <p>MOBILE NO:9848799473</p>
+                        <p>PAN NO.ABVFS5272J</p>
+                        <p>GSTIN CODE:36ABVFS5272J1ZD</p>
+                        <p> <a href="srianjanatransport@redifmail.com">srianjanatransport@redifmail.com</a></p>
+                        <p> <a href="http://www.srianjanatransport.com">http://www.srianjanatransport.com</a> </p>
+                    </th>
+                    <th style=" border: none; float: right; padding-left: 300px">
+                        <h3>INVOICE</h3>
+                        <h6>RTGS DETAILS:</h6>
+                        <p>HDFC BANK LTD.</p>
+                        <p>VIVEKANANDA NAGAR, KUKATPALLY</p>
+                        <p>IFSC-HDFC0001639</p>
+                        <p>CURRENT A/C.#16392000002774</p>
 
+
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
