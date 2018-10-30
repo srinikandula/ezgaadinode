@@ -12,55 +12,42 @@ function createDriverAttendance(account,today,callback){
       status:false,
       messages:[]
     };
-    DriversAttendanceColl.find({accountId:account._id,date:today},function(err,data){
+    DriversColl.find({accountId:account._id},function(err,drivers){
+
         if(err){
             retObj.status = false;
             retObj.messages.push("Error in finding data"+JSON.stringify(err));
             callback(retObj);
-        }else if(data.length>0){
-            retObj.status = false;
-            retObj.messages.push("Already created");
-            callback(retObj);
-        }else{
-            DriversColl.find({accountId:account._id},function(err,drivers){
+        }else if(drivers.length>0){
+            async.map(drivers,function(driver,asyncCallback){
+                var driverObj = {
+                    accountId:account._id,
+                    contactPhone:driver.mobile,
+                    driverId:driver._id,
+                    driverName:driver.fullName,
+                    date:today
+                };
+                var driverAttendanceDoc = new DriversAttendanceColl(driverObj);
+                driverAttendanceDoc.save(function(err,result){
+                    if(err){
+                        asyncCallback(true);
+                    } else{
+                        asyncCallback(false);
+                    }
+                });
+            },function(err){
                 if(err){
                     retObj.status = false;
-                    retObj.messages.push("Error in finding data"+JSON.stringify(err));
                     callback(retObj);
-                }else if(drivers.length>0){
-                    async.each(drivers,function(driver,asyncCallback){
-                        var driverObj = {
-                            accountId:account._id,
-                            contactPhone:driver.mobile,
-                            driverId:driver._id,
-                            driverName:driver.fullName,
-                            date:today
-                        };
-                        var driverAttendanceDoc = new DriversAttendanceColl(driverObj);
-                        driverAttendanceDoc.save(function(err,result){
-                            if(err){
-                                asyncCallback(true);
-                            } else{
-                                asyncCallback(false);
-                            }
-                        });
-                    },function(err){
-                        if(err){
-                            retObj.status = false;
-                            retObj.messages.push("Error in finding data"+JSON.stringify(err));
-                            callback(retObj);
-                        }else{
-                            retObj.status = true;
-                            retObj.messages.push("Driver attendance Sheet created successfully");
-                            callback(retObj);
-                        }
-                    });
                 }else{
-                    retObj.status = false;
-                    retObj.messages.push("No data found");
+                    retObj.status = true;
                     callback(retObj);
                 }
             });
+        }else{
+            retObj.status = true;
+            retObj.messages.push("No data found");
+            callback(retObj);
         }
     });
 };
@@ -75,18 +62,22 @@ Drivers.prototype.createDriversAttendance = function(today,callback){
           retObj.messages.push("Error in finding data"+JSON.stringify(err));
           callback(retObj);
       } else{
-          async.each(accounts,function (account,asyncAccCallback) {
-              if(account.driverSheetEnabled === true){
-                  createDriverAttendance(account,today,function(createCallback){
-                      if(createCallback.status){
-                          asyncAccCallback(false);
-                      }else{
-                          asyncAccCallback(true);
-                      }
-                  });
-              }else{
-                  asyncAccCallback(false);
-              }
+          async.map(accounts,function (account,asyncAccCallback) {
+              DriversAttendanceColl.find({accountId:account._id,date:today},function(err,data){
+                  if(err){
+                      asyncAccCallback(true);
+                  }else if(!data.length){
+                      createDriverAttendance(account,today,function(createCallback){
+                          if(createCallback.status){
+                              asyncAccCallback(false);
+                          }else{
+                              asyncAccCallback(true);
+                          }
+                      });
+                  }else{
+                      asyncAccCallback(false);
+                  }
+              });
               },function(err){
               if(err){
                   retObj.status = false;
@@ -100,7 +91,6 @@ Drivers.prototype.createDriversAttendance = function(today,callback){
           });
       }
   });
-
 };
 Drivers.prototype.getDriversAttendance = function(req,callback){
   var retObj = {
