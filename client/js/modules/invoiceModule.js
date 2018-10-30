@@ -520,8 +520,8 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         w.print();
         w.close();
     };
-    $scope.print = function(){
-        console.log("print....");
+    $scope.print = function(data){
+        console.log("print....", data);
         var w = window.open();
         w.document.write(document.getElementsByClassName('invoice_Container')[0].innerHTML);
         w.print();
@@ -532,7 +532,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
             if(successCallback.data.status){
                  // $scope.print = true;
                 $scope.invoice = successCallback.data.data;
-                $scope.print();
+                $scope.print( $scope.invoice);
             }
         },function(errorCallback){});
     };

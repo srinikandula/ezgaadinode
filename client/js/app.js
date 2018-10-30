@@ -285,11 +285,11 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             tripId: null
         }
     }).state({
-        name: 'tripSettlement',
-        url: '/tripSettlements',
+        name: 'tripsettlement',
+        url: '/tripsettlement',
         templateUrl: 'views/partials/tripSettlement/tripSettlementList.html',
         data: {
-            activeTab: 'tripSettlement',
+            activeTab: 'tripsettlement',
             subTab: 'ERP'
         },
         params: {
@@ -836,40 +836,40 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             access: 'auth'
         }
     }).state({
-        name: 'tripSheet',
-        url: '/tripSheet',
+        name: 'tripsheet',
+        url: '/tripsheet',
         templateUrl: 'views/partials/tripSheets/tripSheet.html',
         data: {
-            activeTab: 'tripSheet',
+            activeTab: 'tripsheet',
             subTab: 'ERP'
         },
         params: {
             access: 'auth'
         }
     }).state({
-        name: 'driverSheet',
-        url: '/driverSheet',
+        name: 'driversheet',
+        url: '/driversheet',
         templateUrl: 'views/partials/driverSheet/driver-sheet.html',
         data: {
-            activeTab: 'driverSheet',
+            activeTab: 'driversheet',
             subTab: 'ERP'
         },
         params: {
             access: 'auth'
         }
     }).state({
-        name: 'expensesSheet',
-        url: '/expensesSheet',
+        name: 'expensessheet',
+        url: '/expensessheet',
         templateUrl: 'views/partials/expenses/expensesSheet.html',
         data: {
-            activeTab: 'expensesSheet',
+            activeTab: 'expensessheet',
             subTab: 'ERP'
         },
         params: {
             access: 'auth'
         }
     });
-    // agentReports
+    // agentReportstrips
     $urlRouterProvider.otherwise('/login');
 }]);
 

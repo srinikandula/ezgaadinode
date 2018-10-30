@@ -59,10 +59,7 @@
             <button type="button" class="btn btn-default" ng-click="nextDay()"><i
                     class="glyphicon glyphicon-chevron-right"></i></button>
         </div>
-        <div class="col-sm-1">
-            <button type="button" class="btn btn-default" ng-click="createTripSheet(dt)"><span
-                    class="glyphicon glyphicon-refresh"></span></button>
-        </div>
+
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
@@ -108,6 +105,13 @@
             <td>
                 <input type="text" class="form-control" ng-model="expensesSheet.remarks">
             </td>
+        </tr>
+        <tr><td colspan="7">Total</td>
+        <td>{{dieselTotal}}</td>
+            <td>{{cashTotal}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
     <div class="center-block" style="width: 60%;">

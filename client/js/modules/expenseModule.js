@@ -585,7 +585,10 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             ExpenseService.getAllExpensesSheet($scope.today, function (success) {
                 if (success.data.status) {
                     $scope.expensesSheetsDetails = success.data.data;
+                    $scope.dieselTotal = 0;
+                    $scope.cashTotal = 0;
                     for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
+
                         if ($scope.expensesSheetsDetails[i].partyId) {
                             var party = _.find($scope.parties, function (party) {
                                 return party._id.toString() === $scope.expensesSheetsDetails[i].partyId;
@@ -594,7 +597,14 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                                 $scope.expensesSheetsDetails[i].partyName = party.name;
                             }
                         }
+                        if($scope.expensesSheetsDetails[i].dieselAmount){
+                            $scope.dieselTotal += $scope.expensesSheetsDetails[i].dieselAmount;
+                        }
+                        if($scope.expensesSheetsDetails[i].cash){
+                            $scope.cashTotal += $scope.expensesSheetsDetails[i].cash;
+                        }
                     }
+                    console.log("dieselTotal", $scope.dieselTotal)
                 }
             })
         };
