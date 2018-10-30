@@ -202,6 +202,7 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                     expenseObj.vehicleNo = tripSheet.registrationNo;
                     expenseObj.tripSheetId = tripSheet._id;
                     expenseObj.date = tripSheet.date;
+                    expenseObj.driverName = tripSheet.driverName;
                     var doc = new ExpensesSheetColl(expenseObj);
                     doc.save(function(err,result){});
                 }

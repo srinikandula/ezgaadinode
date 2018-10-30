@@ -18,6 +18,7 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
           retObj.status = true;
           retObj.messages.push("success");
           retObj.data = expenseSheets;
+          console.log("retObj.data",retObj.data);
           callback(retObj);
       }
   });

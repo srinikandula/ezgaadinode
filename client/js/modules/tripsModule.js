@@ -1286,15 +1286,12 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         DriverService.getAllDriversAttendance($scope.today, function (success) {
             if (success.data.status) {
                 $scope.driverSheets = success.data.data;
-                console.log("$scope.driverSheets", $scope.driverSheets);
                 $scope.presentDrivers = [];
                 for(var i=0; i<$scope.driverSheets.length;i++){
                     if($scope.driverSheets[i].isPresent === true){
                         $scope.presentDrivers.push($scope.driverSheets[i]);
                     }
                 }
-                console.log("$scope.presentDrivers", $scope.presentDrivers);
-
             }
         }, function (error) {
 
