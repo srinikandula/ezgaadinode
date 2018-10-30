@@ -1296,6 +1296,7 @@ var expensesSheetSchema = new mongoose.Schema({
     dieselSlip:String,
     from:String,
     to:String,
+    partyId:String,
     dieselAmount:Number,
     cash:Number,
     lrNo:String,
