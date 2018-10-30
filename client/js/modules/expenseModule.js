@@ -119,6 +119,13 @@ app.factory('ExpenseService', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        updateExpensesSheet: function (params, success, error) {
+            $http({
+                url: '/v1/expense/updateExpensesSheet',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
     }
 }]);
 
@@ -597,6 +604,14 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         $scope.saveAll = function () {
             var params = $scope.expensesSheetsDetails;
             console.log("params", params);
+            ExpenseService.updateExpensesSheet(params, function (success) {
+                if(success.data.status){
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                }else{
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                }
+            })
+
         }
 
     }]);

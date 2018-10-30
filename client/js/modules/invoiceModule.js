@@ -523,15 +523,16 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
     $scope.print = function(){
         console.log("print....");
         var w = window.open();
-        w.document.write(document.getElementsByClassName('invoice_Container').innerHTML);
+        w.document.write(document.getElementsByClassName('invoice_Container')[0].innerHTML);
         w.print();
         w.close();
     };
     $scope.printInvoice = function (id) {
         InvoiceService.printInvoice(id,function(successCallback){
             if(successCallback.data.status){
-                // $scope.print = true;
+                 // $scope.print = true;
                 $scope.invoice = successCallback.data.data;
+                $scope.print();
             }
         },function(errorCallback){});
     };

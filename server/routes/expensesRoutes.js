@@ -13,6 +13,13 @@ AuthRouter.get('/getExpensesSheet/:date', function (req, res) {
     });
 });
 
+AuthRouter.put('/updateExpensesSheet', function (req, res) {
+    ExpenseSheet.updateExpenseSheet(req, function (result) {
+        res.send(result);
+    });
+});
+
+
 AuthRouter.post('/addExpense', function (req, res) {
     ExpenseCost.addExpense(req.jwt, req.body,req, function (result) {
         res.send(result);
