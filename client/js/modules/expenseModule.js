@@ -1,4 +1,4 @@
-app.factory('ExpenseService',['$http', function ($http) {
+app.factory('ExpenseService', ['$http', function ($http) {
     return {
         addExpense: function (object, success, error) {
             $http({
@@ -84,41 +84,54 @@ app.factory('ExpenseService',['$http', function ($http) {
                 params: params
             }).then(success, error);
         },
-        getPaybleAmountByParty:function(params,success,error){
+        getPaybleAmountByParty: function (params, success, error) {
             $http({
                 url: '/v1/expense/getPaybleAmountByParty',
                 method: "GET",
                 params: params
             }).then(success, error);
         },
-        getPaybleAmountByPartyId:function(params,success,error){
+        getPaybleAmountByPartyId: function (params, success, error) {
             $http({
                 url: '/v1/expense/getPaybleAmountByPartyId',
                 method: "GET",
                 params: {
-                    partyId:params
+                    partyId: params
                 }
             }).then(success, error);
         },
-        shareDetailsViaEmail:function(params,success,error){
+        shareDetailsViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/expense/shareDetailsViaEmail',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getPartiesFromExpense:function (success,error) {
+        getPartiesFromExpense: function (success, error) {
             $http({
                 url: '/v1/expense/getPartiesFromExpense',
                 method: "GET",
             }).then(success, error)
-        }
+        },
+        getAllExpensesSheet: function (today, success, error) {
+            $http({
+                url: '/v1/expense/getExpensesSheet/' + today,
+                method: "GET"
+            }).then(success, error)
+        },
+        updateExpensesSheet: function (params, success, error) {
+            $http({
+                url: '/v1/expense/updateExpensesSheet',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
     }
 }]);
 
 
-app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService,TrucksService) {
-     $scope.goToEditExpensePage = function (expenseId) {
+app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService', 'TrucksService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService, TrucksService) {
+    $scope.goToEditExpensePage = function (expenseId) {
         $state.go('expensesEdit', {expenseId: expenseId});
     };
 
@@ -143,9 +156,10 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            regNumber:tableParams.truckNumber,
-            fromDate:$scope.fromDate,
-            toDate:$scope.toDate};
+            regNumber: tableParams.truckNumber,
+            fromDate: $scope.fromDate,
+            toDate: $scope.toDate
+        };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
@@ -154,8 +168,8 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             if (angular.isArray(response.data.expenses)) {
                 $scope.loading = false;
                 $scope.maintanenceCosts = response.data.expenses;
-                $scope.userId=response.data.userId;
-                $scope.userType=response.data.userType;
+                $scope.userId = response.data.userId;
+                $scope.userType = response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.maintanenceCosts;
                 $scope.currentPageOfMaintanence = $scope.maintanenceCosts;
@@ -170,7 +184,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                 $scope.trucksList = success.data.trucks;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (error) {
@@ -215,7 +229,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                         $scope.getCount();
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                 })
@@ -223,7 +237,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         })
     };
 
-    $scope.searchByVechicleNumber=function(truckNumber){
+    $scope.searchByVechicleNumber = function (truckNumber) {
         $scope.expenseParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -234,12 +248,12 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.truckNumber=truckNumber;
+                params.truckNumber = truckNumber;
                 loadTableData(params);
             }
         });
     };
-    $scope.shareDetailsViaEmail=function(){
+    $scope.shareDetailsViaEmail = function () {
         swal({
             title: 'Share expenses data using mail',
             input: 'email',
@@ -247,29 +261,30 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             confirmButtonText: 'Submit',
             showLoaderOnConfirm: true,
             preConfirm: (email) => {
-            return new Promise((resolve) => {
-                ExpenseService.shareDetailsViaEmail({
-                email:email
-            },function(success){
-                if (success.data.status) {
-                    resolve()
-                } else {
+                return new Promise((resolve) => {
+                    ExpenseService.shareDetailsViaEmail({
+                        email: email
+                    }, function (success) {
+                        if (success.data.status) {
+                            resolve()
+                        } else {
 
-                }
-            },function(error){})
-        })
+                        }
+                    }, function (error) {
+                    })
+                })
 
-    },
-        allowOutsideClick: false
+            },
+            allowOutsideClick: false
 
-    }).then((result) => {
+        }).then((result) => {
             if (result.value) {
-            swal({
-                type: 'success',
-                html: ' sent successfully'
-            })
-        }
-    })
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
+            }
+        })
     };
     $scope.downloadDetails = function () {
         window.open('/v1/expense/downloadDetails');
@@ -277,7 +292,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
 
 }]);
 
-app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService,PartyService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
+app.controller('expenseEditController', ['$scope', 'ExpenseService', 'PartyService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService, PartyService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
     $scope.pagetitle = "Add Expenses";
     $scope.dateCallback = "past";
 
@@ -290,11 +305,11 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         expenseType: '',
         description: '',
         partyId: undefined,
-        totalAmount:0,
-        paidAmount:0,
-        cost:0,
+        totalAmount: 0,
+        paidAmount: 0,
+        cost: 0,
         date: '',
-        mode:'',
+        mode: '',
         expenseName: '',
         error: [],
         success: []
@@ -310,20 +325,20 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
     }
 
 
-    function getPartiesbySupplier () {
-        PartyService.getAllPartiesBySupplier (function (success) {
-            if(success.data.status){
+    function getPartiesbySupplier() {
+        PartyService.getAllPartiesBySupplier(function (success) {
+            if (success.data.status) {
                 $scope.partyBySupplier = success.data.parties;
                 console.log("Parties", $scope.partyBySupplier);
                 var selectedParty = _.find($scope.partyBySupplier, function (party) {
                     return party._id.toString() === $scope.expenseDetails.partyId;
                 });
-             
+
                 $scope.selectPartyId(selectedParty);
                 if (selectedParty) {
                     $scope.name = selectedParty.name;
                 }
-            }else {
+            } else {
                 Notification.error(success.data.message);
             }
         })
@@ -365,7 +380,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                 });
                 if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
-                    }
+                }
 
             } else {
                 Notification.error(success.data.message);
@@ -404,7 +419,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         var params = $scope.expenseDetails;
         params.error = [];
         params.success = [];
-    
+
         if (!params.vehicleNumber) {
             params.error.push('Invalid vehicle Number');
         }
@@ -420,7 +435,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!params.mode) {
             params.error.push('Please Select Cash or Credit');
         }
-        if (!_.isNumber(params.cost)&& params.mode === 'Cash') {
+        if (!_.isNumber(params.cost) && params.mode === 'Cash') {
             params.error.push('Invalid Total Expense Amount');
         }
         if (!params.partyId && params.mode === 'Credit') {
@@ -432,7 +447,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!_.isNumber(params.paidAmount) && params.mode === 'Credit') {
             params.error.push('Invalid Paid Amount');
         }
-        if(params.mode === 'Credit') {
+        if (params.mode === 'Credit') {
             if (params.paidAmount > params.totalAmount) {
                 params.error.push('Paid Amount Should be less than total Amount');
             }
@@ -445,7 +460,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                         $state.go('expenses');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
 
@@ -456,12 +471,12 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                     if (success.data.status) {
                         params.success = success.data.message;
                         success.data.messages.forEach(function (message) {
-                            Notification.success({ message: message });
+                            Notification.success({message: message});
                         });
                         $state.go('expenses');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                 });
@@ -470,12 +485,12 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
     }
 }]);
 
-app.controller('UploadExpanseCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
-    $scope.file=undefined;
-    $scope.uploadExpenses=function () {
-        if(!$scope.file){
+app.controller('UploadExpanseCtrl', ['$scope', 'Upload', 'Notification', '$state', function ($scope, Upload, Notification, $state) {
+    $scope.file = undefined;
+    $scope.uploadExpenses = function () {
+        if (!$scope.file) {
             Notification.error("Please select file");
-        }else{
+        } else {
             Upload.upload({
                 url: '/v1/expense/uploadExpensesData',
                 data: {
@@ -497,53 +512,106 @@ app.controller('UploadExpanseCtrl', ['$scope','Upload','Notification','$state', 
 
 }]);
 
-app.controller('expensesSheetController', ['$scope','Upload','Notification','$state','TrucksService',function ($scope, Upload,Notification,$state, TrucksService) {
+app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '$state', 'TrucksService', 'ExpenseService', 'NgTableParams','PartyService',
+    function ($scope, Upload, Notification, $state, TrucksService, ExpenseService, NgTableParams, PartyService) {
 
-    $scope.today = function () {
-        $scope.dt = new Date();
-    };
-    $scope.today();
+        $scope.today = function () {
+            $scope.dt = new Date();
+        };
+        $scope.today();
 
-    $scope.clear = function () {
-        $scope.dt = null;
-    };
+        $scope.clear = function () {
+            $scope.dt = null;
+        };
 
-    $scope.open2 = function () {
-        $scope.popup2.opened = true;
-    };
+        $scope.open2 = function () {
+            $scope.popup2.opened = true;
+        };
 
-    $scope.popup2 = {
-        opened: false
-    };
+        $scope.popup2 = {
+            opened: false
+        };
 
-    $scope.nextDay = function () {
-        var dt = $scope.dt;
-        dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
-        $scope.dt.setTime(dt.getTime());
-        $scope.dt = new Date($scope.dt);
-        $scope.getAllTripssheets($scope.dt);
-    };
+        $scope.nextDay = function () {
+            var dt = $scope.dt;
+            dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
+            $scope.dt.setTime(dt.getTime());
+            $scope.dt = new Date($scope.dt);
+            $scope.getAllExpensesSheets($scope.dt);
+        };
 
-    $scope.previousDay = function () {
-        var dt = $scope.dt;
-        dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
-        $scope.dt = new Date($scope.dt);
-        $scope.getAllTripssheets($scope.dt);
-    };
+        $scope.previousDay = function () {
+            var dt = $scope.dt;
+            dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
+            $scope.dt = new Date($scope.dt);
+            $scope.getAllExpensesSheets($scope.dt);
+        };
 
-    $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucksForFilter(function (success) {
-            if (success.data.status) {
-                $scope.trucksList = success.data.trucks;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
-            }
-        }, function (error) {
+        $scope.getAllTrucks = function () {
+            TrucksService.getAllTrucksForFilter(function (success) {
+                if (success.data.status) {
+                    $scope.trucksList = success.data.trucks;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (error) {
 
-        })
-    };
-    $scope.getAllTrucks();
+            })
+        };
+        $scope.getAllTrucks();
 
-}]);
+        function getParties() {
+            PartyService.getAllPartiesByTransporter(function (success) {
+                if (success.data.status) {
+                    $scope.parties = success.data.parties;
+                    // console.log("$scope.parties", $scope.parties);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            });
+        }
+
+        getParties();
+
+        $scope.getAllExpensesSheets = function (date) {
+            var date = new Date(date);
+            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            ExpenseService.getAllExpensesSheet($scope.today, function (success) {
+                if (success.data.status) {
+                    $scope.expensesSheetsDetails = success.data.data;
+                    for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
+                        if ($scope.expensesSheetsDetails[i].partyId) {
+                            var party = _.find($scope.parties, function (party) {
+                                return party._id.toString() === $scope.expensesSheetsDetails[i].partyId;
+                            });
+                            if (party) {
+                                $scope.expensesSheetsDetails[i].partyName = party.name;
+                            }
+                        }
+                    }
+                }
+            })
+        };
+
+        $scope.getAllExpensesSheets(new Date());
+
+        $scope.saveAll = function () {
+            var params = $scope.expensesSheetsDetails;
+            console.log("params", params);
+            ExpenseService.updateExpensesSheet(params, function (success) {
+                if(success.data.status){
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                }else{
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                }
+            })
+
+        }
+
+    }]);

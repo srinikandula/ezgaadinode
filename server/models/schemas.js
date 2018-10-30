@@ -1291,6 +1291,7 @@ var counterSchema = new mongoose.Schema({
 
 var expensesSheetSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
+    partyId:String,
     vehicleNo:String,
     date:String,
     dieselSlip:String,

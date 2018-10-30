@@ -2,8 +2,23 @@ var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var ExpenseCost = require('../apis/expensesApi');
+var ExpenseSheet = require('../apis/expenseSheetApi');
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
+
+
+AuthRouter.get('/getExpensesSheet/:date', function (req, res) {
+    ExpenseSheet.getExpenseSheets(req, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.put('/updateExpensesSheet', function (req, res) {
+    ExpenseSheet.updateExpenseSheet(req, function (result) {
+        res.send(result);
+    });
+});
+
 
 AuthRouter.post('/addExpense', function (req, res) {
     ExpenseCost.addExpense(req.jwt, req.body,req, function (result) {
@@ -147,6 +162,8 @@ AuthRouter.post('/uploadExpensesData',multipartyMiddleware, function(req,res){
         res.send(result);
     })
 });
+
+
 
 module.exports = {
     OpenRouter: OpenRouter,
