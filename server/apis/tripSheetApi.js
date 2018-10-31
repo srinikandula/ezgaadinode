@@ -174,14 +174,13 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         if(tripSheet.partyId){
             if(tripSheet.partyId._id !== undefined){
                 tripSheet.partyId = tripSheet.partyId._id;
-                invoiceObj.partyId = tripSheet.partyId;
-                expenseObj.partyId = tripSheet.partyId;
             }
             invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
                 if(err){
                     asyncCallback(true);
                 }else if(!invoices.length){
                     invoiceObj.status = 'pending';
+                    invoiceObj.partyId = tripSheet.partyId;
                     invoiceObj.tripSheetId = tripSheet._id;
                     invoiceObj.accountId = req.jwt.accountId;
                     invoiceObj.trip.push({
@@ -197,9 +196,11 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                 if(err){
                     asyncCallback(true);
                 }else if(!expenses.length){
+                    expenseObj.partyId = tripSheet.partyId;
                     expenseObj.from = tripSheet.loadingPoint;
                     expenseObj.to = tripSheet.unloadingPoint;
                     expenseObj.vehicleNo = tripSheet.registrationNo;
+                    expenseObj.truckId = tripSheet.truckId;
                     expenseObj.tripSheetId = tripSheet._id;
                     expenseObj.date = tripSheet.date;
                     expenseObj.driverName = tripSheet.driverName;
