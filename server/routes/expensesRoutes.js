@@ -18,6 +18,11 @@ AuthRouter.put('/updateExpensesSheet', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/getExpenseSheetByParams', function (req, res) {
+    ExpenseSheet.getExpenseSheet(req, function (result) {
+        res.send(result);
+    });
+});
 
 
 AuthRouter.post('/addExpense', function (req, res) {
