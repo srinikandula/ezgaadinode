@@ -1260,7 +1260,8 @@ var tripSheetsSchema =  new mongoose.Schema({
     loadingPoint:String,
     unloadingPoint:String,
     driverName:String,
-    partyId:String
+    partyId:String,
+    tripId:String
 }, {timestamps: true});
 
 var loadingPointsSchema=new mongoose.Schema({
@@ -1294,6 +1295,7 @@ var expensesSheetSchema = new mongoose.Schema({
     partyId:String,
     vehicleNo:String,
     date:String,
+    truckId:String,
     dieselSlip:String,
     from:String,
     to:String,

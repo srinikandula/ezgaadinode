@@ -61,4 +61,30 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
     }
   });
 };
+ExpenseSheets.prototype.getExpenseSheet = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {};
+    if(req.query.truckId !== 'undefined'){
+        condition.truckId = req.query.truckId;
+    }
+    if((req.query.fromDate && req.query.toDate) !== 'undefined'){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+    }
+    ExpensesSheetColl.find(condition).sort({createdAt:-1}).exec(function(err,expenseSheets){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("error in fetching data"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push("success");
+            retObj.data = expenseSheets;
+            callback(retObj);
+        }
+    });
+
+};
 module.exports = new ExpenseSheets();
