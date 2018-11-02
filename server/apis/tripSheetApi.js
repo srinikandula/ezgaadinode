@@ -163,19 +163,13 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         errors:[]
     };
     var tripSheets = req.body;
-    var invoiceObj = {trip:[],partyId:''};
-    var expenseObj = {partyId:'',accountId:req.jwt.accountId};
     async.each(tripSheets,function(tripSheet,asyncCallback){
-        if((tripSheet.unloadingPoint && tripSheet.loadingPoint) !== undefined){
-            if(!tripSheet.partyId){
-                retObj.errors.push("Select party");
-            }
-        }
+        var invoiceObj = {trip:[],partyId:''};
+        var expenseObj = {partyId:'',accountId:req.jwt.accountId};
         if(tripSheet.partyId){
             if(tripSheet.partyId._id !== undefined){
                 tripSheet.partyId = tripSheet.partyId._id;
                 invoiceObj.partyId = tripSheet.partyId;
-                expenseObj.partyId = tripSheet.partyId;
             }
             invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
                 if(err){
@@ -197,9 +191,11 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                 if(err){
                     asyncCallback(true);
                 }else if(!expenses.length){
+                    expenseObj.partyId = tripSheet.partyId;
                     expenseObj.from = tripSheet.loadingPoint;
                     expenseObj.to = tripSheet.unloadingPoint;
                     expenseObj.vehicleNo = tripSheet.registrationNo;
+                    expenseObj.truckId = tripSheet.truckId;
                     expenseObj.tripSheetId = tripSheet._id;
                     expenseObj.date = tripSheet.date;
                     expenseObj.driverName = tripSheet.driverName;
@@ -207,7 +203,7 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                     doc.save(function(err,result){});
                 }
             });
-        }
+        };
         TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
             if(err){
                 asyncCallback(true);

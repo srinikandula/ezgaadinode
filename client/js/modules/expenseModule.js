@@ -608,6 +608,12 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                 }
             })
         };
+        $scope.printArea = function () {
+            var w = window.open();
+            w.document.write(document.getElementsByClassName('report_left_inner')[0].innerHTML);
+            w.print();
+            w.close();
+        };
 
         $scope.getAllExpensesSheets(new Date());
 
