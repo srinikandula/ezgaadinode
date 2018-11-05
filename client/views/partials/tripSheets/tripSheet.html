@@ -129,13 +129,13 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                 <select class="form-control" ng-model="sheet.driverName" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
-                    <option value="" selected>--Select Driver--</option>
+                    <option value="" selected>Select Driver</option>
                     <option ng-repeat="driver in presentDrivers">{{driver.driverName}}</option>
                 </select>
                 </div>
             </td>
             <td>
-                <input type="text" class="form-control" ng-model="sheet.tripId">
+                <input type="text" class="form-control" ng-model="sheet.tripId" style="width: 40px;">
             </td>
             <td class="col-sm-2">
                 <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
