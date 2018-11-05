@@ -155,7 +155,6 @@ TripSheets.prototype.getTripSheets = function (req, callback) {
 
 };
 */
-
 TripSheets.prototype.updateTripSheet = function (req, callback) {
     var retObj = {
         status: false,
@@ -163,66 +162,94 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         errors:[]
     };
     var tripSheets = req.body;
-    async.each(tripSheets,function(tripSheet,asyncCallback){
-        var invoiceObj = {trip:[],partyId:''};
+    var tripGroups = _.groupBy(tripSheets, 'tripId');
+    var keys = [];
+    for (var key in tripGroups) {
+        if (tripGroups.hasOwnProperty(key)) keys.push(key);
+    }
+    async.map(tripSheets,function(tripSheet,asyncCallback){
         var expenseObj = {partyId:'',accountId:req.jwt.accountId};
-        if(tripSheet.partyId){
-            if(tripSheet.partyId._id !== undefined){
-                tripSheet.partyId = tripSheet.partyId._id;
-                invoiceObj.partyId = tripSheet.partyId;
-            }
-            invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
-                if(err){
-                    asyncCallback(true);
-                }else if(!invoices.length){
-                    invoiceObj.status = 'pending';
-                    invoiceObj.tripSheetId = tripSheet._id;
-                    invoiceObj.accountId = req.jwt.accountId;
-                    invoiceObj.trip.push({
-                        vehicleNo:tripSheet.registrationNo,
-                        from:tripSheet.loadingPoint,
-                        to:tripSheet.unloadingPoint,
-                        driverName:tripSheet.driverName
-                    });
-                    Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
-                }
-            });
-            ExpensesSheetColl.find({tripSheetId:tripSheet._id},function(err,expenses){
-                if(err){
-                    asyncCallback(true);
-                }else if(!expenses.length){
-                    expenseObj.partyId = tripSheet.partyId;
-                    expenseObj.from = tripSheet.loadingPoint;
-                    expenseObj.to = tripSheet.unloadingPoint;
-                    expenseObj.vehicleNo = tripSheet.registrationNo;
-                    expenseObj.truckId = tripSheet.truckId;
-                    expenseObj.tripSheetId = tripSheet._id;
-                    expenseObj.date = tripSheet.date;
-                    expenseObj.driverName = tripSheet.driverName;
-                    var doc = new ExpensesSheetColl(expenseObj);
-                    doc.save(function(err,result){});
-                }
-            });
-        };
         TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
             if(err){
                 asyncCallback(true);
             }else{
+                ExpensesSheetColl.find({tripSheetId:tripSheet._id},function(err,expenses){
+                    if(err){
+                        asyncCallback(true);
+                    }else if(!expenses.length){
+                        expenseObj.partyId = tripSheet.partyId;
+                        expenseObj.from = tripSheet.loadingPoint;
+                        expenseObj.to = tripSheet.unloadingPoint;
+                        expenseObj.vehicleNo = tripSheet.registrationNo;
+                        expenseObj.truckId = tripSheet.truckId;
+                        expenseObj.tripSheetId = tripSheet._id;
+                        expenseObj.date = tripSheet.date;
+                        expenseObj.driverName = tripSheet.driverName;
+                        var doc = new ExpensesSheetColl(expenseObj);
+                        doc.save(function(err,result){});
+                    }
+                });
                 asyncCallback(false);
             }
         });
     },function(err){
-        if(retObj.errors.length>0){
-            retObj.status = false;
-            callback(retObj);
-        }else if (err) {
+        if(err){
             retObj.status = false;
             retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
             callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push("Success");
-            callback(retObj);
+        }else{
+            async.map(keys,function(key,asyncCallback){
+                var invoiceObj = {trip:[],partyId:'',tripSheetId:[]};
+                if(key !== 'undefined'){
+                    for(var j=0;j<tripGroups[key].length;j++){
+                        var tripSheet = tripGroups[key][j];
+                        if(tripSheet.partyId){
+                            if(tripSheet.partyId._id !== undefined){
+                                tripSheet.partyId = tripSheet.partyId._id;
+                                invoiceObj.partyId = tripSheet.partyId;
+                            }
+                            invoiceObj.status = 'pending';
+                            invoiceObj.tripId = tripSheet.tripId;
+                            invoiceObj.tripSheetId.push(tripSheet._id);
+                            invoiceObj.accountId = req.jwt.accountId;
+                            invoiceObj.trip.push({
+                                vehicleNo:tripSheet.registrationNo,
+                                from:tripSheet.loadingPoint,
+                                to:tripSheet.unloadingPoint,
+                                driverName:tripSheet.driverName
+                            });
+                        }else{
+                            invoiceObj = 'undefined';
+                        }
+                    }
+                }else{
+                    invoiceObj = 'undefined';
+                }
+                if(invoiceObj !== 'undefined'){
+                    invoiceColl.find({"tripSheetId":{$in:invoiceObj.tripSheetId}},function(err,invoices){
+                        if(err){
+                            asyncCallback(true);
+                        } else if(!invoices.length){
+                            Invoices.addInvoice(req.jwt,invoiceObj,function(saveInvoiceCallback){});
+                            asyncCallback(false);
+                        }else{
+                            asyncCallback(false);
+                        }
+                    });
+                } else{
+                    asyncCallback(false);
+                }
+            },function(err){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+                    callback(retObj);
+                }else{
+                    retObj.status = true;
+                    retObj.messages.push("Success");
+                    callback(retObj);
+                }
+            });
         }
     });
 };

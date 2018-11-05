@@ -81,6 +81,7 @@
             <th>loading Point</th>
             <th>Unloading Point</th>
             <th>Driver</th>
+            <th>Trip Id</th>
             <th>Party Name</th>
         </tr>
         <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo.registrationNo}"
@@ -132,6 +133,9 @@
                     <option ng-repeat="driver in presentDrivers">{{driver.driverName}}</option>
                 </select>
                 </div>
+            </td>
+            <td>
+                <input type="text" class="form-control" ng-model="sheet.tripId">
             </td>
             <td class="col-sm-2">
                 <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"

@@ -1198,7 +1198,7 @@ var invoicesSchema=new mongoose.Schema({
     totalAmount:Number,
     tonnage:String,
     ratePerTonne:String,
-    tripSheetId:String,
+    tripSheetId:[],
     status:String,
     trip:[],
     attachments: [{
