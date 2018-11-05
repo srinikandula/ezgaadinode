@@ -45,6 +45,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('routeConfigEnabled',success.data.routeConfigEnabled);
                     $cookies.put('tripSheetEnabled',success.data.tripSheetEnabled);
                     $cookies.put('driverSheetEnabled',success.data.driverSheetEnabled);
+                    $cookies.put('expenseSheetEnabled',success.data.expenseSheetEnabled);
 
 
                     var permissions = [];

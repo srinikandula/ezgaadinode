@@ -43,6 +43,7 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
     retObj.routeConfigEnabled = user.accountId.routeConfigEnabled;
     retObj.driverSheetEnabled = user.accountId.driverSheetEnabled;
     retObj.tripSheetEnabled = user.accountId.tripSheetEnabled;
+    retObj.expenseSheetEnabled = user.accountId.expenseSheetEnabled;
     retObj.permissions = accessPermissions;
     retObj.type = user.type;
     retObj.role = user.role;

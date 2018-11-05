@@ -109,6 +109,7 @@ var accountSchema = new mongoose.Schema({
     templatePath:String,
     tripSheetEnabled: {type: Boolean, default: false},
     driverSheetEnabled: {type: Boolean, default: false},
+    expenseSheetEnabled:{type:Boolean,default:false}
 }, {
     timestamps: true
 });
@@ -1307,7 +1308,7 @@ var expensesSheetSchema = new mongoose.Schema({
     driverName:String,
     remarks:String,
     throughOnline:{type: Boolean, default: false},
-    tripSheetId:String
+    tripSheetId:String,
 }, {timestamps: true});
 
 module.exports = {
