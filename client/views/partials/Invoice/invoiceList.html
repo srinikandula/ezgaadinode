@@ -90,7 +90,7 @@
     </div>
 
 
-    <div class="report_left_inner" style="margin: 10px 0px;">
+    <div class="report_left_inner table-responsive" style="margin: 10px 0px; display:none;">
         <table class="table" style="border: 1px solid #000000; border-collapse: collapse;">
             <thead>
                 <tr class="print-style">
@@ -121,25 +121,28 @@
                 </tr class="print-style">
             </thead>
             <tbody>
-                <tr class="print-style" ng-repeat="invoice in invoices track by $index" style="text-align: center;border: 1px solid #ccc;">
-                    <td style="border: 1px solid #000000" scope="row">{{$index + 1}}</td>
-                    <td style="border: 1px solid #000000">{{invoice.createdAt | date: "dd.MM.y"}}</td>
-                    <td style="border: 1px solid #000000">TS{{$index + -741}}</td>
-                    <td style="border: 1px solid #000000">{{invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo
-                        ||
-                        invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
-                    <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
-                    <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
-                    <!-- <td style="border: 1px solid #000000">{{invoice.totalAmount}}</td> -->
-                    <td style="border: 1px solid #000000" ng-init="$parent.total = $parent.total + (invoice.totalAmount)">{{invoice.totalAmount}}</td>
-                </tr class="print-style">
+                <div>
+                    <tr class="print-style" style="text-align: center;border: 1px solid #ccc;" ng-repeat="invoice in invoices track by $index">
+
+                        <td style="border: 1px solid #000000" scope="row">{{$index + 1}}</td>
+                        <td style="border: 1px solid #000000">{{invoice.createdAt | date: "dd.MM.y"}}</td>
+                        <td style="border: 1px solid #000000; width: 50px;">TS{{$index + -741}}</td>
+                        <td style="border: 1px solid #000000">{{invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo
+                            ||
+                            invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
+                        <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
+                        <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
+                        <!-- <td style="border: 1px solid #000000">{{invoice.totalAmount}}</td> -->
+                        <td style="border: 1px solid #000000" ng-init="$parent.total = $parent.total + (invoice.totalAmount)">{{invoice.totalAmount}}</td>
+                    </tr class="print-style">
+                </div>
                 <tr class="print-style">
                     <th colspan="6" style="text-align:right; border: 1px solid #000000">Total:</th>
-                    <th style="text-align: center; border: 1px solid #000000;">{{ total }}</th>
+                    <th style="text-align: center; border: 1px solid #000000;">{{ PdfTotalAmount}}</th>`
                 </tr class="print-style">
                 <tr class="print-style">
                     <th colspan="7" style="text-align: left; border: 1px solid #000000">
-                        <b>Ruppees Only:</b> {{ total | words}}
+                        <b>Ruppees Only:</b> {{ PdfTotalAmount | words}}
                     </th>
                 </tr class="print-style">
                 <tr class="print-style">
