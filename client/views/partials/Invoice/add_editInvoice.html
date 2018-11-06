@@ -143,7 +143,15 @@
                 </div>
             </div>
             <div class="col-sm-12 col-xs-12 mt-10">
-                <div class="form-group col-sm-12 col-xs-12">
+                <div ng-if="invoice.tripSheetId.length>0">
+                     <div class=" col-sm-2 form-group col-xs-12">
+                        <div class="styling-input-list">
+                            <input type="text"  class="form-control custom-form-control"  ng-model="partyName" readonly/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Party*</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-sm-12 col-xs-12" ng-hide="invoice.tripSheetId.length>0">
                     <div class="styling-input-list">
                         <ui-select ng-model="invoice.partyId" theme="select2"
                                    title="Choose a party" append-to-body="true">

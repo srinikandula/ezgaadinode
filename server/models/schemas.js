@@ -1288,7 +1288,8 @@ var driversAttendanceSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 var counterSchema = new mongoose.Schema({
-    count: Number
+    count: Number,
+    name:String
 }, {timestamps: true});
 
 var expensesSheetSchema = new mongoose.Schema({
