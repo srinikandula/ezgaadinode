@@ -79,26 +79,27 @@ Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
         status: false,
         messages: []
     };
-    var countObj = {};
+    var countObj = {name:'a'};
     invoiceDetails.accountId = jwt.accountId;
-    CounterCollection.find({},function(err,data){
+    CounterCollection.findOneAndUpdate({name:'a'},{$inc:{count:1}},{new:true},function(err,data){
         if(err){
             retObj.messages.push("Internal server error," + JSON.stringify(err.message));
             callback(retObj);
-        }else if(!data.length){
+        }else if(!data){
             countObj.count = 100;
+            var doc =  new CounterCollection(countObj);
+            doc.save(function(err,result){
+                invoiceDetails.invoiceNo = "IN-"+result.count;
+                saveInvoice(invoiceDetails,function(saveCallback){
+                    callback(saveCallback);
+                });
+            });
         }else{
-            var count = data[data.length-1].count+1;
-            countObj.count = count;
-        }
-        var doc =  new CounterCollection(countObj);
-        doc.save(function(err,result){
-            invoiceDetails.invoiceNo = "IN-"+result.count;
+            invoiceDetails.invoiceNo = "IN-"+data.count;
             saveInvoice(invoiceDetails,function(saveCallback){
                 callback(saveCallback);
             });
-        });
-
+        }
     });
 };
 Invoices.prototype.updateInvoice = function (jwt, invoiceDetails, callback) {

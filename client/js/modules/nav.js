@@ -31,6 +31,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $scope.routeConfigEnabled = $cookies.get('routeConfigEnabled');
         $scope.tripSheetEnabled = $cookies.get('tripSheetEnabled');
         $scope.driverSheetEnabled = $cookies.get('driverSheetEnabled');
+        $scope.expenseSheetEnabled = $cookies.get('expenseSheetEnabled');
         return $cookies.get('token') != undefined;
 
     };

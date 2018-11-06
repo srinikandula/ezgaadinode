@@ -109,6 +109,7 @@ var accountSchema = new mongoose.Schema({
     templatePath:String,
     tripSheetEnabled: {type: Boolean, default: false},
     driverSheetEnabled: {type: Boolean, default: false},
+    expenseSheetEnabled:{type:Boolean,default:false}
 }, {
     timestamps: true
 });
@@ -1198,7 +1199,7 @@ var invoicesSchema=new mongoose.Schema({
     totalAmount:Number,
     tonnage:String,
     ratePerTonne:String,
-    tripSheetId:String,
+    tripSheetId:[],
     status:String,
     trip:[],
     attachments: [{
@@ -1287,7 +1288,8 @@ var driversAttendanceSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 var counterSchema = new mongoose.Schema({
-    count: Number
+    count: Number,
+    name:String
 }, {timestamps: true});
 
 var expensesSheetSchema = new mongoose.Schema({
@@ -1307,7 +1309,7 @@ var expensesSheetSchema = new mongoose.Schema({
     driverName:String,
     remarks:String,
     throughOnline:{type: Boolean, default: false},
-    tripSheetId:String
+    tripSheetId:String,
 }, {timestamps: true});
 
 module.exports = {
