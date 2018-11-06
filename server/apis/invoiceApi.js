@@ -324,9 +324,9 @@ Invoices.prototype.generatePDF = function(req,callback){
                         doc.pdfTotalAmountWords=converter.toWords(doc.pdfTotalAmount);
                         doc.amount=nanToZero(doc.amount);
                         if(doc.temparatureCargo) {
-                            doc.temparatureCargo ="Yes"
+                            doc.temparatureCargo ="Temparature Cargo"
                         }else{
-                            doc.temparatureCargo="No"
+                            doc.temparatureCargo=''
                         }
                         invoiceCallback(false,doc);
                     }else{
@@ -523,7 +523,7 @@ Invoices.prototype.printInvoice = function(req,callback){
         messages: []
     };
    Invoices.prototype.generatePDF(req,function (invoiceCallback) {
-      if(invoiceCallback.status){
+       if(invoiceCallback.status){
          retObj.status = true;
          retObj.messages.push("success");
          retObj.data = invoiceCallback.result;
