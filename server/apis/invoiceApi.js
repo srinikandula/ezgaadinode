@@ -395,7 +395,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                             result.sgstAmount = (result.accountDetails.sgst/100)*result.invoiceDetails.totalAmount;
                             result.totalAmount = result.cgstAmount + result.sgstAmount + result.invoiceDetails.totalAmount;
                         }
-                        pdfGenerator.createPdf(result.accountDetails.templatePath,'invoice.html','landscape',result,function (resp) {
+                        pdfGenerator.createPdf(result.accountDetails.templatePath,'invoice.html','portrait',result,function (resp) {
                             callback(resp);
                         })
                     }
