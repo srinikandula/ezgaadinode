@@ -175,22 +175,24 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
             if(err){
                 asyncCallback(true);
             }else{
-                ExpensesSheetColl.find({tripSheetId:tripSheet._id},function(err,expenses){
-                    if(err){
-                        asyncCallback(true);
-                    }else if(!expenses.length){
-                        expenseObj.partyId = tripSheet.partyId;
-                        expenseObj.from = tripSheet.loadingPoint;
-                        expenseObj.to = tripSheet.unloadingPoint;
-                        expenseObj.vehicleNo = tripSheet.registrationNo;
-                        expenseObj.truckId = tripSheet.truckId;
-                        expenseObj.tripSheetId = tripSheet._id;
-                        expenseObj.date = tripSheet.date;
-                        expenseObj.driverName = tripSheet.driverName;
-                        var doc = new ExpensesSheetColl(expenseObj);
-                        doc.save(function(err,result){});
-                    }
-                });
+                if(tripSheet.partyId){
+                    ExpensesSheetColl.find({tripSheetId:tripSheet._id},function(err,expenses){
+                        if(err){
+                            asyncCallback(true);
+                        }else if(!expenses.length){
+                            expenseObj.partyId = tripSheet.partyId;
+                            expenseObj.from = tripSheet.loadingPoint;
+                            expenseObj.to = tripSheet.unloadingPoint;
+                            expenseObj.vehicleNo = tripSheet.registrationNo;
+                            expenseObj.truckId = tripSheet.truckId;
+                            expenseObj.tripSheetId = tripSheet._id;
+                            expenseObj.date = tripSheet.date;
+                            expenseObj.driverName = tripSheet.driverName;
+                            var doc = new ExpensesSheetColl(expenseObj);
+                            doc.save(function(err,result){});
+                        }
+                    });
+                }
                 asyncCallback(false);
             }
         });

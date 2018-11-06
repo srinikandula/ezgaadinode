@@ -1298,7 +1298,14 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         })
     };
     $scope.getAllDriversAttendance(new Date());
-
-
-
+    $scope.getValues = function(value,index){
+        for(var i=0;i<index;i++){
+            if($scope.tripSheets[i].tripId == value){
+                $scope.tripSheets[index].loadingPoint = $scope.tripSheets[i].loadingPoint;
+                $scope.tripSheets[index].unloadingPoint = $scope.tripSheets[i].unloadingPoint;
+                $scope.tripSheets[index].partyId = $scope.tripSheets[i].partyId;
+                break;
+            }
+        }
+    }
 }]);
