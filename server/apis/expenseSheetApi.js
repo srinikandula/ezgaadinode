@@ -41,7 +41,8 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
               lrNo:expenseSheet.lrNo,
               unloadingDate:expenseSheet.unloadingDate,
               driverName:expenseSheet.driverName,
-              remarks:expenseSheet.remarks
+              remarks:expenseSheet.remarks,
+              throughOnline:expenseSheet.throughOnline
           }},function(err,updateResult){
                 if(err){
                     asyncCallback(true);

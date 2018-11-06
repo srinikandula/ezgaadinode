@@ -1306,6 +1306,7 @@ var expensesSheetSchema = new mongoose.Schema({
     unloadingDate:String,
     driverName:String,
     remarks:String,
+    throughOnline:{type: Boolean, default: false},
     tripSheetId:String
 }, {timestamps: true});
 
