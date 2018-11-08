@@ -94,63 +94,64 @@
 
 
     <div class="report_left_inner" style="margin: 10px 0px; display:none;">
-        <table class="table" style="border: 1px solid #000000; border-collapse: collapse;">
+        <table class="table" style="border: 1px solid #000000; border-collapse: collapse;width: 100%;">
             <thead>
-                <tr class="print-style">
-                    <th colspan="7" style="text-align: center; border: 1px solid #000000">
-                        <h4 style="margin-bottom: 0rem !important;">
-                            <b> {{partyName.party.name}}</b>
-                        </h4>
-                    </th>
-                </tr>
-                <tr class="print-style">
-                    <th style="border: none"></th>
-                    <th style="border: none"></th>
-                    <th style="border: none"></th>
-                    <th style="border: none"></th>
-                    <th style="border: none"></th>
-                    <th style="text-align:right; border: none">Date:</th>
-                    <th style="text-align: center; border: 1px solid #000000">{{date | date:'dd.MM.yyyy'}}</th>
-                </tr class="print-style">
-                <tr class="print-style" style="text-align: center;border: 1px solid #ccc;">
-                    <th style="border: 1px solid #000000">S.No</th>
-                    <th style="border: 1px solid #000000">Date</th>
-                    <th style="border: 1px solid #000000">Bill No</th>
-                    <th style="border: 1px solid #000000">Vehicle No</th>
-                    <th style="border: 1px solid #000000">From</th>
-                    <th style="border: 1px solid #000000">To</th>
-                    <th style="border: 1px solid #000000">Amount in Rs.</th>
-                </tr class="print-style">
+            <tr class="print-style">
+                <th colspan="7" style="text-align: center; border: 1px solid #000000">
+                    <h4 style="margin-bottom: 0rem !important;">
+                        <b> {{partyName.party.name}}</b>
+                    </h4>
+                </th>
+            </tr>
+            <tr class="print-style">
+                <th style="border: none"></th>
+                <th style="border: none"></th>
+                <th style="border: none"></th>
+                <th style="border: none"></th>
+                <th style="border: none"></th>
+                <th style="text-align:right; border: none">Date:</th>
+                <th style="text-align: center; border: 1px solid #000000">{{date | date:'dd.MM.yyyy'}}</th>
+            </tr class="print-style">
+            <tr class="print-style" style="text-align: center;border: 1px solid #ccc;">
+                <th style="border: 1px solid #000000">S.No</th>
+                <th style="border: 1px solid #000000">Date</th>
+                <th style="border: 1px solid #000000">Bill No</th>
+                <th style="border: 1px solid #000000">Vehicle No</th>
+                <th style="border: 1px solid #000000">From</th>
+                <th style="border: 1px solid #000000">To</th>
+                <th style="border: 1px solid #000000">Amount in Rs.</th>
+            </tr class="print-style">
             </thead>
             <tbody>
-                <tr class="print-style" ng-repeat="invoice in invoices track by $index" style="text-align: center;border: 1px solid #ccc;">
-                    <td style="border: 1px solid #000000" scope="row">{{$index + 1}}</td>
-                    <td style="border: 1px solid #000000">{{invoice.createdAt | date: "dd.MM.y"}}</td>
-                    <td style="border: 1px solid #000000">TS{{$index + -741}}</td>
-                    <td style="border: 1px solid #000000">{{invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo
-                        ||
-                        invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
-                    <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
-                    <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
-                    <td style="border: 1px solid #000000">10,000.00</td>
-                </tr class="print-style">
-                <tr class="print-style">
-                    <th colspan="6" style="text-align:right; border: 1px solid #000000">Total:</th>
-                    <th style="text-align: center; border: 1px solid #000000;">13,000.00</th>
-                </tr class="print-style">
-                <tr class="print-style">
-                    <th colspan="7" style="text-align: left; border: 1px solid #000000">
-                        <b>Ruppees Only:</b>
-                    </th>
-                </tr class="print-style">
-                <tr class="print-style">
-                    <td colspan="7" style="text-align: right; border: 1px solid #000000">
-                        <p>For Sri Anjana Logistics</p>
-                        <br>
-                        <p>Authorised Signature</p>
-                    </td>
-                </tr class="print-style">
+            <tr class="print-style" ng-repeat="invoice in invoices track by $index" style="text-align: center;border: 1px solid #ccc;">
+                <td style="border: 1px solid #000000" scope="row">{{$index + 1}}</td>
+                <td style="border: 1px solid #000000">{{invoice.createdAt | date: "dd.MM.y"}}</td>
+                <td style="border: 1px solid #000000">TS{{$index + -741}}</td>
+                <td style="border: 1px solid #000000">{{invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo
+                    ||
+                    invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
+                <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
+                <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
+                <td style="border: 1px solid #000000">10,000.00</td>
+            </tr class="print-style">
+            <tr class="print-style">
+                <th colspan="6" style="text-align:right; border: 1px solid #000000">Total:</th>
+                <th style="text-align: center; border: 1px solid #000000;">{{printTotalAmount}}</th>
+            </tr class="print-style">
+            <tr class="print-style">
+                <th colspan="7" style="text-align: left; border: 1px solid #000000">
+                    <b>Ruppees Only: {{printTotalAmount | words}}</b>
+                </th>
+            </tr class="print-style">
+            <tr class="print-style">
+                <td colspan="7" style="text-align: right; border: 1px solid #000000">
+                    <p>For Sri Anjana Logistics</p>
+                    <br>
+                    <p>Authorised Signature</p>
+                </td>
+            </tr class="print-style">
             </tbody>
         </table>
     </div>
 </div>
+

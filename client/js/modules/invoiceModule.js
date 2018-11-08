@@ -515,6 +515,8 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         InvoiceService.getInnvoiceByParty(params, function (success) {
                 if (success.data.status) {
                     $scope.invoices = success.data.data;
+                    $scope.printTotalAmount=success.data.PrintTotalAmount;
+                    console.log("total",$scope.printTotalAmount);
                 } else {}
             },
             function (error) {
