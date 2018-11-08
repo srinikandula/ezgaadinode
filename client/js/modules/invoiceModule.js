@@ -70,6 +70,8 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
     }
 }]);
 app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices','$uibModal', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices,$uibModal) {
+app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices) {
+    $scope.date=new Date();
     $scope.pageTitle = "Add Invoice";
     $scope.partyName = '';
     $scope.getTrip = {};
@@ -108,6 +110,15 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
     }, function (error) {});
     if ($stateParams.id) {
         $scope.pageTitle = "Edit Invoice";
+        InvoiceService.printInvoice($stateParams.id,function(success){
+            if(success.data.status){
+                $scope.invoicePDF=success.data.data;
+                console.log("invoice",$scope.invoicePDF);
+            }
+
+        },function(error){
+
+        });
         InvoiceService.getInvoice($stateParams.id, function (successCallback) {
             if (successCallback.data.status) {
                 $scope.invoice = successCallback.data.data;
@@ -342,6 +353,12 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
             });
     };
     $scope.getTrips();
+    $scope.printInvoice=function(){
+        var w = window.open();
+        w.document.write(document.getElementsByClassName('invoice_Container')[0].innerHTML);
+        w.print();
+        w.close();
+    }
 }]);
 app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
     $scope.path = path;
@@ -356,6 +373,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         party: ''
     };
     $scope.print = false;
+    $scope.invoice = {};
 
     $scope.delete = function (id) {
         swal({
@@ -449,6 +467,10 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         window.open('/v1/invoices/generatePDF/' + invoiceId);
     };
 
+    $scope.generatePrint = function (invoiceId) {
+        window.open('/v1/invoices/generatePrint/' + invoiceId);
+    };
+
     // PartyService.getAllPartiesForFilter(function (success) {
     //     if (success.data.status) {
     //         $scope.partiesList = success.data.parties;
@@ -522,17 +544,27 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
     };
     $scope.print = function(data){
         console.log("print....", data);
+        $scope.print = function(){
+        console.log("print========= invoice....",$scope.invoice);
+        $scope.printTable();
+
+    };
+    $scope.printTable=function(){
         var w = window.open();
         w.document.write(document.getElementsByClassName('invoice_Container')[0].innerHTML);
         w.print();
         w.close();
-    };
+    }
     $scope.printInvoice = function (id) {
         InvoiceService.printInvoice(id,function(successCallback){
             if(successCallback.data.status){
                  // $scope.print = true;
                 $scope.invoice = successCallback.data.data;
                 $scope.print( $scope.invoice);
+                $scope.invoice = successCallback.data.data;
+                console.log("successssssssssssssssssss",$scope.invoice);
+                $scope.isPrint = true;
+                $scope.print();
             }
         },function(errorCallback){});
     };
