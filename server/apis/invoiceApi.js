@@ -320,7 +320,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                         if(doc.gatePassDate){
                             doc.gatePassDate=  dateFormat(doc.gatePassDate,"dd/mm/yyyy");
                         }
-                        doc.pdfTotalAmount=nanToZero(doc.amount)+nanToZero(doc.DCamount);
+                        doc.pdfTotalAmount=nanToZero(doc.amount)+nanToZero(doc.DCamount*doc.noOfDays);
                         doc.pdfTotalAmountWords=converter.toWords(doc.pdfTotalAmount);
                         doc.amount=nanToZero(doc.amount);
                         if(doc.temparatureCargo) {
