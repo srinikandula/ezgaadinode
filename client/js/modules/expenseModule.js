@@ -596,7 +596,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     $scope.cashTotal = 0;
                     for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
                         if ($scope.expensesSheetsDetails[i].partyId) {
-                            getParties();
                             var party = _.find($scope.parties, function (party) {
                                 return party._id.toString() === $scope.expensesSheetsDetails[i].partyId;
                             });
@@ -611,7 +610,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                             $scope.cashTotal += $scope.expensesSheetsDetails[i].cash;
                         }
                     }
-                    console.log("$scope.expensesSheetsDetails[i].partyName",$scope.expensesSheetsDetails);
+                    console.log('party', $scope.expensesSheetsDetails);
                 }
             })
         };
@@ -644,7 +643,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             ExpenseService.expensesSheetReport(params, function (success) {
                 if (success.data.status) {
                     $scope.expenseSheetReports = success.data.data;
-                    console.log("$scope.expenseSheetReports", $scope.expenseSheetReports);
                     for(var i=0;i<$scope.expenseSheetReports.length;i++){
                         if($scope.expenseSheetReports[i].partyId){
                             var party = _.find($scope.parties,function(party){
