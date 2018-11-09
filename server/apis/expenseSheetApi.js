@@ -1,6 +1,6 @@
 var ExpensesSheetColl = require('./../models/schemas').ExpensesSheetColl;
 var async = require('async');
-
+var accountBalanceColl = require('./../models/schemas').accountBalanceColl;
 var ExpenseSheets = function(){
 
 };
@@ -9,18 +9,31 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
         status:false,
         messages:[]
     };
-  ExpensesSheetColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,expenseSheets){
-      if(err){
-          retObj.status = false;
-          retObj.messages.push("error in fetching data"+JSON.stringify(err));
-          callback(retObj);
-      }else{
-          retObj.status = true;
-          retObj.messages.push("success");
-          retObj.data = expenseSheets;
-          callback(retObj);
-      }
-  });
+    async.parallel({
+        expenseSheets:function(expenseSheetCallback){
+            ExpensesSheetColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,data){
+                expenseSheetCallback(err,data);
+            });
+        },
+        accountBalance:function(balanceCallback){
+            accountBalanceColl.find({accountId:req.jwt.accountId},function(err,data){
+                balanceCallback(err,data);
+            });
+        }
+    },function(err,results){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("error in fetching data"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push("success");
+            retObj.data = results.expenseSheets;
+            retObj.amounts = results.accountBalance;
+            callback(retObj);
+        }
+    });
+
 };
 ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
   var retObj = {
@@ -87,5 +100,29 @@ ExpenseSheets.prototype.getExpenseSheet = function(req,callback){
         }
     });
 
+};
+ExpenseSheets.prototype.saveAmounts = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var obj = {
+        accountId:req.jwt.accountId,
+        date:req.body.date,
+        openingBalance:req.body.openingBalance,
+        closingBalance:req.body.closingBalance
+    };
+    var doc = new accountBalanceColl(obj);
+    doc.save(function(err,result){
+       if(err){
+           retObj.status = false;
+           retObj.messages.push("error"+JSON.stringify(err));
+           callback(retObj);
+       } else{
+           retObj.status = true;
+           retObj.messages.push("success");
+           callback(retObj);
+       }
+    });
 };
 module.exports = new ExpenseSheets();
