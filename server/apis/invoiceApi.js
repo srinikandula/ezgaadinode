@@ -178,7 +178,7 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
                         async.each(
                             invoices,
                             function (invoice, asyncCallback) {
-                                // console.log('invoices3333333', invoices);
+                              //  console.log('invoices3333333', invoices);
                                 if (invoice.partyId) {
                                     var party = _.find(parties, function (party) {
                                         return party._id.toString() === invoice.partyId;
@@ -197,6 +197,7 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
                                 } else {
                                     retObj.status = true;
                                     retObj.messages.push('Success');
+                                    // console.log("invoices",invoices);
                                     retObj.data = invoices;
                                     callback(retObj);
                                 }
@@ -411,6 +412,7 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
         status: false,
         messages: []
     };
+    var printTotal=0;
     if (params.fromDate && params.toDate && params._id) {
         q = {
             accountId: jwt.accountId,
@@ -472,6 +474,15 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
                                 retObj.status = true;
                                 retObj.messages.push('Success');
                                 retObj.data = invoices;
+                                for(var i=0;i<invoices.length;i++)
+                                {
+                                    if(invoices[i].totalAmount) {
+                                        printTotal += invoices[i].totalAmount;
+                                    }
+                                }
+                                retObj.PrintTotalAmount=printTotal;
+                                console.log("invoicesbyparty",retObj);
+
                                 callback(retObj);
                             }
                         });
