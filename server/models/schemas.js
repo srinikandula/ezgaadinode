@@ -1311,6 +1311,12 @@ var expensesSheetSchema = new mongoose.Schema({
     throughOnline:{type: Boolean, default: false},
     tripSheetId:String,
 }, {timestamps: true});
+var accountBalanceSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    date:String,
+    openingBalance:Number,
+    closingBalance:Number
+}, {timestamps: true});
 
 module.exports = {
     CounterCollection:mongoose.model('counter', counterSchema, 'counter'),
@@ -1383,5 +1389,6 @@ module.exports = {
     tripSheetsColl:mongoose.model('tripSheets', tripSheetsSchema, 'tripSheets'),
     driversAttendanceColl:mongoose.model('driversAttendance', driversAttendanceSchema, 'driversAttendance'),
     loadingPointsColl: mongoose.model('loadingPoints', loadingPointsSchema, 'loadingPoints'),
-    unloadingPointsColl: mongoose.model('unloadingPoints', unloadingPointsSchema, 'unloadingPoints')
+    unloadingPointsColl: mongoose.model('unloadingPoints', unloadingPointsSchema, 'unloadingPoints'),
+    accountBalanceColl:mongoose.model('accountBalance',accountBalanceSchema,'accountBalance')
 };
