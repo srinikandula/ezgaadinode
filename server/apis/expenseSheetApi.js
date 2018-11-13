@@ -112,17 +112,26 @@ ExpenseSheets.prototype.saveAmounts = function(req,callback){
         openingBalance:req.body.openingBalance,
         closingBalance:req.body.closingBalance
     };
-    var doc = new accountBalanceColl(obj);
-    doc.save(function(err,result){
-       if(err){
-           retObj.status = false;
-           retObj.messages.push("error"+JSON.stringify(err));
-           callback(retObj);
-       } else{
-           retObj.status = true;
-           retObj.messages.push("success");
-           callback(retObj);
-       }
+    accountBalanceColl.findOne({date:req.body.date},function(err,data){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("error"+JSON.stringify(err));
+            callback(retObj);
+        } else if(!data){
+            var doc = new accountBalanceColl(obj);
+            doc.save(function(err,result){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("error"+JSON.stringify(err));
+                    callback(retObj);
+                } else{
+                    retObj.status = true;
+                    retObj.messages.push("success");
+                    callback(retObj);
+                }
+            });
+        }
     });
+
 };
 module.exports = new ExpenseSheets();

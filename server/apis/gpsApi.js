@@ -448,6 +448,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
         status: false,
         messages: []
     };
+    console.log("gps tracking by truck....",startDate,endDate);
     var overSpeedLimit = 60;
     TrucksColl.findOne({registrationNo: truckId, deviceId: {$exists: true}}, function (err, truckDetails) {
         if (err) {
@@ -697,17 +698,19 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
     gps.gpsTrackingByTruck(params.truckNo, params.startDate, params.endDate, req, function (result) {
         if (result.status) {
             var positions = result.results.positions;
-
             async.eachSeries(positions,function(position,asyncCallback){
                 if(position.address === '{address}'){
                     getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
                         var zipCodeArr = addResp.address.match( numberPattern );
-                        for(var i=0;i<zipCodeArr.length;i++){
-                            if(zipCodeArr[i].length == 6){
-                                position.zipcode = zipCodeArr[i];
+                        if(zipCodeArr){
+                            for(var i=0;i<zipCodeArr.length;i++){
+                                if(zipCodeArr[i].length == 6){
+                                    position.zipcode = zipCodeArr[i];
+                                }
                             }
                         }
                         position.address = addResp.address;
+                        devicePostions.findOneAndUpdate({_id:position._id},{$set:{address:addResp.address,zipcode:position.zipcode}},function(err,position){});
                         asyncCallback(false);
                     });
                 }else{
@@ -739,7 +742,7 @@ function getOSMAddress(position, osmCallback) {
     };
     request({
         method: 'GET',
-        url: 'http://35.154.13.0/reverse.php?format=json&lat=' + position.latitude + '&lon=' + position.longitude
+        url: 'http://13.232.210.73/reverse.php?format=json&lat=' + position.latitude + '&lon=' + position.longitude
     }, function (errAddress, address) {  //{"error":"Unable to geocode"}
         if (errAddress) {
             //console.error('Error resolving OSM address');
@@ -756,7 +759,7 @@ function getOSMAddress(position, osmCallback) {
                 } catch (error) {
                     retObj.messages.push(JSON.stringify(error));
                     console.error("OSM error{$position.latitude " + JSON.stringify(error));
-                    //osmCallback(retObj);
+                    osmCallback(retObj);
                 }
             }
 
@@ -824,6 +827,7 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
         messages: []
     };
     var startDate = new Date()/*req.params.date*/;
+    startDate.setDate(startDate.getDate() - 1);
     // startDate.setDate(7);
     // startDate.setMonth(3);
     // startDate.setFullYear(2018);
@@ -834,7 +838,6 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
     // endDate.setDate(6);
     // endDate.setMonth(3);
     // endDate.setFullYear(2018);
-    endDate.setDate(startDate.getDate() - 1);
     // endDate.setHours(5);
     // endDate.setMinutes(30);
     // endDate.setSeconds(0);

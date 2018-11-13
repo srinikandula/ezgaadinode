@@ -457,7 +457,8 @@ var devicePositions = new mongoose.Schema({
     isIdle: Boolean,
     isStopped: Boolean,
     distance: {type: Number, default: 0},
-    totalDistance: {type: Number, default: 0}
+    totalDistance: {type: Number, default: 0},
+    zipcode:String
     // isViewed : Boolean
 }, {timestamps: true, versionKey: false});
 
@@ -1313,8 +1314,11 @@ var expensesSheetSchema = new mongoose.Schema({
 var accountBalanceSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     date:String,
+    advanceAmount:Number,
+    expenditureAmount:Number,
+    totalAmount:Number,
     openingBalance:{type: Number, default:0},
-    closingBalance:{type: Number, default:0},
+    closingBalance:{type: Number, default:0}
 }, {timestamps: true});
 
 module.exports = {
