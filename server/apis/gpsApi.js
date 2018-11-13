@@ -701,7 +701,6 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
             async.eachSeries(positions,function(position,asyncCallback){
                 if(position.address === '{address}'){
                     getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
-                        devicePostions.findOneAndUpdate({_id:position._id},{$set:{address:addResp.address}},function(err,position){});
                         var zipCodeArr = addResp.address.match( numberPattern );
                         if(zipCodeArr){
                             for(var i=0;i<zipCodeArr.length;i++){
@@ -828,6 +827,7 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
         messages: []
     };
     var startDate = new Date()/*req.params.date*/;
+    startDate.setDate(startDate.getDate() - 1);
     // startDate.setDate(7);
     // startDate.setMonth(3);
     // startDate.setFullYear(2018);
@@ -838,7 +838,6 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
     // endDate.setDate(6);
     // endDate.setMonth(3);
     // endDate.setFullYear(2018);
-    endDate.setDate(startDate.getDate() - 1);
     // endDate.setHours(5);
     // endDate.setMinutes(30);
     // endDate.setSeconds(0);
