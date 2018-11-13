@@ -4,7 +4,7 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var async = require('async');
 var invoiceColl = require('./../models/schemas').invoicesCollection;
 var partyColl = require('./../models/schemas').PartyCollection;
-var CounterCollection = require('./../models/schemas').CounterCollection;
+var accountBalanceColl = require('./../models/schemas').accountBalanceColl;
 var Invoices = require('./../apis/invoiceApi');
 var _ = require('underscore');
 var ExpensesSheetColl = require('./../models/schemas').ExpensesSheetColl;
@@ -45,8 +45,35 @@ function createTripSheet(account,today,callback){
                     retObj.status = false;
                     callback(retObj);
                 } else{
-                    retObj.status = true;
-                    callback(retObj);
+                    var now = new Date(today);
+                    var date =new Date(now.setDate(now.getDate()-1));
+                    date = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
+                    accountBalanceColl.findOne({date:date},function(err,data){
+                        if(err){
+                            retObj.status = false;
+                            callback(retObj);
+                        }else if(!data){
+                            var obj = {
+                                accountId:account._id,
+                                date:today,
+                                closingBalance:0
+                            };
+                            var doc = new accountBalanceColl(obj);
+                            doc.save(function(err,result){});
+                            retObj.status = true;
+                            callback(retObj);
+                        }else{
+                            var obj = {
+                                accountId:account._id,
+                                date:today,
+                                openingBalance:data.closingBalance
+                            };
+                            var doc = new accountBalanceColl(obj);
+                            doc.save(function(err,result){});
+                            retObj.status = true;
+                            callback(retObj);
+                        }
+                    });
                 }
             });
         }else{

@@ -1315,7 +1315,10 @@ var accountBalanceSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     date:String,
     openingBalance:Number,
-    closingBalance:Number
+    closingBalance:Number,
+    advanceAmount:Number,
+    expenditureAmount:Number,
+    totalAmount:Number
 }, {timestamps: true});
 
 module.exports = {
