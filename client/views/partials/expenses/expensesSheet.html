@@ -115,6 +115,8 @@
                 <input type="text" class="form-control" ng-model="expensesSheet.remarks">
             </td>
         </tr>
+        <tr ng-if="expensesSheetsDetails.length == 0">
+            <td colspan="13">No Records Found</td></tr>
         <tr><td colspan="7"><b>Total</b></td>
             <td><b>{{dieselTotal}}</b></td>
             <td><b>{{cashTotal}}</b></td>
@@ -130,7 +132,7 @@
                 <li>Advance:</li>
             </ul>
             <ul class="list-inline col-sm-9 mb-7">
-                 <li><input type="text" class="form-control" ng-model="expense.advance"></li>
+                 <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
             </ul>
         </div>
         <div class="col-sm-5 pull-right">
@@ -142,11 +144,11 @@
                 <li>Closing Balance</li>
             </ul>
             <ul class="list-inline col-sm-7 mb-7">
-                <li><input type="text" class="form-control" ng-model="expense.openingBalance"></li>
-                <li><input type="text" class="form-control" ng-model="expense.advance"></li>
+                <li><input type="text" class="form-control" ng-model="balance.openingBalance"></li>
+                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
                 <li><input type="text" class="form-control" ng-model="cashTotal"></li>
-                <li><input type="text" class="form-control"></li>
-                <li><input type="text" class="form-control"></li>
+                <li><input type="text" class="form-control" ng-model="dieselTotal"></li>
+                <li><input type="text" class="form-control" ng-model="balance.closingBalance"></li>
             </ul>
         </div>
     </div>
