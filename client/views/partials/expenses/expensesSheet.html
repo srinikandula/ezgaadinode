@@ -80,6 +80,7 @@
             <th>Diesel Slip</th>
             <th>Diesel Amount</th>
             <th>Cash</th>
+            <th>Payment Type</th>
             <th>LR No</th>
             <th>Unloading Date</th>
             <th>Remarks</th>
@@ -99,8 +100,10 @@
             </td>
             <td >
                 <input type="text" class="form-control" ng-model="expensesSheet.cash">
-                <input type="checkbox" ng-model="expensesSheet.throughOnline" value=""/>
-                Paid through Online
+            </td>
+            <td>
+               <label><input type="checkbox" ng-model="expensesSheet.throughOnline" value=""/>
+                Paid through Online</label>
             </td>
             <td>
                 <input type="text" class="form-control" ng-model="expensesSheet.lrNo">
@@ -112,14 +115,43 @@
                 <input type="text" class="form-control" ng-model="expensesSheet.remarks">
             </td>
         </tr>
-        <tr><td colspan="7">Total</td>
-            <td>{{dieselTotal}}</td>
-            <td>{{cashTotal}}</td>
+        <tr ng-if="expensesSheetsDetails.length == 0">
+            <td colspan="13">No Records Found</td></tr>
+        <tr><td colspan="7"><b>Total</b></td>
+            <td><b>{{dieselTotal}}</b></td>
+            <td><b>{{cashTotal}}</b></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
         </tr>
     </table>
+    <div class="row">
+        <div class="col-sm-4">
+            <ul class="col-sm-3 list-inline expenseSheetTotals">
+                <li>Advance:</li>
+            </ul>
+            <ul class="list-inline col-sm-9 mb-7">
+                 <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
+            </ul>
+        </div>
+        <div class="col-sm-5 pull-right">
+            <ul class="list-inline col-sm-5 expenseSheetTotals">
+                <li>Opening Balance</li>
+                <li>Advance</li>
+                <li>Total</li>
+                <li>Expenditure</li>
+                <li>Closing Balance</li>
+            </ul>
+            <ul class="list-inline col-sm-7 mb-7">
+                <li><input type="text" class="form-control" ng-model="balance.openingBalance"></li>
+                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
+                <li><input type="text" class="form-control" ng-model="cashTotal"></li>
+                <li><input type="text" class="form-control" ng-model="dieselTotal"></li>
+                <li><input type="text" class="form-control" ng-model="balance.closingBalance"></li>
+            </ul>
+        </div>
+    </div>
     <div class="center-block" style="width: 60%;">
         <!--<div class="alert alert-danger" role="alert" ng-show="errors.length">-->
         <!--<ul>-->

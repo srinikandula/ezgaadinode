@@ -69,8 +69,7 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
         }
     }
 }]);
-app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices','$uibModal', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices,$uibModal) {
-app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices) {
+app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices','$uibModal', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices, $uibModal) {
     $scope.date=new Date();
     $scope.pageTitle = "Add Invoice";
     $scope.partyName = '';
@@ -330,7 +329,6 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
     };
     $scope.cancel = function () {
         $state.go('invoice');
-        getAllPartiesForFilter
     };
     $scope.searchSource = function (index) {
         var input = document.getElementById('source' + index);
@@ -544,13 +542,13 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         w.print();
         w.close();
     };
-    $scope.print = function(data){
-        console.log("print....", data);
-        $scope.print = function(){
-        console.log("print========= invoice....",$scope.invoice);
-        $scope.printTable();
+    $scope.print = function(data) {
+        $scope.print = function () {
+            $scope.printTable();
 
-    };
+        };
+
+    }
     $scope.printTable=function(){
         var w = window.open();
         w.document.write(document.getElementsByClassName('invoice_Container')[0].innerHTML);
@@ -564,7 +562,6 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
                 $scope.invoice = successCallback.data.data;
                 $scope.print( $scope.invoice);
                 $scope.invoice = successCallback.data.data;
-                console.log("successssssssssssssssssss",$scope.invoice);
                 $scope.isPrint = true;
                 $scope.print();
             }

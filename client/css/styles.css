@@ -3416,3 +3416,14 @@ textarea.form-control {
 .sheet-content{
     border-radius: 15px;
 }
+.expenseSheetTotals li{
+    height: 39px;
+    line-height: 39px;
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    color: #000;
+}
+.mb-7 li{
+    margin-bottom: 6px;
+}

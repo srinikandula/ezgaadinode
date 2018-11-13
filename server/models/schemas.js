@@ -1302,7 +1302,6 @@ var expensesSheetSchema = new mongoose.Schema({
     dieselSlip:String,
     from:String,
     to:String,
-    partyId:String,
     dieselAmount:Number,
     cash:Number,
     lrNo:String,
@@ -1315,11 +1314,11 @@ var expensesSheetSchema = new mongoose.Schema({
 var accountBalanceSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     date:String,
-    openingBalance:Number,
-    closingBalance:Number,
     advanceAmount:Number,
     expenditureAmount:Number,
-    totalAmount:Number
+    totalAmount:Number,
+    openingBalance:{type: Number, default:0},
+    closingBalance:{type: Number, default:0}
 }, {timestamps: true});
 
 module.exports = {
