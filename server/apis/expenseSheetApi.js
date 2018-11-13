@@ -69,9 +69,25 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
         retObj.messages.push("error in fetching data"+JSON.stringify(err));
         callback(retObj);
     }else{
-        retObj.status = true;
-        retObj.messages.push("success");
-        callback(retObj);
+        var obj = {
+            date:req.params.date,
+            openingBalance:req.body.openingBalance,
+            closingBalance:req.body.closingBalance,
+            advanceAmount:req.body.advanceAmount,
+            totalAmount:req.body.totalAmount,
+            expenditureAmount:req.body.expenditureAmount
+        };
+        accountBalanceColl.findOneAndUpdate({date:req.body.date},{$set:obj},function(err,updateRes){
+            if(err){
+                retObj.status = false;
+                retObj.messages.push("error"+JSON.stringify(err));
+                callback(retObj);
+            } else{
+                retObj.status = true;
+                retObj.messages.push("successfully updated..");
+                callback(retObj);
+            }
+        });
     }
   });
 };
@@ -110,7 +126,10 @@ ExpenseSheets.prototype.saveAmounts = function(req,callback){
         accountId:req.jwt.accountId,
         date:req.body.date,
         openingBalance:req.body.openingBalance,
-        closingBalance:req.body.closingBalance
+        closingBalance:req.body.closingBalance,
+        advanceAmount:req.body.advanceAmount,
+        totalAmount:req.body.totalAmount,
+        expenditureAmount:req.body.expenditureAmount
     };
     accountBalanceColl.findOne({date:req.body.date},function(err,data){
         if(err){
@@ -134,4 +153,5 @@ ExpenseSheets.prototype.saveAmounts = function(req,callback){
     });
 
 };
+
 module.exports = new ExpenseSheets();

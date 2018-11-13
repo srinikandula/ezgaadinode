@@ -126,6 +126,7 @@
             <td></td>
         </tr>
     </table>
+    <div class="clearfix"></div>
     <div class="row">
         <div class="col-sm-4">
             <ul class="col-sm-3 list-inline expenseSheetTotals">
@@ -144,11 +145,11 @@
                 <li>Closing Balance</li>
             </ul>
             <ul class="list-inline col-sm-7 mb-7">
-                <li><input type="text" class="form-control" ng-model="balance.openingBalance"></li>
+                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.openingBalance"></li>
                 <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
                 <li><input type="text" class="form-control" ng-model="cashTotal"></li>
                 <li><input type="text" class="form-control" ng-model="dieselTotal"></li>
-                <li><input type="text" class="form-control" ng-model="balance.closingBalance"></li>
+                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.closingBalance"></li>
             </ul>
         </div>
     </div>
@@ -162,7 +163,7 @@
 
     <div class="col-sm-12">
         <div class="pull-right">
-            <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+            <button class="btn btn-primary" ng-click="saveAll()">Save</button>
         </div>
     </div>
 

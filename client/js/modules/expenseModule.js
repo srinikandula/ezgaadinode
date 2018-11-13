@@ -119,9 +119,9 @@ app.factory('ExpenseService', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        updateExpensesSheet: function (params, success, error) {
+        updateExpensesSheet: function (params, today, success, error) {
             $http({
-                url: '/v1/expense/updateExpensesSheet',
+                url: '/v1/expense/updateExpensesSheet/' + today,
                 method: "PUT",
                 data: params
             }).then(success, error)
@@ -630,9 +630,12 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         $scope.getAllExpensesSheets(new Date());
 
         $scope.saveAll = function () {
+            var date = new Date();
+            var dt = new Date(date);
+            $scope.today = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate();
                 var params = $scope.expensesSheetsDetails;
                 // console.log("params---------->>", params);
-                ExpenseService.updateExpensesSheet(params, function (success) {
+                ExpenseService.updateExpensesSheet(params, $scope.today, function (success) {
                     if (success.data.status) {
                         swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
                     } else {
@@ -664,6 +667,21 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     console.log("error");
                 }
             })
-        }
+        };
 
+        $scope.balance = {
+            openingBalance:0,
+            closingBalance:0
+        }
+        $scope.saveBalance = function () {
+            var params = $scope.balance;
+             // console.log("params---------->>", params);
+            ExpenseService.saveOpeningBalance(params, function (success) {
+                if (success.data.status) {
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                } else {
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                }
+            });
+        };
     }]);

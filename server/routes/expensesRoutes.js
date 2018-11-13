@@ -18,7 +18,7 @@ AuthRouter.post('/add', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateExpensesSheet', function (req, res) {
+AuthRouter.put('/updateExpensesSheet/:date', function (req, res) {
     ExpenseSheet.updateExpenseSheet(req, function (result) {
         res.send(result);
     });
