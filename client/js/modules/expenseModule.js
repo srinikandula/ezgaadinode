@@ -126,6 +126,13 @@ app.factory('ExpenseService', ['$http', function ($http) {
                 data: params
             }).then(success, error)
         },
+        saveOpeningBalance: function (params, success, error) {
+            $http({
+                url: '/v1/expense/add',
+                method: "POST",
+                data: params
+            }).then(success, error)
+        },
         expensesSheetReport: function (params, success, error) {
             $http({
                 url: '/v1/expense/getExpenseSheetByParams',
@@ -596,7 +603,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     $scope.cashTotal = 0;
                     for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
                         if ($scope.expensesSheetsDetails[i].partyId) {
-                            getParties();
                             var party = _.find($scope.parties, function (party) {
                                 return party._id.toString() === $scope.expensesSheetsDetails[i].partyId;
                             });
@@ -611,7 +617,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                             $scope.cashTotal += $scope.expensesSheetsDetails[i].cash;
                         }
                     }
-                    console.log("$scope.expensesSheetsDetails[i].partyName",$scope.expensesSheetsDetails);
                 }
             })
         };
@@ -625,16 +630,16 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         $scope.getAllExpensesSheets(new Date());
 
         $scope.saveAll = function () {
-            var params = $scope.expensesSheetsDetails;
-            ExpenseService.updateExpensesSheet(params, function (success) {
-                if(success.data.status){
-                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
-                }else{
-                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
-                }
-            })
-
-        }
+                var params = $scope.expensesSheetsDetails;
+                // console.log("params---------->>", params);
+                ExpenseService.updateExpensesSheet(params, function (success) {
+                    if (success.data.status) {
+                        swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                    } else {
+                        swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                    }
+                });
+            };
 
         $scope.validateFilters = function (truckId, fromDate, toDate) {
             var params = {};
@@ -644,7 +649,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             ExpenseService.expensesSheetReport(params, function (success) {
                 if (success.data.status) {
                     $scope.expenseSheetReports = success.data.data;
-                    console.log("$scope.expenseSheetReports", $scope.expenseSheetReports);
                     for(var i=0;i<$scope.expenseSheetReports.length;i++){
                         if($scope.expenseSheetReports[i].partyId){
                             var party = _.find($scope.parties,function(party){
@@ -657,7 +661,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     }
                     $scope.validateTable = true;
                 }else {
-                    console.log("erorrr");
+                    console.log("error");
                 }
             })
         }
