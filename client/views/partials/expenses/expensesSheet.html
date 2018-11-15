@@ -133,7 +133,7 @@
                 <li>Advance:</li>
             </ul>
             <ul class="list-inline col-sm-9 mb-7">
-                 <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
+                 <li><input type="text" class="form-control" ng-model="totalAmounts[0].advanceAmount"></li>
             </ul>
         </div>
         <div class="col-sm-5 pull-right">
@@ -145,11 +145,11 @@
                 <li>Closing Balance</li>
             </ul>
             <ul class="list-inline col-sm-7 mb-7">
-                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.openingBalance"></li>
-                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.advanceAmount"></li>
+                <li><input type="text" class="form-control" ng-model="totalAmounts[0].openingBalance"></li>
+                <li><input type="text" class="form-control" ng-model="totalAmounts[0].advanceAmount"></li>
                 <li><input type="text" class="form-control" ng-model="cashTotal"></li>
                 <li><input type="text" class="form-control" ng-model="dieselTotal"></li>
-                <li><input type="text" class="form-control" ng-model="expensesSheetsDetails.closingBalance"></li>
+                <li><input type="text" class="form-control" ng-model="totalAmounts[0].closingBalance"></li>
             </ul>
         </div>
     </div>

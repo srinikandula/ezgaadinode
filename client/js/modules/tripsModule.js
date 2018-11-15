@@ -1129,7 +1129,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.getAllLoadingPoints(function (success) {
             if (success.data.status) {
                 $scope.loadingPoints = success.data.data;
-                $scope
             }
         })
     };

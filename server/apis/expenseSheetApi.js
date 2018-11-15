@@ -16,7 +16,10 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
             });
         },
         accountBalance:function(balanceCallback){
-            accountBalanceColl.find({accountId:req.jwt.accountId},function(err,data){
+            var date = new Date(req.params.date);
+            var x = new Date(date.setDate(date.getDate()-1));
+            // x = x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate();
+            accountBalanceColl.find({accountId:req.jwt.accountId,createdAt:{$gte:x,$lte:req.params.date}},function(err,data){
                 balanceCallback(err,data);
             });
         }
@@ -40,7 +43,7 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
       status:false,
       messages:[]
   };
-  var expenseSheets = req.body;
+  var expenseSheets = req.body.expense;
   async.each(expenseSheets,function(expenseSheet,asyncCallback){
       ExpensesSheetColl.findOneAndUpdate({_id:expenseSheet._id},{$set:{
               vehicleNo:expenseSheet.vehicleNo,
@@ -69,15 +72,24 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
         retObj.messages.push("error in fetching data"+JSON.stringify(err));
         callback(retObj);
     }else{
-        var obj = {
-            date:req.params.date,
-            openingBalance:req.body.openingBalance,
-            closingBalance:req.body.closingBalance,
-            advanceAmount:req.body.advanceAmount,
-            totalAmount:req.body.totalAmount,
-            expenditureAmount:req.body.expenditureAmount
-        };
-        accountBalanceColl.findOneAndUpdate({date:req.body.date},{$set:obj},function(err,updateRes){
+        var amounts = req.body.amounts;
+        async.each(amounts,function(amount,asyncAmtCallback){
+            var obj = {
+                date:req.params.date,
+                openingBalance:amount.openingBalance,
+                closingBalance:amount.closingBalance,
+                advanceAmount:amount.advanceAmount,
+                totalAmount:amount.totalAmount,
+                expenditureAmount:amount.expenditureAmount
+            };
+            accountBalanceColl.findOneAndUpdate({_id:amount._id},{$set:obj},function(err,updateRes){
+                if(err){
+                    asyncAmtCallback(err);
+                } else{
+                    asyncAmtCallback(null);
+                }
+            });
+        },function(err){
             if(err){
                 retObj.status = false;
                 retObj.messages.push("error"+JSON.stringify(err));
@@ -132,7 +144,7 @@ ExpenseSheets.prototype.saveAmounts = function(req,callback){
         expenditureAmount:req.body.expenditureAmount
     };
     accountBalanceColl.findOne({date:req.body.date},function(err,data){
-        if(err){
+        if(err || data){
             retObj.status = false;
             retObj.messages.push("error"+JSON.stringify(err));
             callback(retObj);

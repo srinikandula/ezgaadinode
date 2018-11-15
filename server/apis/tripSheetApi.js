@@ -46,9 +46,7 @@ function createTripSheet(account,today,callback){
                     callback(retObj);
                 } else{
                     var now = new Date(today);
-                    var date =new Date(now.setDate(now.getDate()-1));
-                    date = date.getFullYear()+'-'+(date.getMonth()+1)+'-'+date.getDate();
-                    accountBalanceColl.findOne({date:date},function(err,data){
+                    var date =new Date(now.setDate(now.getDate()-1));accountBalanceColl.findOne({date:date},function(err,data){
                         if(err){
                             retObj.status = false;
                             callback(retObj);
