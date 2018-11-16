@@ -16,13 +16,11 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
             });
         },
         accountBalance:function(balanceCallback){
-            var date = new Date(req.params.date);
-            var x = new Date(date.setDate(date.getDate()-1));
-            // x = x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate();
             accountBalanceColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,data){
                 if(!data.length) {
                     accountBalanceColl.find({accountId: req.jwt.accountId},{closingBalance:1}).sort({createdAt:-1}).limit(1).exec(function (err, data) {
                         balanceCallback(err,data);
+
                     });
                 }else{
                     balanceCallback(err,data);
@@ -30,6 +28,7 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
             });
         }
     },function(err,results){
+        console.log("results", results);
         if(err){
             retObj.status = false;
             retObj.messages.push("error in fetching data"+JSON.stringify(err));
@@ -131,7 +130,20 @@ ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
             closingBalance:amount.closingBalance,
             advanceAmount:amount.advanceAmount
         };
-        var doc = new accountBalanceColl(obj);
+        if(amount._id){
+            accountBalanceColl.findOneAndUpdate({_id:amount._id},{$set:obj},function(err,result){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("error"+JSON.stringify(err));
+                    callback(retObj);
+                } else{
+                    retObj.status = true;
+                    retObj.messages.push("success");
+                    callback(retObj);
+                }
+            });
+        }else{
+            var doc = new accountBalanceColl(obj);
         doc.save(function(err,result){
             if(err){
                 retObj.status = false;
@@ -143,6 +155,8 @@ ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
                 callback(retObj);
             }
         });
+        }
+
     },function(err){
 
     });
