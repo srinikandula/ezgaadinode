@@ -20,7 +20,8 @@ var request = require('request');
 const ObjectId = mongoose.Types.ObjectId;
 var config = require('../config/config');
 var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
-
+var json2xls = require('json2xls');
+var fs = require('fs');
 
 
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
@@ -447,6 +448,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
         messages: []
     };
     // console.log("gps tracking by truck....",startDate,endDate);
+    var numberPattern = /\d+/g;
     var overSpeedLimit = 60;
     TrucksColl.findOne({registrationNo: truckId, deviceId: {$exists: true}}, function (err, truckDetails) {
         if (err) {
@@ -459,20 +461,17 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                     overSpeedLimit = settings.results.overSpeedLimit;
                 }
             });
-            devicePostions.find({
-                accountId:truckDetails.accountId.toString(),
+            devicePostions.find({accountId:truckDetails.accountId.toString(),
                 uniqueId: truckDetails.deviceId,
-                createdAt: {$gte: startDate, $lte: endDate}
+                createdAt:{$gte: startDate, $lte: endDate}
             }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
                 if (err) {
                     retObj.status = false;
                     callback(retObj);
                 } else {
-                    archivedDevicePositions.find({
+                    archivedDevicePositions.find({accountId:truckDetails.accountId.toString(),
                         uniqueId: truckDetails.deviceId,
-                        accountId:truckDetails.accountId.toString(),
-                        createdAt: {$gte: startDate, $lte: endDate}
-                    }).sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
+                        createdAt:{$gte: startDate, $lte: endDate}}).sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
                         if (err) {
                             retObj.status = false;
                             retObj.messages.push('Error fetching truck positions');
@@ -487,30 +486,62 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                             });
 
                             if (positions.length > 0) {
-                                var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
-                                var diffDays = timeDiff / (1000 * 3600 * 24);
-                                var speedValues = _.pluck(positions, 'speed');
-                                var topSpeed = Math.max.apply(Math, speedValues);
-                                var sum = 0, counter = 0, distance = 0;
-                                for (var i = 0; i < speedValues.length; i++) {
-                                    if (Number(speedValues[i]) !== 0.0) {
-                                        sum = sum + Number(speedValues[i]);
-                                        counter++;
+                                async.eachSeries(positions,function(position,asyncCallback){
+                                    if(position.address === '{address}'){
+                                        getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
+                                            if (addResp.status) {
+                                                var zipCodeArr = addResp.address.match( numberPattern );
+                                                if(zipCodeArr){
+                                                    for(var i=0;i<zipCodeArr.length;i++){
+                                                        if(zipCodeArr[i].length == 6){
+                                                            position.zipcode = zipCodeArr[i];
+                                                        }
+                                                    }
+                                                }
+                                                position.address = addResp.address;
+                                                devicePostions.findOneAndUpdate({_id:position._id},{$set:{address:addResp.address,zipcode:position.zipcode}},function(err,position){});
+                                                archivedDevicePositions.findOneAndUpdate({_id:position._id},{$set:{address:addResp.address,zipcode:position.zipcode}},function(err,position){});
+                                                asyncCallback(false);
+                                            }else{
+                                                asyncCallback(err);
+                                            }
+                                        });
+                                    }else{
+                                        asyncCallback(false);
                                     }
-                                    distance += positions[i].distance;
-                                }
-                                averageSpeed = (sum / counter);
-                                retObj.status = true;
-                                retObj.messages.push('Success');
-                                retObj.results = {
-                                    positions: positions,
-                                    distanceTravelled: distance,
-                                    timeTravelled: (diffDays * 24),
-                                    topSpeed: topSpeed,
-                                    averageSpeed: averageSpeed,
-                                    overSpeedLimit: overSpeedLimit
-                                };
-                                callback(retObj)
+                                },function(err) {
+                                    if (err) {
+                                        retObj.status = false;
+                                        retObj.messages.push('Error fetching truck positions');
+                                        callback(retObj);
+                                    }else{
+                                        var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
+                                        var diffDays = timeDiff / (1000 * 3600 * 24);
+                                        var speedValues = _.pluck(positions, 'speed');
+                                        var topSpeed = Math.max.apply(Math, speedValues);
+                                        var sum = 0, counter = 0, distance = 0;
+                                        for (var i = 0; i < speedValues.length; i++) {
+                                            if (Number(speedValues[i]) !== 0.0) {
+                                                sum = sum + Number(speedValues[i]);
+                                                counter++;
+                                            }
+                                            distance += positions[i].distance;
+                                        }
+                                        averageSpeed = (sum / counter);
+                                        retObj.status = true;
+                                        retObj.messages.push('Success');
+                                        retObj.results = {
+                                            positions: positions,
+                                            distanceTravelled: distance,
+                                            timeTravelled: (diffDays * 24),
+                                            topSpeed: topSpeed,
+                                            registrationNo:truckId,
+                                            averageSpeed: averageSpeed,
+                                            overSpeedLimit: overSpeedLimit
+                                        };
+                                        callback(retObj)
+                                    }
+                                });
                             } else {
                                 retObj.status = false;
                                 retObj.messages.push('No records found for that period');
@@ -1108,5 +1139,80 @@ Gps.prototype.getTruckLatestLocation = function (req, callback) {
         })
     }
 };
-
+Gps.prototype.ReportForAccount = function(req,callback){
+   var retObj = {
+       status:false,
+       messages:[]
+   };
+    var obj = [];
+    var accountName = '';
+    var startDate = new Date();
+    startDate.setMonth(startDate.getMonth()-4);
+    var endDate = new Date();
+   AccountsColl.find({"dailyReportEnabled":true},function(err,accounts){
+       async.map(accounts,function(account,asyncCallback){
+           accountName = account.userName;
+           TrucksColl.find({accountId:account._id},function(err,trucks){
+              if(err){
+                  asyncCallback(err);
+              }else{
+                  async.map(trucks,function(truck,asyncPosCallback){
+                      Gps.prototype.gpsTrackingByTruck(truck.registrationNo,startDate,endDate,req,function(trackCallback){
+                          if(trackCallback.status){
+                            var positions = trackCallback.results.positions ;
+                            // console.log("positions.......length......",positions.length,truck.registrationNo);
+                                  for(var i=0;i<positions.length;i++){
+                                      var status;
+                                      var doc = {};
+                                      if (positions[i].isStopped) {
+                                          status = 'Stopped'
+                                      } else if (positions[i].isIdle) {
+                                          status = 'Idle'
+                                      } else {
+                                          status = 'Moving'
+                                      }
+                                      doc.Date = positions[i].createdAt.toLocaleDateString();
+                                      doc.TruckNo = truck.registrationNo;
+                                      doc.address = positions[i].address;
+                                      doc.zipcode = positions[i].zipcode;
+                                      doc.speed = positions[i].speed;
+                                      doc.odoMeter = parseInt(positions[i].totalDistance);
+                                      doc.status = status;
+                                      obj.push(doc);
+                                  }
+                                  asyncPosCallback(null);
+                        }else{
+                            asyncPosCallback(err);
+                        }
+                      });
+                  },function(err){
+                      if(err){
+                            asyncCallback(err);
+                        }else{
+                            asyncCallback(null);
+                        }
+                  });
+              }
+          });
+           },function(err){
+           console.log("else........obj....",obj);
+           if(err){
+               retObj.messages.push("Internal server error,"+JSON.stringify(err));
+               callback(retObj);
+           }else{
+               var xls = json2xls(obj);
+               fs.writeFileSync('server/reports/ReportsDataForAccount.xlsx', xls, 'binary', function (err) {
+                   if (err) {
+                       retObj.messages.push("Internal server error,"+JSON.stringify(err));
+                       callback(retObj);
+                   } else {
+                       retObj.status = true;
+                       retObj.messages.push("Excel Created successfully");
+                       callback(retObj);
+                        }
+                    });
+                }
+       });
+   });
+};
 module.exports = new Gps();

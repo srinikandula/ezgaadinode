@@ -100,7 +100,11 @@ OpenRouter.get('/getDailyReport', function (req, res) {
         res.send(result);
     });
 });
-
+OpenRouter.get('/getDailyReportForAccount', function (req, res) {
+    gps.ReportForAccount(req, function (result) {
+        res.send(result);
+    });
+});
 AuthRouter.post('/shareTripDetailsByVechicleViaEmail', function (req, res) {
     gps.shareTripDetailsByVechicleViaEmail(req, function (result) {
         res.send(result);
@@ -109,21 +113,18 @@ AuthRouter.post('/shareTripDetailsByVechicleViaEmail', function (req, res) {
 
 
 var identifyNotWorkingDevices = cronjob.schedule('*/30 * * * *', function () {
-    console.log("identify not    devices.....");
+    console.log("identify not devices.....");
     gps.identifyNotWorkingDevices(function (result) {});
 });
 identifyNotWorkingDevices.start();
 
-/*
-
-var task = cronjob.schedule('* *!/30 * * *', function() {
+var task = cronjob.schedule('0 0 * * *', function() {
     console.log("daily email report...");
     gps.emailDayGPSReport({},function (result) {
         console.log("emailDayGPSReport..",result);
     });
 });
 task.start();
-*/
 
 
 OpenRouter.get('/emailDayGPSreport', function (req, res) {
