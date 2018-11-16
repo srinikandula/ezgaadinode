@@ -589,7 +589,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
             ExpenseService.getAllExpensesSheet($scope.today, function (success) {
                 if (success.data.status) {
-                    $scope.expensesSheetsDetails = success.data.data
+                    $scope.expensesSheetsDetails = success.data.data;
                     $scope.totalAmounts  = success.data.amounts;
                     $scope.dieselTotal = 0;
                     $scope.cashTotal = 0;

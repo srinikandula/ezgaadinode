@@ -45,33 +45,9 @@ function createTripSheet(account,today,callback){
                     retObj.status = false;
                     callback(retObj);
                 } else{
-                    var now = new Date(today);
-                    var date =new Date(now.setDate(now.getDate()-1));accountBalanceColl.findOne({date:date},function(err,data){
-                        if(err){
-                            retObj.status = false;
-                            callback(retObj);
-                        }else if(!data){
-                            var obj = {
-                                accountId:account._id,
-                                date:today,
-                                closingBalance:0
-                            };
-                            var doc = new accountBalanceColl(obj);
-                            doc.save(function(err,result){});
-                            retObj.status = true;
-                            callback(retObj);
-                        }else{
-                            var obj = {
-                                accountId:account._id,
-                                date:today,
-                                openingBalance:data.closingBalance
-                            };
-                            var doc = new accountBalanceColl(obj);
-                            doc.save(function(err,result){});
-                            retObj.status = true;
-                            callback(retObj);
-                        }
-                    });
+                    retObj.status = true;
+                    retObj.messages.push("Success");
+                    callback(retObj);
                 }
             });
         }else{
