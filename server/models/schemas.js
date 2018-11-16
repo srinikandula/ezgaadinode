@@ -1314,11 +1314,11 @@ var expensesSheetSchema = new mongoose.Schema({
 var accountBalanceSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     date:String,
-    advanceAmount:Number,
-    expenditureAmount:Number,
-    totalAmount:Number,
     openingBalance:{type: Number, default:0},
-    closingBalance:{type: Number, default:0}
+    closingBalance:{type: Number, default:0},
+    advanceAmount:{type: Number, default:0},
+    totalAmount:{type: Number, default:0},
+    expenditureAmount:{type: Number, default:0},
 }, {timestamps: true});
 
 module.exports = {

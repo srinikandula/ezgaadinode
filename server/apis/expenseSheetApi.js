@@ -16,11 +16,19 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
             });
         },
         accountBalance:function(balanceCallback){
-            accountBalanceColl.find({accountId:req.jwt.accountId},function(err,data){
-                balanceCallback(err,data);
+            accountBalanceColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,data){
+                if(!data.length) {
+                    accountBalanceColl.find({accountId: req.jwt.accountId},{closingBalance:1}).sort({createdAt:-1}).limit(1).exec(function (err, data) {
+                        balanceCallback(err,data);
+
+                    });
+                }else{
+                    balanceCallback(err,data);
+                }
             });
         }
     },function(err,results){
+        console.log("results", results);
         if(err){
             retObj.status = false;
             retObj.messages.push("error in fetching data"+JSON.stringify(err));
@@ -40,7 +48,7 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
       status:false,
       messages:[]
   };
-  var expenseSheets = req.body;
+  var expenseSheets = req.body.expense;
   async.each(expenseSheets,function(expenseSheet,asyncCallback){
       ExpensesSheetColl.findOneAndUpdate({_id:expenseSheet._id},{$set:{
               vehicleNo:expenseSheet.vehicleNo,
@@ -58,9 +66,9 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
               throughOnline:expenseSheet.throughOnline
           }},function(err,updateResult){
                 if(err){
-                    asyncCallback(true);
+                    asyncCallback(err);
                 }else{
-                    asyncCallback(false);
+                    asyncCallback(null);
                 }
       });
   },function(err){
@@ -69,9 +77,16 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
         retObj.messages.push("error in fetching data"+JSON.stringify(err));
         callback(retObj);
     }else{
-        retObj.status = true;
-        retObj.messages.push("success");
-        callback(retObj);
+        var amounts = req.body.amounts;
+        ExpenseSheets.prototype.saveAmounts(amounts,req,function(saveCallback){
+            if(saveCallback.status){
+                retObj.status = true;
+                retObj.messages.push("successfully updated..");
+                callback(retObj);
+            }else{
+                callback(saveCallback)
+            }
+        });
     }
   });
 };
@@ -101,25 +116,22 @@ ExpenseSheets.prototype.getExpenseSheet = function(req,callback){
     });
 
 };
-ExpenseSheets.prototype.saveAmounts = function(req,callback){
+ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    var obj = {
-        accountId:req.jwt.accountId,
-        date:req.body.date,
-        openingBalance:req.body.openingBalance,
-        closingBalance:req.body.closingBalance
-    };
-    accountBalanceColl.findOne({date:req.body.date},function(err,data){
-        if(err){
-            retObj.status = false;
-            retObj.messages.push("error"+JSON.stringify(err));
-            callback(retObj);
-        } else if(!data){
-            var doc = new accountBalanceColl(obj);
-            doc.save(function(err,result){
+    // console.log("save amounts......",req.params.date);
+    async.map(amounts,function (amount,asyncCallback) {
+        var obj = {
+            accountId:req.jwt.accountId,
+            date:req.params.date,
+            openingBalance:amount.openingBalance,
+            closingBalance:amount.closingBalance,
+            advanceAmount:amount.advanceAmount
+        };
+        if(amount._id){
+            accountBalanceColl.findOneAndUpdate({_id:amount._id},{$set:obj},function(err,result){
                 if(err){
                     retObj.status = false;
                     retObj.messages.push("error"+JSON.stringify(err));
@@ -130,8 +142,25 @@ ExpenseSheets.prototype.saveAmounts = function(req,callback){
                     callback(retObj);
                 }
             });
+        }else{
+            var doc = new accountBalanceColl(obj);
+        doc.save(function(err,result){
+            if(err){
+                retObj.status = false;
+                retObj.messages.push("error"+JSON.stringify(err));
+                callback(retObj);
+            } else{
+                retObj.status = true;
+                retObj.messages.push("success");
+                callback(retObj);
+            }
+        });
         }
+
+    },function(err){
+
     });
 
 };
+
 module.exports = new ExpenseSheets();

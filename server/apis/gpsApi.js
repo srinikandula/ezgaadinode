@@ -2,7 +2,6 @@ var _ = require('underscore');
 var async = require('async');
 var nodeGeocoder = require('node-geocoder');
 var GoogleUrl = require( 'google-url' );
-var config = require('./../config/config');
 var devicePostions = require('./../models/schemas').GpsColl;
 var SecretKeysColl = require('./../models/schemas').SecretKeysColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
@@ -12,7 +11,6 @@ var ShareLinksColl = require('./../models/schemas').ShareLinksColl;
 
 var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
-var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var mailerApi = require('./../apis/mailerApi');
@@ -448,7 +446,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
         status: false,
         messages: []
     };
-    console.log("gps tracking by truck....",startDate,endDate);
+    // console.log("gps tracking by truck....",startDate,endDate);
     var overSpeedLimit = 60;
     TrucksColl.findOne({registrationNo: truckId, deviceId: {$exists: true}}, function (err, truckDetails) {
         if (err) {
@@ -659,7 +657,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                     }, function (addressResp) {
                         if (addressResp.status) {
                             truck.attrs.latestLocation.address = addressResp.address;
-                            console.log('updating truck ' + truck.registrationNo + '   address '+addressResp.address );
+                            // console.log('updating truck ' + truck.registrationNo + '   address '+addressResp.address );
                             TrucksColl.findOneAndUpdate({"registrationNo":truck.registrationNo}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
                                 //  console.log('truck updated ' + updated);
                             });
@@ -735,7 +733,7 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
     })
 };
 
-function getOSMAddress(position, osmCallback) {
+function    getOSMAddress(position, osmCallback) {
     var retObj = {
         status: false,
         messages: []
