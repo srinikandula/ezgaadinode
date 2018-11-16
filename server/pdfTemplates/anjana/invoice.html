@@ -29,7 +29,7 @@
         p {
             text-align: left;
             margin: 0%;
-            font-size: 8PX;
+            font-size: 9PX;
 
         }
 
@@ -49,12 +49,15 @@
 
         }
 
-        th,
+        th{
+            text-align: center;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
         td {
             text-align: center;
             border: 1px solid black;
             border-collapse: collapse;
-
         }
 
     </style>
@@ -90,7 +93,7 @@
         </table>
         <div class="container">
             <div style="margin: 10px 0px;">
-                <table class="table1" style="margin-bottom:-6px !important;width: 100%;line-height: 1.6;">
+                <table class="table1" style="margin-bottom:-6px !important;width: 100%;">
                     <thead>
                     <tr>
                         <th colspan="3" style="font-size: 12px">
@@ -124,10 +127,10 @@
 
                     <tr >
                         <td>
-                            <p style="text-align: center; font-size: 8px ">{{invoiceNo}}</p>
+                            <p style="text-align: center; font-size: 8px ">&nbsp;{{invoiceNo}}</p>
                         </td>
                         <td>
-                            <p style="text-align: center;font-size: 8px">{{invoiceDate}}</p>
+                            <p style="text-align: center;font-size: 8px">&nbsp;{{invoiceDate}}</p>
                         </td>
                     </tr>
 
@@ -141,10 +144,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.lrNo}}<p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.lrNo}}<p>
                         </td>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.lrDate}}</p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.lrDate}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -157,10 +160,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.consignorInvoiceNo}}</p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.consignorInvoiceNo}}</p>
                         </td>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.consignorInvoiceDate}}</p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.consignorInvoiceDate}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -184,10 +187,10 @@
                             <p> <b>GSTIN: {{gstNo}}</b></p>
                         </td>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.gatePassNo}}</p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.gatePassNo}}</p>
                         </td>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.gatePassDate}}</p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.gatePassDate}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -200,10 +203,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">{{invoiceDetails.noOfpallets}}</p>
+                            <p style="text-align: center;">&nbsp;{{invoiceDetails.noOfpallets}}</p>
                         </td>
                         <td>
-                            <p style="text-align: center;">By Road</p>
+                            <p style="text-align: center;">&nbsp;By Road</p>
                         </td>
                     </tr>
                     <tr>
@@ -217,12 +220,12 @@
                     <tr>
                         <td>
                             {{#each invoiceDetails.trip}}
-                            <p style="text-align: center;font-size: 8px">{{this.from}}</p>
+                            <p style="text-align: center;font-size: 8px">&nbsp;{{this.from}}</p>
                             {{/each}}
                         </td>
                         <td>
                             {{#each invoiceDetails.trip}}
-                            <p style="text-align: center;font-size: 8px">{{this.to}}</p>
+                            <p style="text-align: center;font-size: 8px">&nbsp;{{this.to}}</p>
                             {{/each}}
                         </td>
                     </tr>
@@ -242,7 +245,7 @@
                     <tr>
                         <td scope="row"><p style="font-size:12px;text-align: center">1</p>
                         </td>
-                        <td colspan="">
+                        <td colspan="" style="width: 215px">
                             {{#each invoiceDetails.trip}}
                             <p><b>Vehicle No:{{this.vehicleNo}}</b></p>
                             {{/each}}
@@ -259,7 +262,7 @@
                                 {{/each}}</p>
                         </td>
                         <td><p style="font-size:12px;text-align: center">{{invoiceDetails.quantity}}</p></td>
-                        <td><p style="font-size:12px;text-align: center">{{ invoiceDetails.amount}}
+                        <td style="width: 121px"><p style="font-size:12px;text-align: center">{{ invoiceDetails.amount}}
                             <!--{{this.ratePerTonne}}-->
                         </p></td>
                     </tr>
@@ -269,7 +272,7 @@
                             <p>Detention Charges</p>
                         </td>
                         <td colspan="">
-                            <table style="border: 1px black; width: 104.5%;border-collapse: collapse !important;margin: -2px;">
+                            <table style="border: 1px black; width: 103%;border-collapse: collapse !important;margin: -2px;">
                                 <tr>
                                     <td>
                                         <p>No. Days</p>
@@ -279,7 +282,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td style="font-size: 10px">{{invoiceDetails.noOfDays}}</td>
+                                    <td style="font-size: 10px">&nbsp;{{invoiceDetails.noOfDays}}</td>
                                     <td style="font-size: 10px">&nbsp;{{invoiceDetails.DCamount}}</td>
                                 </tr>
                             </table>
@@ -312,15 +315,15 @@
                     <p><b>(3)Exempted vide Sr.No 22of notifications no 12/2017-Central Tax(Rate)Dated 28<sup>th</sup>
                         june 2017, and as notified by state under GST Law.Classification of supply Exempted.</b></p>
                 </td>
-                <td style=" border:none;float: right; padding-left:196px;">
-                    <p style="padding-left: 130px">E&O.E</p>
-                    <p>Company's Bank DETAILS:</p>
-                    <p>Bank Name:<b>HDFC BANK</b></p>
-                    <p>A/C No.:<b>16392000002774</b></p>
-                    <p>IFSC:<b>HDFC0001639</b></p>
-                    <p>Branch:<b>Vivekananda nagar</b></p>
-                    <div style="border: 1px solid black; margin-right: -2px; margin-top: 20px; margin-bottom: -3px; ">
-                        <p style="margin-right: 20px; text-align: center;">for</p> <p style="font-size: 10px;text-align: center;margin-bottom: 60%;"> SRI ANJANA TRANSPORT </p>
+                <td style=" border:none;float: left; margin-left:100px;text-align: left;">
+                    <p style="float:right;padding-left: 100px">E&O.E</p>
+                    <p style="margin-top: 20px;">Company's Bank DETAILS:</p>
+                    <p>Bank Name&nbsp;&nbsp;:&nbsp;<b>HDFC BANK</b></p>
+                    <p>A/C No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<b>16392000002774</b></p>
+                    <p>IFSC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<b>HDFC0001639</b></p>
+                    <p>Branch&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<b>Vivekananda nagar</b></p>
+                    <div style="border: 1px solid black;border-collapse: collapse;margin-right: -2px;margin-top: 60px;margin-bottom: -2px;width: 200px; ">
+                        <p style="margin-right: 20px; text-align: center;">for</p> <p style="font-size: 10px;text-align: center;"> SRI ANJANA TRANSPORT </p>
                             <br>
                             <br>
                             <br>
