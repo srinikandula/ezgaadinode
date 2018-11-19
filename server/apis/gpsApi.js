@@ -1147,7 +1147,7 @@ Gps.prototype.ReportForAccount = function(req,callback){
     var obj = [];
     var email = '';
     var startDate = new Date();
-    startDate.setMonth(startDate.getMonth()-1);
+    startDate.setDate(startDate.getDate()-1);
     var endDate = new Date();
    AccountsColl.find({"dailyReportEnabled":true},function(err,accounts){
        async.map(accounts,function(account,asyncCallback){
@@ -1160,7 +1160,6 @@ Gps.prototype.ReportForAccount = function(req,callback){
                       Gps.prototype.gpsTrackingByTruck(truck.registrationNo,startDate,endDate,req,function(trackCallback){
                           if(trackCallback.status){
                             var positions = trackCallback.results.positions ;
-                            // console.log("positions.......length......",positions.length,truck.registrationNo);
                                   for(var i=0;i<positions.length;i++){
                                       var status;
                                       var doc = {};
@@ -1172,6 +1171,7 @@ Gps.prototype.ReportForAccount = function(req,callback){
                                           status = 'Moving'
                                       }
                                       doc.Date = positions[i].createdAt.toLocaleDateString();
+                                      doc.Time = positions[i].createdAt.toLocaleTimeString();
                                       doc.TruckNo = truck.registrationNo;
                                       doc.address = positions[i].address;
                                       doc.zipcode = positions[i].zipcode;
@@ -1195,14 +1195,13 @@ Gps.prototype.ReportForAccount = function(req,callback){
               }
           });
            },function(err){
-           // console.log("else........obj....",obj);
            if(err){
                retObj.messages.push("Internal server error,"+JSON.stringify(err));
                callback(retObj);
            }else{
-               var totalString = 'Date'+','+'Truck Reg No'+','+'Address'+','+'Zipcode'+','+'Speed'+','+'Odometer'+','+'Status'+ '\n';
+               var totalString = 'Date'+','+'Time'+','+'Truck Reg No'+','+'Address'+','+'Zipcode'+','+'Speed'+','+'Odometer'+','+'Status'+ '\n';
                    for (var i = 0; i < obj.length; i++) {
-                       var doc = obj[i].Date + ',' + obj[i].TruckNo + ',' + obj[i].address + ',' + obj[i].zipcode + ',' +obj[i].speed+','+obj[i].odoMeter+','+obj[i].status;
+                       var doc = obj[i].Date + ','+obj[i].Time+',' + obj[i].TruckNo + ','+'"' + obj[i].address +'"'+ ',' + obj[i].zipcode + ',' +obj[i].speed+','+obj[i].odoMeter+','+obj[i].status;
                        if (i !== obj.length - 1) {
                            if (obj[i] !== null) {
                                totalString = totalString + doc + '\n';
@@ -1215,8 +1214,7 @@ Gps.prototype.ReportForAccount = function(req,callback){
                    }
                totalString = totalString.replace(/[^\x00-\xFF]/g, " ");
                retObj.data = totalString;
-               // console.log("total string......",totalString);
-              /* mailerApi.sendEmailWithAttachment2({
+               mailerApi.sendEmailWithAttachment2({
                    to: email,
                    subject: 'Daily-Report',
                    data: totalString
@@ -1230,7 +1228,7 @@ Gps.prototype.ReportForAccount = function(req,callback){
                        retObj.messages.push("Error , Please try again.");
                        callback(retObj);
                    }
-               });*/
+               });
                    /* var xls = json2xls(obj);
                fs.writeFileSync('server/reports/ReportsDataForAccount.xlsx', xls, 'binary', function (err) {
                    if (err) {

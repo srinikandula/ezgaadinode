@@ -105,6 +105,12 @@ OpenRouter.get('/getDailyReportForAccount', function (req, res) {
         res.send(result);
     });
 });
+var ReportForAccount = cronjob.schedule('0 0 * * *', function() {
+    gps.ReportForAccount({},function (result) {
+    });
+});
+ReportForAccount.start();
+
 AuthRouter.post('/shareTripDetailsByVechicleViaEmail', function (req, res) {
     gps.shareTripDetailsByVechicleViaEmail(req, function (result) {
         res.send(result);
