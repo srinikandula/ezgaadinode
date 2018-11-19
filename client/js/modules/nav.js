@@ -32,8 +32,15 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $scope.tripSheetEnabled = $cookies.get('tripSheetEnabled');
         $scope.driverSheetEnabled = $cookies.get('driverSheetEnabled');
         $scope.expenseSheetEnabled = $cookies.get('expenseSheetEnabled');
+        $scope.loadRequestEnabled = $cookies.get('loadRequestEnabled');
+        $scope.invoiceEnabled = $cookies.get('invoiceEnabled');
+        $scope.lrEnabled = $cookies.get('lrEnabled');
+        $scope.inventoriesEnabled = $cookies.get('inventoriesEnabled');
+        $scope.tripSettlementEnabled = $cookies.get('tripSettlementEnabled');
+        $scope.paymentsEnabled = $cookies.get('paymentsEnabled');
+        $scope.receiptsEnabled = $cookies.get('receiptsEnabled');
+        $scope.isPartiesForAnjana = $cookies.get('isPartiesForAnjana');
         return $cookies.get('token') != undefined;
-
     };
 
     $scope.isLoggedInn = '';

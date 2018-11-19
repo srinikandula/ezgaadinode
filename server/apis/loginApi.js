@@ -44,6 +44,14 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
     retObj.driverSheetEnabled = user.accountId.driverSheetEnabled;
     retObj.tripSheetEnabled = user.accountId.tripSheetEnabled;
     retObj.expenseSheetEnabled = user.accountId.expenseSheetEnabled;
+    retObj.lrEnabled = user.accountId.lrEnabled;
+    retObj.tripSettlementEnabled = user.accountId.tripSettlementEnabled;
+    retObj.invoiceEnabled = user.accountId.invoiceEnabled;
+    retObj.loadRequestEnabled = user.accountId.loadRequestEnabled;
+    retObj.inventoriesEnabled = user.accountId.inventoriesEnabled;
+    retObj.paymentsEnabled = user.accountId.paymentsEnabled;
+    retObj.receiptsEnabled = user.accountId.receiptsEnabled;
+    retObj.isPartiesForAnjana = user.accountId.isPartiesForAnjana;
     retObj.permissions = accessPermissions;
     retObj.type = user.type;
     retObj.role = user.role;

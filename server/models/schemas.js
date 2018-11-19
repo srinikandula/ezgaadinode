@@ -78,7 +78,6 @@ var accountSchema = new mongoose.Schema({
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: true},
     dailyReportEnabled: {type: Boolean, default: false},
-    routeConfigEnabled: {type: Boolean, default: false},
     homeLocation: {},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
@@ -109,8 +108,17 @@ var accountSchema = new mongoose.Schema({
     templatePath:String,
     tripSheetEnabled: {type: Boolean, default: false},
     driverSheetEnabled: {type: Boolean, default: false},
-    expenseSheetEnabled:{type:Boolean,default:false}
-}, {
+    expenseSheetEnabled:{type:Boolean,default:false},
+    inventoriesEnabled:{type:Boolean,default:false},
+    routeConfigEnabled: {type: Boolean, default: false},
+    lrEnabled:{type:Boolean,default:false},
+    tripSettlementEnabled:{type:Boolean,default:false},
+    invoiceEnabled:{type:Boolean,default:false},
+    loadRequestEnabled:{type:Boolean,default:false},
+    receiptsEnabled:{type:Boolean,default:false},
+    paymentsEnabled:{type:Boolean,default:false},
+    isPartiesForAnjana:{type:Boolean,default:false}
+    }, {
     timestamps: true
 });
 
@@ -266,7 +274,7 @@ var partySchema = new mongoose.Schema({
     email: String,
     city: String,
     address:String,
-    anjanaPartyType:{type: Boolean, default: false},
+    anjanaPartyType:String,
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: String,
     tripLanes: [],

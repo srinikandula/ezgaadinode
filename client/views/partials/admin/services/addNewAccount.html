@@ -141,33 +141,6 @@
                                         </label>
                                     </div>
                                 </li>
-                                <li>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" value="" ng-model="accountDetails.tripSheetEnabled">
-                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-                                            Trip Sheet
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" value="" ng-model="accountDetails.driverSheetEnabled">
-                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-                                            Driver Sheet
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" value="" ng-model="accountDetails.expenseSheetEnabled">
-                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-                                            Expense Sheet
-                                        </label>
-                                    </div>
-                                </li>
                             </ul>
                         </div>
                         <div class="form-group">
@@ -220,6 +193,141 @@
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenTwo">
+                <uib-accordion-heading>
+                    Features To Enable <i class="pull-right glyphicon"
+                               ng-class="{'glyphicon-chevron-down': status.isOpenSeven, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                </uib-accordion-heading>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <p class="smsenabled">Master</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="" ng-model="accountDetails.inventoriesEnabled">
+                                        <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        Inventories
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="" ng-model="accountDetails.isPartiesForAnjana">
+                                        <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        Parties For Anjana
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                       <div class="form-group">
+                           <p class="">Transactions</p>
+                           <ul class="list-inline">
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.tripSheetEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           Trip Sheet
+                                       </label>
+                                   </div>
+                               </li>
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.driverSheetEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           Driver Sheet
+                                       </label>
+                                   </div>
+                               </li>
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.expenseSheetEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           Expense Sheet
+                                       </label>
+                                   </div>
+                               </li>
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.lrEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           LR
+                                       </label>
+                                   </div>
+                               </li>
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.tripSettlementEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           Trip Settlement
+                                       </label>
+                                   </div>
+                               </li>
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.invoiceEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           Invoice
+                                       </label>
+                                   </div>
+                               </li>
+                               <li>
+                                   <div class="checkbox">
+                                       <label>
+                                           <input type="checkbox" value="" ng-model="accountDetails.receiptsEnabled">
+                                           <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                           Receipts
+                                       </label>
+                                   </div>
+                               </li> <li>
+                               <div class="checkbox">
+                                   <label>
+                                       <input type="checkbox" value="" ng-model="accountDetails.paymentsEnabled">
+                                       <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                       Payments
+                                   </label>
+                               </div>
+                           </li>
+                           </ul>
+                       </div>
+                    <div class="form-group">
+                        <p class="smsenabled">Load Request</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="" ng-model="accountDetails.loadRequestEnabled">
+                                        <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        Load Request
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                        <p class="smsenabled">Route Config</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="" ng-model="accountDetails.routeConfigEnabled">
+                                        <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        Route Config
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                     </div>
                 </div>
         </uib-accordion>

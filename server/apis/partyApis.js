@@ -179,6 +179,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, req, callback) {
         status: false,
         messages: []
     };
+    console.log("update party......",partyDetails);
     var giveAccess = false;
     if (jwt.type === "account" && partyDetails.accountId === jwt.accountId) {
         giveAccess = true;
@@ -211,7 +212,8 @@ Party.prototype.updateParty = function (jwt, partyDetails, req, callback) {
                 "partyType": partyDetails.partyType,
                 "isSms": partyDetails.isSms,
                 "isEmail": partyDetails.isEmail,
-                "gstNo": partyDetails.gstNo
+                "gstNo": partyDetails.gstNo,
+                "anjanaPartyType":partyDetails.anjanaPartyType
             }
         }, {
             new: true
