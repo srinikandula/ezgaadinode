@@ -115,9 +115,9 @@
                                         <div class="panel-body custom-panel-body">
                                             <left-menu label="Trucks" ui-sref="trucks"></left-menu>
                                             <left-menu label="Drivers" ui-sref="drivers"></left-menu>
-                                            <left-menu label="Parties" ui-sref="parties"></left-menu>
                                              <left-menu label="Parties" ui-sref="anjanaParties"></left-menu>
                                             <left-menu label="Inventories" ui-sref="inventories"></left-menu>
+                                            <left-menu  ng-class="{hide:inventoriesEnabled === 'false'}" label="Inventories" ui-sref="inventories"></left-menu>
                                             <left-menu label="Users" ui-sref="users"></left-menu>
                                         </div>
                                     </div>
@@ -152,11 +152,11 @@
                                                 <left-menu ng-class="{hide:driverSheetEnabled === 'false'}"  label="DriverSheet" ui-sref="driversheet"></left-menu>
                                                <left-menu  ng-class="{hide:tripSheetEnabled === 'false'}" label="TripSheet" ui-sref="tripsheet"></left-menu>
                                                 <left-menu ng-class="{hide:expenseSheetEnabled === 'false'}"label="ExpensesSheet" ui-sref="expensessheet"></left-menu>
-                                                 <left-menu label="Receipts" ui-sref="receipts"></left-menu>
-                                                <left-menu label="Payments" ui-sref="payments"></left-menu>
-                                          <left-menu label="LR" ui-sref="lrs"></left-menu>
-                                            <left-menu label="TripSettlement" ui-sref="tripsettlement"></left-menu>
-                                            <left-menu label="Invoice" ui-sref="invoice"></left-menu>
+                                                 <left-menu ng-class="{hide:receiptsEnabled === 'false'}"label="Receipts" ui-sref="receipts"></left-menu>
+                                                <left-menu ng-class="{hide:paymentsEnabled === 'false'}"label="Payments" ui-sref="payments"></left-menu>
+                                          <left-menu ng-class="{hide:lrEnabled === 'false'}"label="LR" ui-sref="lrs"></left-menu>
+                                            <left-menu ng-class="{hide:tripSettlementEnabled === 'false'}"label="TripSettlement" ui-sref="tripsettlement"></left-menu>
+                                            <left-menu ng-class="{hide:invoiceEnabled === 'false'}"label="Invoice" ui-sref="invoice"></left-menu>
                                         </div>
                                     </div>
                                 </div>
@@ -164,7 +164,7 @@
                                 <div class="panel panel-default custom-panel-default custom-panel">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#Request" class="left-menu-anchor">
+                                            <a data-toggle="collapse"ng-class="{hide:loadRequestEnabled === 'false'}" data-parent="#accordion" href="#Request" class="left-menu-anchor">
                                                 Load Request</a>
                                         </h4>
                                     </div>
@@ -178,7 +178,7 @@
                                 <div class="panel panel-default custom-panel-default custom-panel">
                                     <div class="panel-heading">
                                         <h4 class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#routeConfig"
+                                            <a data-toggle="collapse" data-parent="#accordion"ng-class="{hide:routeConfigEnabled === 'false'}" href="#routeConfig"
                                                 class="left-menu-anchor">
                                                 Route Config</a>
                                         </h4>

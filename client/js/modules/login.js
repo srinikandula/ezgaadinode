@@ -46,7 +46,13 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('tripSheetEnabled',success.data.tripSheetEnabled);
                     $cookies.put('driverSheetEnabled',success.data.driverSheetEnabled);
                     $cookies.put('expenseSheetEnabled',success.data.expenseSheetEnabled);
-
+                    $cookies.put('inventoriesEnabled',success.data.inventoriesEnabled);
+                    $cookies.put('loadRequestEnabled',success.data.loadRequestEnabled);
+                    $cookies.put('lrEnabled',success.data.lrEnabled);
+                    $cookies.put('tripSettlementEnabled',success.data.tripSettlementEnabled);
+                    $cookies.put('invoiceEnabled',success.data.invoiceEnabled);
+                    $cookies.put('receiptsEnabled',success.data.receiptsEnabled);
+                    $cookies.put('paymentsEnabled',success.data.paymentsEnabled);
 
                     var permissions = [];
                     $scope.loginRes.forEach(permission => {
