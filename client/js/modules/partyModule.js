@@ -364,8 +364,12 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
-                        $state.go('parties');
-                        Notification.success({
+                        if($state.current.name === "editParty"){
+                            $state.go('parties');
+                        }
+                        if($state.current.name === "editAnjanaParty"){
+                            $state.go('anjanaParties');
+                        }                        Notification.success({
                             message: "Party Updated Successfully"
                         });
                     } else {
@@ -383,8 +387,12 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 PartyService.addParty($scope.party, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('parties');
-                        Notification.success({
+                        if($state.current.name === "editParty"){
+                            $state.go('parties');
+                        }
+                        if($state.current.name === "editAnjanaParty"){
+                            $state.go('anjanaParties');
+                        }                        Notification.success({
                             message: "Party Added Successfully"
                         });
                     } else {

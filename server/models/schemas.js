@@ -274,7 +274,7 @@ var partySchema = new mongoose.Schema({
     email: String,
     city: String,
     address:String,
-    anjanaPartyType:{type: Boolean, default: false},
+    anjanaPartyType:String,
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: String,
     tripLanes: [],

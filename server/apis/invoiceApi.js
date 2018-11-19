@@ -350,7 +350,6 @@ Invoices.prototype.generatePDF = function(req,callback){
                 })
             }
         },function(err,result){
-            console.log("resultttttttttttttt",result);
             var totalAmountByTonne = 0;
             if(err){
                 callback(err);
@@ -386,9 +385,19 @@ Invoices.prototype.generatePDF = function(req,callback){
                     result.totalAmountByTonne = nanToZero(totalAmountByTonne);
                 }
                 PartiesColl.findOne({_id:result.invoiceDetails.partyId},function(err,party){
+                    var templateName;
                     if(err){
                         retObj.messages.push("error in finding party details"+JSON.stringify(err));
                     }else{
+                        if(party.anjanaPartyType === 'forAnjanaTransport'){
+                            templateName = 'anjanaTransportInvoice.html'
+                        }
+                        else if(party.anjanaPartyType === 'forAnjanaLogistics'){
+                            templateName = 'anjanaLogisticsInvoice.html'
+                        }else{
+                            console.log("else...........");
+                            templateName = 'invoice.html'
+                        }
                         result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;
                         result.partyAddress = party.city;
@@ -398,7 +407,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                             result.sgstAmount = (result.accountDetails.sgst/100)*result.invoiceDetails.totalAmount;
                             result.totalAmount = result.cgstAmount + result.sgstAmount + result.invoiceDetails.totalAmount;
                         }
-                        pdfGenerator.createPdf(result.accountDetails.templatePath,'invoice.html','portrait',result,function (resp) {
+                        pdfGenerator.createPdf(result.accountDetails.templatePath,templateName,'portrait',result,function (resp) {
                             callback(resp);
                         })
                     }
