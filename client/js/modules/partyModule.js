@@ -93,9 +93,17 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         name: ''
     };
     $scope.goToEditPartyPage = function (partyId) {
-        $state.go('editParty', {
-            partyId: partyId
-        });
+        if($state.current.name === "parties"){
+            $state.go('editParty', {
+                partyId: partyId
+            });
+        }
+        if($state.current.name === "anjanaParties"){
+            $state.go('editAnjanaParty', {
+                partyId: partyId
+            });
+        }
+
     };
 
     $scope.count = 0;
@@ -391,7 +399,12 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         }
     };
     $scope.cancel = function () {
-        $state.go('parties');
+        if($state.current.name === "editParty"){
+            $state.go('parties');
+        }
+        if($state.current.name === "editAnjanaParty"){
+            $state.go('anjanaParties');
+        }
     };
     $scope.searchCity = function () {
         var input = document.getElementById('city');

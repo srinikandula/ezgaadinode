@@ -115,7 +115,8 @@
                                         <div class="panel-body custom-panel-body">
                                             <left-menu label="Trucks" ui-sref="trucks"></left-menu>
                                             <left-menu label="Drivers" ui-sref="drivers"></left-menu>
-                                             <left-menu label="Parties" ui-sref="anjanaParties"></left-menu>
+                                            <left-menu label="Parties" ng-class="{hide:isPartiesForAnjana === 'true'}" ui-sref="parties"></left-menu>
+                                             <left-menu label="Parties"  ng-class="{hide:isPartiesForAnjana === 'false'}" ui-sref="anjanaParties"></left-menu>
                                             <left-menu label="Inventories" ui-sref="inventories"></left-menu>
                                             <left-menu  ng-class="{hide:inventoriesEnabled === 'false'}" label="Inventories" ui-sref="inventories"></left-menu>
                                             <left-menu label="Users" ui-sref="users"></left-menu>
