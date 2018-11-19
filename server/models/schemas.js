@@ -1185,6 +1185,7 @@ var invoicesSchema=new mongoose.Schema({
     lrDate:Date,
     consignorInvoiceDate:Date,
     gatePassDate:Date,
+    specialInstructions:String,
     despatchedThrough:String,
     noOfDays:Number,
     amount:Number,

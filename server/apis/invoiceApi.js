@@ -81,6 +81,7 @@ Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
     };
     var countObj = {name:'a'};
     invoiceDetails.accountId = jwt.accountId;
+    console.log("data/.....")
     CounterCollection.findOneAndUpdate({name:'a'},{$inc:{count:1}},{new:true},function(err,data){
         if(err){
             retObj.messages.push("Internal server error," + JSON.stringify(err.message));
