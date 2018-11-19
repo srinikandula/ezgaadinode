@@ -96,17 +96,17 @@
                 <table class="table1" style="margin-bottom:-6px !important;width: 100%;">
                     <thead>
                     <tr>
-                        <th colspan="3" style="font-size: 12px">
+                        <th colspan="3" style="font-size: 12px;">
                             <b>INVOICE</b>
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td rowspan="7" scope="row">
+                        <td rowspan="7" scope="row" style="width: 200PX">
                             <b>
                                 <p> SRI ANJANA TRANSPORT</p>
-                            </b> <br>
+                            </b>
                             <small>
                                 <p> Pol No: 506/9, DATTATREYA COLONY,</p>
                                 <p> YELLAMMABANDA, KUKATPALLY, HYDERABAD-72,</p>
@@ -116,7 +116,7 @@
                                 <p> <a href="#">http://www.srianjanatransport.com</a></p>
                             </small>
                         </td>
-                        <th>
+                        <th style="width: 167px">
                             <p style="text-align: center;">Invoice No</p>
                         </th>
                         <th>
@@ -249,7 +249,7 @@
                             {{#each invoiceDetails.trip}}
                             <p><b>Vehicle No:{{this.vehicleNo}}</b></p>
                             {{/each}}
-                            <p style="float: right">{{specialInstructions}}</p>
+                            <p style="float: right;margin-right: 10px;"><b>{{invoiceDetails.specialInstructions}}</b></p>
                             <p> {{invoiceDetails.temparatureCargo}} </p>
                             <p> {{invoiceDetails.noOfpallets}} Pallets</p>
                             {{#each invoiceDetails.trip}}
@@ -308,7 +308,7 @@
                 <td style="border:none;">
                     <p>Amount Chargeable (in Words)</p>
                     <p><b>INR {{invoiceDetails.pdfTotalAmountWords}} Rupees Only</b></p> <br>
-                    <p><b>Company's PAN:ABVFS5272J</b></p>
+                    <p><b>Company's PAN:ABVFS5272J</b></p><br>
                     <p><b><u> Declaration:</u></b></p>
                     <p><b>Transporter is not liable to pay Goods and Service Tax:</b></p>
                     <p><b>(1)Goods and Service tax is paid on reverse charge mechanism
@@ -320,7 +320,7 @@
                 </td>
                 <td style=" border:none;float: left; margin-left:100px;text-align: left;">
                     <p style="float:right;padding-left: 100px">E&O.E</p>
-                    <p style="margin-top: 80px;">Company's Bank DETAILS:</p>
+                    <p style="margin-top: 90px;">Company's Bank DETAILS:</p>
                     <p>Bank Name&nbsp;&nbsp;:&nbsp;<b>HDFC BANK</b></p>
                     <p>A/C No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<b>16392000002774</b></p>
                     <p>IFSC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<b>HDFC0001639</b></p>
