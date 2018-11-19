@@ -868,6 +868,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'anjanaParties',
+        url: '/anjanaParties',
+        templateUrl: 'views/partials/anjanaParties/anjana-partyList.html',
+        data: {
+            activeTab: 'anjanaParties',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'editAnjanaParty',
+        url: '/editAnjanaParty/:partyId',
+        templateUrl: 'views/partials/anjanaParties/anjana-editParty.html',
+        data: {
+            activeTab: 'anjanaParties',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth',
+            partyId: null
+        }
     });
     // agentReportstrips
     $urlRouterProvider.otherwise('/login');

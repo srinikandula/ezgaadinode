@@ -20,15 +20,13 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
                 if(!data.length) {
                     accountBalanceColl.find({accountId: req.jwt.accountId},{closingBalance:1}).sort({createdAt:-1}).limit(1).exec(function (err, data) {
                         balanceCallback(err,data);
-
                     });
                 }else{
                     balanceCallback(err,data);
                 }
             });
         }
-    },function(err,results){
-        console.log("results", results);
+        },function(err,results){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in fetching data"+JSON.stringify(err));

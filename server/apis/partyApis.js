@@ -10,8 +10,6 @@ var Trips = require('./tripsApi');
 var PaymentsReceived = require('./receiptsApi');
 var emailService = require('./mailerApi');
 
-var Utils = require('./utils');
-
 var ExpenseCostColl = require('./expensesApi');
 var TripCollection = require('./../models/schemas').TripCollection;
 var ExpenseCostColl1 = require('./../models/schemas').ExpenseCostColl;
@@ -42,46 +40,46 @@ Party.prototype.addParty = function (jwt, partyDetails, req, callback) {
         result.status = false;
         result.messages.push(" Please provide valid party name");
     }
-    if (!Utils.isValidPhoneNumber(partyDetails.contact)) {
-        result.status = false;
-        result.messages.push(" Please provide valid contact number for party type");
-    }
-
-    if (!partyDetails.partyType) {
-        result.status = false;
-        result.messages.push(" Please select party type");
-    }
-
-    if (partyDetails.partyType === 'Load Owner') {
-        if (!partyDetails.isSms && !partyDetails.isEmail) {
-            result.status = false;
-            result.messages.push(" Please select notification type");
-        }
-        if (partyDetails.tripLanes && partyDetails.tripLanes.length > 0) {
-            for (var i = 0; i < partyDetails.tripLanes.length; i++) {
-                if (!partyDetails.tripLanes[i].name) {
-                    result.status = false;
-                    result.messages.push('Please provide TripLane Name');
-                }
-
-                if (!partyDetails.tripLanes[i].from) {
-                    result.status = false;
-                    result.messages.push('Please provide From Name');
-                }
-
-                if (!partyDetails.tripLanes[i].to) {
-                    result.status = false;
-                    result.messages.push('Please provide To Name');
-                }
-            }
-        }
-        /* else {
-                    result.status = false;
-                    result.messages.push('Please add triplane');
-                }*/
-    } else {
-        partyDetails.tripLanes = [];
-    }
+    // if (!Utils.isValidPhoneNumber(partyDetails.contact)) {
+    //     result.status = false;
+    //     result.messages.push(" Please provide valid contact number for party type");
+    // }
+    //
+    // if (!partyDetails.partyType) {
+    //     result.status = false;
+    //     result.messages.push(" Please select party type");
+    // }
+    //
+    // if (partyDetails.partyType === 'Load Owner') {
+    //     if (!partyDetails.isSms && !partyDetails.isEmail) {
+    //         result.status = false;
+    //         result.messages.push(" Please select notification type");
+    //     }
+    //     if (partyDetails.tripLanes && partyDetails.tripLanes.length > 0) {
+    //         for (var i = 0; i < partyDetails.tripLanes.length; i++) {
+    //             if (!partyDetails.tripLanes[i].name) {
+    //                 result.status = false;
+    //                 result.messages.push('Please provide TripLane Name');
+    //             }
+    //
+    //             if (!partyDetails.tripLanes[i].from) {
+    //                 result.status = false;
+    //                 result.messages.push('Please provide From Name');
+    //             }
+    //
+    //             if (!partyDetails.tripLanes[i].to) {
+    //                 result.status = false;
+    //                 result.messages.push('Please provide To Name');
+    //             }
+    //         }
+    //     }
+    //     /* else {
+    //                 result.status = false;
+    //                 result.messages.push('Please add triplane');
+    //             }*/
+    // } else {
+    //     partyDetails.tripLanes = [];
+    // }
 
 
     if (result.status === false) {

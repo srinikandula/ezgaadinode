@@ -276,6 +276,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             index: 0
         }],
         partyType: '',
+        address:'',
         isEmail: false,
         isSms: false,
         error: [],
@@ -323,33 +324,33 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.name) {
             params.error.push('Please enter Party Name');
         }
-        if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error.push('Please enter Party mobile number');
+        // if (!Utils.isValidPhoneNumber(params.contact)) {
+        //     params.error.push('Please enter Party mobile number');
+        // }
+        if (!params.gstNo) {
+            params.error.push('Please enter GST Number');
         }
-        if (!params.partyType) {
-            params.error.push('Please select Party Type');
-        }
-        if (!params.partyType) {
-            params.error.push('Please select Party Type');
-        }
-        if (params.partyType === 'Load Owner') {
-            if (!params.isSms && !params.isEmail) {
-                params.error.push('Please select Notification Type');
-            }
-            /*for (var i = 0; i < params.tripLanes.length; i++) {
-                if (!params.tripLanes[i].name) {
-                    params.error.push('Please provide TripLane Name');
-                }
-
-                if (!params.tripLanes[i].from) {
-                    params.error.push('Please provide Source Name');
-                }
-
-                if (!params.tripLanes[i].to) {
-                    params.error.push('Please provide Destination Name');
-                }
-            }*/
-        }
+        // if (!params.partyType) {
+        //     params.error.push('Please select Party Type');
+        // }
+        // if (params.partyType === 'Load Owner') {
+        //     if (!params.isSms && !params.isEmail) {
+        //         params.error.push('Please select Notification Type');
+        //     }
+        //     /*for (var i = 0; i < params.tripLanes.length; i++) {
+        //         if (!params.tripLanes[i].name) {
+        //             params.error.push('Please provide TripLane Name');
+        //         }
+        //
+        //         if (!params.tripLanes[i].from) {
+        //             params.error.push('Please provide Source Name');
+        //         }
+        //
+        //         if (!params.tripLanes[i].to) {
+        //             params.error.push('Please provide Destination Name');
+        //         }
+        //     }*/
+        // }
 
         if (!params.error.length) {
             if (params._id) {
