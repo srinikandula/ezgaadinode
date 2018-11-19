@@ -1145,13 +1145,13 @@ Gps.prototype.ReportForAccount = function(req,callback){
        messages:[]
    };
     var obj = [];
-    var accountName = '';
+    var email = '';
     var startDate = new Date();
-    startDate.setMonth(startDate.getMonth()-4);
+    startDate.setMonth(startDate.getMonth()-1);
     var endDate = new Date();
    AccountsColl.find({"dailyReportEnabled":true},function(err,accounts){
        async.map(accounts,function(account,asyncCallback){
-           accountName = account.userName;
+           email = account.email;
            TrucksColl.find({accountId:account._id},function(err,trucks){
               if(err){
                   asyncCallback(err);
@@ -1195,12 +1195,43 @@ Gps.prototype.ReportForAccount = function(req,callback){
               }
           });
            },function(err){
-           console.log("else........obj....",obj);
+           // console.log("else........obj....",obj);
            if(err){
                retObj.messages.push("Internal server error,"+JSON.stringify(err));
                callback(retObj);
            }else{
-               var xls = json2xls(obj);
+               var totalString = 'Date'+','+'Truck Reg No'+','+'Address'+','+'Zipcode'+','+'Speed'+','+'Odometer'+','+'Status'+ '\n';
+                   for (var i = 0; i < obj.length; i++) {
+                       var doc = obj[i].Date + ',' + obj[i].TruckNo + ',' + obj[i].address + ',' + obj[i].zipcode + ',' +obj[i].speed+','+obj[i].odoMeter+','+obj[i].status;
+                       if (i !== obj.length - 1) {
+                           if (obj[i] !== null) {
+                               totalString = totalString + doc + '\n';
+                           }
+                       } else {
+                           if (obj[i] !== null) {
+                               totalString = totalString + doc;
+                           }
+                       }
+                   }
+               totalString = totalString.replace(/[^\x00-\xFF]/g, " ");
+               retObj.data = totalString;
+               // console.log("total string......",totalString);
+              /* mailerApi.sendEmailWithAttachment2({
+                   to: email,
+                   subject: 'Daily-Report',
+                   data: totalString
+               }, function (result) {
+                   if (result.status) {
+                       retObj.status = true;
+                       retObj.messages.push('Daily Report sent successfully');
+                       callback(retObj);
+                   } else {
+                       retObj.status = false;
+                       retObj.messages.push("Error , Please try again.");
+                       callback(retObj);
+                   }
+               });*/
+                   /* var xls = json2xls(obj);
                fs.writeFileSync('server/reports/ReportsDataForAccount.xlsx', xls, 'binary', function (err) {
                    if (err) {
                        retObj.messages.push("Internal server error,"+JSON.stringify(err));
@@ -1210,7 +1241,7 @@ Gps.prototype.ReportForAccount = function(req,callback){
                        retObj.messages.push("Excel Created successfully");
                        callback(retObj);
                         }
-                    });
+                    });*/
                 }
        });
    });
