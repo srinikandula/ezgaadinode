@@ -42,6 +42,7 @@
                             </a></div>
                 </div>
 
+
                 </span>
             <span ng-show="temp">
                 <div ng-repeat="exp in invoice.trip">
@@ -88,7 +89,14 @@
                             </a>
                         </div>
                     </div>
+                <div class="col-xs-12">
+            <div class="col-xs-4 mtb-25 sub-can">
+                <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+                <button type="submit" class="btn can  last" ng-click="add_editInvoice()">Submit</button>
+            </div>
+        </div>
                 </span>
+
             <span data-ng-hide="invoice.addTrip">
                 <div ng-repeat="exp in invoice.trip track by $index">
                     <div ng-if="invoice.tripSheetId.length>0">
