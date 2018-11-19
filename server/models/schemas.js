@@ -116,7 +116,8 @@ var accountSchema = new mongoose.Schema({
     invoiceEnabled:{type:Boolean,default:false},
     loadRequestEnabled:{type:Boolean,default:false},
     receiptsEnabled:{type:Boolean,default:false},
-    paymentsEnabled:{type:Boolean,default:false}
+    paymentsEnabled:{type:Boolean,default:false},
+    isPartiesForAnjana:{type:Boolean,default:false}
     }, {
     timestamps: true
 });

@@ -200,7 +200,7 @@
             <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenTwo">
                 <uib-accordion-heading>
                     Features To Enable <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                               ng-class="{'glyphicon-chevron-down': status.isOpenSeven, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
                 </uib-accordion-heading>
                 <div class="col-sm-6">
                     <div class="form-group">
@@ -212,6 +212,15 @@
                                         <input type="checkbox" value="" ng-model="accountDetails.inventoriesEnabled">
                                         <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                         Inventories
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="" ng-model="accountDetails.isPartiesForAnjana">
+                                        <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        Parties For Anjana
                                     </label>
                                 </div>
                             </li>
