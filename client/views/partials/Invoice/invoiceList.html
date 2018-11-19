@@ -95,6 +95,7 @@
 
     <div class="report_left_inner" style="margin: 10px 0px; display:none;">
         <table class="table" style="border: 1px solid #000000; border-collapse: collapse;width: 100%;">
+        <table class="table" style="width:100%;border: 1px solid #000000; border-collapse: collapse;">
             <thead>
             <tr class="print-style">
                 <th colspan="7" style="text-align: center; border: 1px solid #000000">
@@ -130,7 +131,7 @@
                 <td style="border: 1px solid #000000">{{invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo
                     ||
                     invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
-                <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
+                <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</td>
                 <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
                 <td style="border: 1px solid #000000">{{invoice.rate * invoice.quantity}}</td>
             </tr class="print-style">
