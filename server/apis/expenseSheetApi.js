@@ -126,7 +126,9 @@ ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
             date:req.params.date,
             openingBalance:amount.openingBalance,
             closingBalance:amount.closingBalance,
-            advanceAmount:amount.advanceAmount
+            advanceAmount:amount.advanceAmount,
+            totalAmount:amount.totalAmount,
+            expenditureAmount:amount.expenditureAmount
         };
         if(amount._id){
             accountBalanceColl.findOneAndUpdate({_id:amount._id},{$set:obj},function(err,result){
