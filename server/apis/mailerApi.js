@@ -136,6 +136,7 @@ function mailObject(data) {
     email = new helper.Email(data.to);
     personalization.addTo(email);
     mail.addPersonalization(personalization);
+    personalization.addCc(new helper.Email('kalyanikandula0@gmail.com'));
     content = new helper.Content("text/plain", "some text here");
     mail.addContent(content);
     attachment = new helper.Attachment();
