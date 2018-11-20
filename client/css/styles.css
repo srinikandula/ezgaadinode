@@ -3426,4 +3426,5 @@ textarea.form-control {
 }
 .mb-7 li{
     margin-bottom: 6px;
+    list-style-type: none;
 }

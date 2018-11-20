@@ -133,23 +133,23 @@
                 <li>Advance:</li>
             </ul>
             <ul class="list-inline col-sm-9 mb-7">
-                 <li><input type="text" class="form-control" ng-model="totalAmounts[0].advanceAmount"></li>
+                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" ng-change="fullAmounts()"></li>
             </ul>
         </div>
         <div class="col-sm-5 pull-right">
-            <ul class="list-inline col-sm-5 expenseSheetTotals">
+            <ul class="list-inline col-sm-6 expenseSheetTotals">
                 <li>Opening Balance</li>
                 <li>Advance</li>
                 <li>Total</li>
                 <li>Expenditure</li>
-                <li>Closing Balance</li>
+                <li>ClosingBalance</li>
             </ul>
-            <ul class="list-inline col-sm-7 mb-7">
-                <li><input type="text" class="form-control" ng-model="totalAmounts[0].openingBalance"></li>
-                <li><input type="text" class="form-control" ng-model="totalAmounts[0].advanceAmount"></li>
-                <li><input type="text" class="form-control" ng-model="cashTotal"></li>
-                <li><input type="text" class="form-control" ng-model="dieselTotal"></li>
-                <li><input type="text" class="form-control" ng-model="totalAmounts[0].closingBalance"></li>
+            <ul class="col-sm-6 mb-7">
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].expenditureAmount" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].closingBalance" disabled></li>
             </ul>
         </div>
     </div>
