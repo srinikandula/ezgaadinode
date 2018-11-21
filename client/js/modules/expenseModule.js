@@ -638,6 +638,8 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     if (success.data.status) {
                         $scope.expensesSheetsDetails = success.data.data;
                         $scope.totalAmounts = success.data.amounts;
+                        $scope.totalAmounts[0].openingBalance = $scope.totalAmounts[0].closingBalance;
+                        $scope.totalAmounts[0].closingBalance =0;
                         $scope.dieselTotal = 0;
                         $scope.cashTotal = 0;
                         for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {

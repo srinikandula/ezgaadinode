@@ -480,9 +480,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         if (!params.registrationNo) {
             params.errors.push('Invalid Registration Number');
         }
-        if (!params.truckType) {
-            params.errors.push('Invalid Truck Type');
-        }
+        // if (!params.truckType) {
+        //     params.errors.push('Invalid Truck Type');
+        // }
         /*
                 if (!params.modelAndYear) {
                     params.errors.push('Invalid Modal and Year');
