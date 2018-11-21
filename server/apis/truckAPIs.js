@@ -48,9 +48,9 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, req, callback) {
             retObj.messages.push("Please provide valid registration number");
         }
 
-        if (!truckDetails.truckType) {
-            retObj.messages.push("Please provide valid Truck type");
-        }
+        // if (!truckDetails.truckType) {
+        //     retObj.messages.push("Please provide valid Truck type");
+        // }
 
 
         if (retObj.messages.length) {
