@@ -12,52 +12,6 @@ var TripSheets = function () {
 
 };
 
-function createTripSheet(account,today,callback){
-    var retObj = {
-        status:false,
-        messages:[]
-    };
-    TrucksColl.find({accountId:account._id},function(err,trucks){
-        if(err){
-            retObj.status = false;
-            retObj.messages.push("Error in finding trucks"+JSON.stringify(err));
-            callback(retObj);
-        }else if(trucks.length>0){
-            var tripId = 1;
-            async.map(trucks,function(truck,asyncCallback){
-                var tripSheetObj = {
-                    truckId : truck._id,
-                    registrationNo : truck.registrationNo,
-                    accountId:account._id,
-                    date : today,
-                    tripId:tripId++
-                };
-                var tripSheetDoc = new TripSheetsColl(tripSheetObj);
-                tripSheetDoc.save(function(err,result){
-                    if(err){
-                        asyncCallback(true);
-                    }else{
-                        asyncCallback(false);
-                    }
-                });
-                },function(err){
-                if(err){
-                    retObj.status = false;
-                    callback(retObj);
-                } else{
-                    retObj.status = true;
-                    retObj.messages.push("Success");
-                    callback(retObj);
-                }
-            });
-        }else{
-            retObj.status = true;
-            retObj.messages.push("No trucks found");
-            callback(retObj);
-        }
-    });
-};
-
 TripSheets.prototype.createTripSheet = function (today,callback) {
     var retObj = {
         status:false,
@@ -70,25 +24,49 @@ TripSheets.prototype.createTripSheet = function (today,callback) {
             callback(retObj);
         } else{
             async.map(accounts,function (account,asyncAccCallback) {
-                TripSheetsColl.find({accountId:account._id,date:today},function(err,data){
+                TrucksColl.find({accountId:account._id},function(err,trucks){
                     if(err){
-                        asyncAccCallback(true);
-                    }else if(!data.length){
-                        createTripSheet(account,today,function(tripSheetCallback){
-                            if(tripSheetCallback.status){
-                                asyncAccCallback(false);
+                        asyncAccCallback(err);
+                    }else if(trucks.length > 0){
+                        var tripId = 1;
+                        async.map(trucks,function(truck,asyncTruckCallback){
+                           TripSheetsColl.findOne({truckId:truck._id.toString(),date:today},function(err,data){
+                                if(err){
+                                    asyncTruckCallback(err);
+                                }else if(!data){
+                                    var tripSheetObj = {
+                                        truckId : truck._id,
+                                        registrationNo : truck.registrationNo,
+                                        accountId:account._id,
+                                        date : today,
+                                        tripId:tripId++
+                                    };
+                                    var tripSheetDoc = new TripSheetsColl(tripSheetObj);
+                                    tripSheetDoc.save(function(err,result){
+                                        if(err){
+                                            asyncTruckCallback(err);
+                                        }else{
+                                            asyncTruckCallback(null);
+                                        }
+                                    });
+                                }else{
+                                    asyncTruckCallback(null);
+                                }
+                           });
+                       },function(err){
+                            if(err){
+                                asyncAccCallback(err);
                             }else{
-                                asyncAccCallback(true);
+                                asyncAccCallback(null);
                             }
-                        });
+                       });
                     }else{
-                        asyncAccCallback(false);
+                        asyncAccCallback(null);
                     }
                 });
-                },function(err){
+            },function(err){
                 if(err){
                     retObj.status = false;
-                    retObj.messages.push("Error in saving trip sheet...."+JSON.stringify(err));
                     callback(retObj);
                 } else{
                     retObj.status = true;
