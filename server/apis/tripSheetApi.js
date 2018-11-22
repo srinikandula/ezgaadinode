@@ -324,6 +324,26 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
        }
    });
 };
+TripSheets.prototype.addTrip=function( jwt,tripDetails,req,callback)
+{
+    var retObj = {
+        status: false,
+        messages: []
+    };
+ var tripDoc=new TripSheetsColl(tripDetails);
+        tripDoc.save(function(err,trip)
+        {
+            if(err){
+                retObj.status=false;
+               retObj.messages.push("error while adding trip, try again ");
+               callback(retObj);
+            }else{
+                retObj.status=true;
+                retObj.messages.push("trip added successfully");
+                callback(retObj);
+            }
+        })
 
+}
 
 module.exports = new TripSheets();
