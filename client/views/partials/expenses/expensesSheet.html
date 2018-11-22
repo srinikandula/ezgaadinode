@@ -133,7 +133,7 @@
                 <li>Advance:</li>
             </ul>
             <ul class="list-inline col-sm-9 mb-7">
-                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" ng-change="fullAmounts()"></li>
+                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" ng-change="fullAmounts(totalAmounts[0].advanceAmount)"></li>
             </ul>
         </div>
         <div class="col-sm-5 pull-right">
@@ -145,9 +145,9 @@
                 <li>ClosingBalance</li>
             </ul>
             <ul class="col-sm-6 mb-7">
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled></li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled></li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled min="0"></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled min="0"></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount" disabled min="0"></li>
                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].expenditureAmount" disabled></li>
                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].closingBalance" disabled></li>
             </ul>
