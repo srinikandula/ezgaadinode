@@ -1046,6 +1046,10 @@ app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServ
         }
     };
 
+    $scope.$on('loadingPoints', function (e, value) {
+       console.log('==>>', loadingPoints);
+    });
+
 }]);
 
 
@@ -1087,7 +1091,8 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 }]);
 
 
-app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', 'DriverService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService, DriverService) {
+app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', 'DriverService', '$rootScope',
+    function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService, DriverService, $rootScope) {
 
     $scope.validateTable = false;
 
@@ -1129,6 +1134,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.getAllLoadingPoints(function (success) {
             if (success.data.status) {
                 $scope.loadingPoints = success.data.data;
+                $rootScope.$broadcast('$scope.loadingPoints');
             }
         })
     };
@@ -1306,6 +1312,10 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 break;
             }
         }
-    }
+    };
 
+    $scope.newTrip = {};
+    $scope.saveNewTrip = function () {
+     console.log("$scope.newTrip", $scope.newTrip);
+    }
 }]);
