@@ -10,6 +10,12 @@ var Api = require('../apis/tripSheetApi');
 var Trips = require('../apis/tripsApi');
 
 
+AuthRouter.post('/addTripsheetTrip', function (req, res) {
+    Api.addTrip(req, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.put('/updateTripSheet', function (req, res) {
     Api.updateTripSheet(req, function (result) {
         res.send(result);
@@ -55,6 +61,7 @@ AuthRouter.get('/downloadTripSheetDate',function(req,res){
         }
     });
 });
+
 AuthRouter.post('/addTripsheetTrip', function (req, res) {
     Api.addTrip(req.jwt,req.body, req, function (result) {
         res.send(result);

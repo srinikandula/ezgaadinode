@@ -324,13 +324,15 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
        }
    });
 };
-TripSheets.prototype.addTrip=function( jwt,tripDetails,req,callback)
+    TripSheets.prototype.addTrip=function(req,callback)
 {
     var retObj = {
         status: false,
         messages: []
     };
- var tripDoc=new TripSheetsColl(tripDetails);
+    var tripDetails = req.body;
+    tripDetails.accountId = req.jwt.accountId;
+    var tripDoc=new TripSheetsColl(tripDetails);
         tripDoc.save(function(err,trip)
         {
             if(err){

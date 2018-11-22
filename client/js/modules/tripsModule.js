@@ -162,7 +162,15 @@ app.factory('TripServices', ['$http', function ($http) {
                 method: 'GET',
                 params: params
             }).then(success, error)
+        },
+        addNewTripSheet:function (params, success, error) {
+            $http({
+                url:'/v1/trips/addTripsheetTrip',
+                method:'POST',
+                data:params
+            }).then(success, error)
         }
+
     }
 }]);
 
@@ -1316,6 +1324,21 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     $scope.newTrip = {};
     $scope.saveNewTrip = function () {
-     console.log("$scope.newTrip", $scope.newTrip);
+        var params = $scope.newTrip;
+        if(!params.registrationNo){
+            swal("Error", "Please enter Registration","error" );
+        }else if(!params.partyId){
+            swal("Error", "Please select Party","error" );
+        }else {
+            var date = new Date();
+            params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            TripServices.addNewTripSheet($scope.newTrip, function (success) {
+                if (success.data.status) {
+                    swal("Good job!", "Trip added Successfully!", "success");
+                    $('#addingNewTrip').modal('hide');
+                }
+            });
+        }
+
     }
 }]);

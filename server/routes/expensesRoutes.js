@@ -12,8 +12,15 @@ AuthRouter.get('/getExpensesSheet/:date', function (req, res) {
         res.send(result);
     });
 });
+
 AuthRouter.post('/add', function (req, res) {
     ExpenseSheet.saveAmounts(req, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.post('/addNewExpense', function (req, res) {
+    ExpenseSheet.addNewExpense(req, function (result) {
         res.send(result);
     });
 });

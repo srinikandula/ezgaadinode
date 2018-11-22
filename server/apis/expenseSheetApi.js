@@ -215,4 +215,27 @@ ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
 
 };
 
+ExpenseSheets.prototype.addNewExpense=function(req,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var expenseDetails = req.body;
+    expenseDetails.accountId = req.jwt.accountId;
+    var expenseDoc=new ExpensesSheetColl(expenseDetails);
+    expenseDoc.save(function(err,expense)
+    {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while adding trip, try again ");
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push("Expense added successfully");
+            callback(retObj);
+        }
+    })
+
+}
+
 module.exports = new ExpenseSheets();
