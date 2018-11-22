@@ -55,6 +55,11 @@ AuthRouter.get('/downloadTripSheetDate',function(req,res){
         }
     });
 });
+AuthRouter.post('/addTripsheetTrip', function (req, res) {
+    Api.addTrip(req.jwt,req.body, req, function (result) {
+        res.send(result);
+    });
+});
 
 
 AuthRouter.post('/addTrip', function (req, res) {
@@ -224,6 +229,8 @@ AuthRouter.get('/getTripInvoiceDetails/:tripId/:partyId', function (req, res) {
 
     })
 });
+
+
 
 
 module.exports = {
