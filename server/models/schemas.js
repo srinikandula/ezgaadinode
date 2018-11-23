@@ -1212,6 +1212,7 @@ var invoicesSchema=new mongoose.Schema({
     tonnage:String,
     ratePerTonne:String,
     tripSheetId:[],
+    partyName:String,
     status:String,
     trip:[],
     attachments: [{
