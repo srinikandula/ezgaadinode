@@ -49,7 +49,7 @@
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
-            {{maintanence}}
+            <td data-title="'S No'">{{ (expenseParams.page() - 1) * expenseParams.count() + $index + 1 }}</td>
             <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ maintanence.date |
                 date:'dd-MM-yyyy'}}
             </td>

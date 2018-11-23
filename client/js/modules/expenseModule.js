@@ -655,6 +655,10 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             $scope.dt = new Date($scope.dt);
             $scope.getAllExpensesSheets($scope.dt);
         };
+        $scope.expensesSheetsDetails = {
+            dieselAmount:0,
+            cash:0
+        };
 
         $scope.saveAll = function () {
             console.log("total amounts", $scope.totalAmounts);
@@ -665,7 +669,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     if (success.data.status) {
                         swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
                     } else {
-                        swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                        swal("Error!", "Error in Updating Expense Sheet", "error");
                     }
                 });
             };
@@ -698,11 +702,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         $scope.newExpense = {};
         $scope.saveNewExpense = function () {
             var params = $scope.newExpense;
-            if(!params.vehicleNo){
-                swal("Error", "Please enter Vehicle Number","error" );
-            }else if(!params.partyId){
-                swal("Error", "Please select Party","error" );
-            }else {
                 var date = new Date();
                 params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
                 ExpenseService.addNewExpenseSheet($scope.newExpense, function (success) {
@@ -711,7 +710,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                         $('#createNewExpense').modal('hide');
                     }
                 });
-            }
 
         }
     }]);

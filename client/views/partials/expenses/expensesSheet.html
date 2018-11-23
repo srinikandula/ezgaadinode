@@ -70,7 +70,9 @@
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
-    <table class="table table-bordered table-striped table-condensed table-hover">
+
+    <div style="width: 972px;overflow-x: auto;">
+        <table class="table table-bordered table-striped table-condensed table-hover table-responsive" style="width: 1200px;">
         <tr>
             <th>S No {{expense.registrationNo}}</th>
             <th>Vehicle No</th>
@@ -88,31 +90,31 @@
         </tr>
         <tr style="text-align: center;" ng-repeat="expensesSheet in expensesSheetsDetails">
             <td>{{$index+1}}</td>
-            <td class="col-sm-1">{{expensesSheet.vehicleNo}}</td>
-            <td class="col-sm-1">{{expensesSheet.from}}</td>
-            <td class="col-sm-1">{{expensesSheet.to}}</td>
-            <td class="col-sm-1">{{expensesSheet.partyName}}</td>
-            <td> {{expensesSheet.driverName}}</td>
+            <td>{{expensesSheet.vehicleNo || '---'}}</td>
+            <td class="col-sm-1">{{expensesSheet.from || '---'}}</td>
+            <td class="col-sm-1">{{expensesSheet.to || '---'}}</td>
+            <td class="col-sm-1">{{expensesSheet.partyName || '---'}}</td>
+            <td> {{expensesSheet.driverName || '---'}}</td>
             <td class="col-sm-1">
                 <input type="text" class="form-control" ng-model="expensesSheet.dieselSlip">
             </td>
-            <td>
-                <input type="text" class="form-control" ng-model="expensesSheet.dieselAmount">
+            <td class="col-sm-1">
+                <input type="number" class="form-control" ng-model="expensesSheet.dieselAmount" value="0" min="0">
             </td>
-            <td>
-                <input type="text" class="form-control" ng-model="expensesSheet.cash">
+            <td class="col-sm-2">
+                <input type="number" class="form-control" ng-model="expensesSheet.cash" value="0" min="0">
             </td>
-            <td>
+            <td class="col-sm-1">
                 <label><input type="checkbox" ng-model="expensesSheet.throughOnline" value=""/>
                     Paid through Online</label>
             </td>
-            <td>
+            <td class="col-sm-1">
                 <input type="text" class="form-control" ng-model="expensesSheet.lrNo">
             </td>
-            <td>
+            <td class="col-sm-1">
                 <input type="text" class="form-control" ng-model="expensesSheet.unloadingDate">
             </td>
-            <td>
+            <td class="col-sm-2">
                 <input type="text" class="form-control" ng-model="expensesSheet.remarks">
             </td>
         </tr>
@@ -129,8 +131,9 @@
             <td></td>
         </tr>
     </table>
+    </div>
     <div class="clearfix"></div>
-    <div class="row">
+    <div class="row mt-20">
         <div class="col-sm-4">
             <ul class="col-sm-3 list-inline expenseSheetTotals">
                 <li>Advance:</li>
@@ -238,8 +241,8 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Add New Expense</h4>
                 </div>
-                <div class="modal-body col-sm-9 dis-center">
-                    <div class="form-group col-xs-12">
+                <div class="modal-body col-sm-10 dis-center">
+           <!--         <div class="form-group col-xs-12">
                         <label class="col-sm-5 control-label">Vehicle No*:</label>
                         <div class="col-sm-7">
                             <input type="text" class="form-control" ng-model="newExpense.vehicleNo" placeholder="Enter Vehicle No">
@@ -285,24 +288,6 @@
                         </div>
                     </div>
                     <div class="form-group col-xs-12">
-                        <label class="col-sm-5 control-label">Diesel Amount:</label>
-                        <div class="col-sm-7">
-                            <input type="number" class="form-control" ng-model="newExpense.dieselAmount" placeholder="Enter Diesel Amount">
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-5 control-label">Cash:</label>
-                        <div class="col-sm-7">
-                            <input type="number" class="form-control" ng-model="newExpense.cash" placeholder="Enter Cash">
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-5 control-label">Payment Type:</label>
-                        <div class="col-sm-7">
-                            <input type="checkbox" ng-model="newExpense.throughOnline" value="">
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
                         <label class="col-sm-5 control-label">LR No:</label>
                         <div class="col-sm-7">
                             <input type="text" class="form-control" ng-model="newExpense.lrNo" placeholder="LR No">
@@ -313,11 +298,30 @@
                         <div class="col-sm-7">
                             <input type="text" class="form-control" ng-model="newExpense.date" placeholder="Unloading Date">
                         </div>
+                    </div>-->
+                    <div class="form-group col-xs-12" style="display: none;">
+                        <label class="col-sm-5 control-label">Diesel Amount:</label>
+                        <div class="col-sm-7">
+                            <input type="hidden" value="0" class="form-control" ng-model="newExpense.dieselAmount" placeholder="Enter Diesel Amount">
+                        </div>
                     </div>
                     <div class="form-group col-xs-12">
-                        <label class="col-sm-5 control-label">Remarks</label>
-                        <div class="col-sm-7">
-                            <input type="text" class="form-control" ng-model="newExpense.remarks" placeholder="Enter remarks">
+                        <label class="col-sm-4 control-label">Cash:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" ng-model="newExpense.cash" placeholder="Enter Cash">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-4 control-label">Payment Type:</label>
+                        <div class="col-sm-8">
+                            <input type="checkbox" ng-model="newExpense.throughOnline" value="">
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-4 control-label">Remarks</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" ng-model="newExpense.remarks" rows="5" placeholder="Enter Description"></textarea>
                         </div>
                     </div>
                     <div class="col-12 text-right">

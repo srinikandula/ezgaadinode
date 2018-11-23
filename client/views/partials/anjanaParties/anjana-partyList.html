@@ -42,6 +42,7 @@
 
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
         <tr ng-repeat="parties in currentPageOfParties" style="text-align: center;">
+            <td data-title="'S No'"> {{ (partyParams.page() - 1) * partyParams.count() + $index + 1 }}</td>
 
             <td data-title="'Party Name'" sortable="'name'" class="clickable-item">{{
                 parties.name}}

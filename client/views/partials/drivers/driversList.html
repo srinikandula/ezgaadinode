@@ -45,6 +45,7 @@
         <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="driverParams">
             <tr ng-repeat="drivers in currentPageOfDrivers" style="text-align: center;">
+                <td data-title="'S No'">{{ (driverParams.page() - 1) * driverParams.count() + $index + 1 }}</td>
                 <td data-title="'Driver ID'" sortable="'driverId'" class="clickable-item">
                     {{drivers.driverId}}
                 </td>
