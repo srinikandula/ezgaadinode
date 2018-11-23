@@ -57,6 +57,7 @@
 
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckParams">
         <tr ng-repeat="trucks in currentPageOfTrucks" style="text-align: center;">
+            <td data-title="'S No'">{{(truckParams.page() - 1) * truckParams.count() + $index + 1 }}</td>
             <td data-title="'Reg No'" sortable="'registrationNo'" class="clickable-item">
                 {{trucks.registrationNo | uppercase}}<br>{{trucks.truckType}}/{{trucks.tonnage}}
             </td>

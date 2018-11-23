@@ -165,50 +165,10 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
                 retObj.messages.push('error in fetching records' + JSON.stringify(err));
                 callback(retObj);
             } else {
-                var partyIds = _.pluck(invoices, 'partyId');
-                PartiesColl.find({
-                        _id: {
-                            $in: partyIds
-                        }
-                    }, {
-                        name: 1
-                    },
-                    function (err, parties) {
-                        async.each(
-                            invoices,
-                            function (invoice, asyncCallback) {
-                                if (invoice.partyId) {
-                                    var party = _.find(parties, function (party) {
-                                        return party._id.toString() === invoice.partyId;
-                                    });
-                                    // console.log('invoices', invoice.partyId,party);
-                                    if(party !== undefined){
-                                        invoice.partyName = party.name;
-                                    }
-                                    asyncCallback(false);
-                                }else{
-                                    asyncCallback(false);
-
-                                }
-                            },
-                            function (err) {
-                                if (err) {
-                                    retObj.status = false;
-                                    retObj.messages.push(
-                                        'error in fetching records' + JSON.stringify(err)
-                                    );
-                                    callback(retObj);
-                                } else {
-                                    retObj.status = true;
-                                    retObj.messages.push('Success');
-                                    // console.log("invoices",invoices);
-                                    retObj.data = invoices;
-                                    callback(retObj);
-                                }
-                            }
-                        );
-                    }
-                );
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.data = invoices;
+                callback(retObj);
             }
         });
 };

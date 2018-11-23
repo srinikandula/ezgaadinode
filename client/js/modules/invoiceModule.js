@@ -420,6 +420,18 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
                 $scope.invoices = successCallback.data.data;
                 tableParams.total(successCallback.totalElements);
                 tableParams.data = $scope.invoices;
+                console.log("$scope0000000000", $scope.invoices);
+                for(var i=0;i<$scope.invoices.length;i++){
+                    if($scope.invoices[i].partyId){
+                        var party = _.find($scope.partiesList,function(party){
+                            return party._id.toString() === $scope.invoices[i].partyId;
+                        });
+                        if(party){
+                            $scope.invoices[i].partyName = party.name;
+                        }
+                    }
+                }
+
             }
         }, function (errorCallback) {});
     };
@@ -514,7 +526,6 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
                 if (success.data.status) {
                     $scope.invoices = success.data.data;
                     $scope.printTotalAmount=success.data.PrintTotalAmount;
-                    console.log("total",$scope.printTotalAmount);
                 } else {}
             },
             function (error) {

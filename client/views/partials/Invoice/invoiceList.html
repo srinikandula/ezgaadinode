@@ -41,11 +41,9 @@
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="invoiceParams">
         <tr class="print-style" ng-repeat="invoice in invoices track by $index" style="text-align: center;">
-            <td data-title="'S.No'" sortable="''" class="clickable-item">{{$index + 1}}
+            <td data-title="'S.No'" sortable="''" class="clickable-item">{{(invoiceParams.page() - 1) * invoiceParams.count() + $index + 1 }}
             </td>
-            <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{
-                invoice.partyName}}
-            </td>
+            <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{invoice.partyName}}</td>
             <td data-title="'Date'" sortable="'createdAt'" class="clickable-item">{{
                 invoice.createdAt | date: "dd/MM/y"}}
             </td>
