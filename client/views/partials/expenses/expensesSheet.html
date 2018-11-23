@@ -66,11 +66,12 @@
         </div>
 
         <div class="pull-right">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#createNewExpense">New Expense</button>
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
-    <table class="table table-bordered table-striped table-condensed table-hover" >
-        <tr >
+    <table class="table table-bordered table-striped table-condensed table-hover">
+        <tr>
             <th>S No {{expense.registrationNo}}</th>
             <th>Vehicle No</th>
             <th>From</th>
@@ -98,12 +99,12 @@
             <td>
                 <input type="text" class="form-control" ng-model="expensesSheet.dieselAmount">
             </td>
-            <td >
+            <td>
                 <input type="text" class="form-control" ng-model="expensesSheet.cash">
             </td>
             <td>
-               <label><input type="checkbox" ng-model="expensesSheet.throughOnline" value=""/>
-                Paid through Online</label>
+                <label><input type="checkbox" ng-model="expensesSheet.throughOnline" value=""/>
+                    Paid through Online</label>
             </td>
             <td>
                 <input type="text" class="form-control" ng-model="expensesSheet.lrNo">
@@ -116,8 +117,10 @@
             </td>
         </tr>
         <tr ng-if="expensesSheetsDetails.length == 0">
-            <td colspan="13">No Records Found</td></tr>
-        <tr><td colspan="7"><b>Total</b></td>
+            <td colspan="13">No Records Found</td>
+        </tr>
+        <tr>
+            <td colspan="7"><b>Total</b></td>
             <td><b>{{dieselTotal}}</b></td>
             <td><b>{{cashTotal}}</b></td>
             <td></td>
@@ -133,7 +136,8 @@
                 <li>Advance:</li>
             </ul>
             <ul class="list-inline col-sm-9 mb-7">
-                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" ng-change="fullAmounts(totalAmounts[0].advanceAmount)"></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount"
+                           ng-change="fullAmounts(totalAmounts[0].advanceAmount)"></li>
             </ul>
         </div>
         <div class="col-sm-5 pull-right">
@@ -145,10 +149,14 @@
                 <li>ClosingBalance</li>
             </ul>
             <ul class="col-sm-6 mb-7">
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled min="0"></li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled min="0"></li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount" disabled min="0"></li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].expenditureAmount" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled
+                           min="0"></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled min="0">
+                </li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount" disabled min="0">
+                </li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].expenditureAmount" disabled>
+                </li>
                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].closingBalance" disabled></li>
             </ul>
         </div>
@@ -220,6 +228,111 @@
             </div>
 
         </div>
+    </div>
+
+    <div id="createNewExpense" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add New Expense</h4>
+                </div>
+                <div class="modal-body col-sm-9 dis-center">
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Vehicle No*:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.vehicleNo" placeholder="Enter Vehicle No">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">From:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.from" placeholder="Enter From">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">To:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.to" placeholder="Enter To">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Party Name*:</label>
+                        <div class="col-sm-7">
+                            <ui-select ng-model="newExpense.partyId" theme="select2" title="Choose a Party"
+                                       append-to-body="true">
+                                <ui-select-match placeholder=" Select a Party" class="form-control">
+                                    {{$select.selected.name || sheet.partyName}}
+                                </ui-select-match>
+                                <ui-select-choices repeat="party in parties | propsFilter: {name: $select.search}">
+                                    <div ng-bind-html="party.name | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Driver Name:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.driverName" placeholder="Enter Driver Name">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Diesel Slip:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.dieselSlip" placeholder="Enter Diesel Slip">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Diesel Amount:</label>
+                        <div class="col-sm-7">
+                            <input type="number" class="form-control" ng-model="newExpense.dieselAmount" placeholder="Enter Diesel Amount">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Cash:</label>
+                        <div class="col-sm-7">
+                            <input type="number" class="form-control" ng-model="newExpense.cash" placeholder="Enter Cash">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Payment Type:</label>
+                        <div class="col-sm-7">
+                            <input type="checkbox" ng-model="newExpense.throughOnline" value="">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">LR No:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.lrNo" placeholder="LR No">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Unloading Date</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.date" placeholder="Unloading Date">
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label class="col-sm-5 control-label">Remarks</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control" ng-model="newExpense.remarks" placeholder="Enter remarks">
+                        </div>
+                    </div>
+                    <div class="col-12 text-right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" ng-click="saveNewExpense()">Save
+                        </button>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+
+            </div>
+            <div class="clearfix"></div>
+
+        </div>
+
     </div>
 
 

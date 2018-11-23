@@ -139,6 +139,13 @@ app.factory('ExpenseService', ['$http', function ($http) {
                 method: 'GET',
                 params: params
             }).then(success, error)
+        },
+        addNewExpenseSheet:function (params, success, error) {
+            $http({
+                url:'/v1/expense/addNewExpense',
+                method:'POST',
+                data:params
+            }).then(success, error)
         }
     }
 }]);
@@ -687,4 +694,24 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                 }
             })
         };
+
+        $scope.newExpense = {};
+        $scope.saveNewExpense = function () {
+            var params = $scope.newExpense;
+            if(!params.vehicleNo){
+                swal("Error", "Please enter Vehicle Number","error" );
+            }else if(!params.partyId){
+                swal("Error", "Please select Party","error" );
+            }else {
+                var date = new Date();
+                params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                ExpenseService.addNewExpenseSheet($scope.newExpense, function (success) {
+                    if (success.data.status) {
+                        swal("Good job!", "Expense added Successfully!", "success");
+                        $('#createNewExpense').modal('hide');
+                    }
+                });
+            }
+
+        }
     }]);
