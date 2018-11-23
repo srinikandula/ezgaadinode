@@ -165,7 +165,6 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
                 retObj.messages.push('error in fetching records' + JSON.stringify(err));
                 callback(retObj);
             } else {
-                // console.log('invoices222222222', invoices);
                 var partyIds = _.pluck(invoices, 'partyId');
                 PartiesColl.find({
                         _id: {
@@ -178,13 +177,18 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
                         async.each(
                             invoices,
                             function (invoice, asyncCallback) {
-                              //  console.log('invoices3333333', invoices);
                                 if (invoice.partyId) {
                                     var party = _.find(parties, function (party) {
                                         return party._id.toString() === invoice.partyId;
                                     });
-                                    invoice.partyId = party.name;
+                                    // console.log('invoices', invoice.partyId,party);
+                                    if(party !== undefined){
+                                        invoice.partyName = party.name;
+                                    }
                                     asyncCallback(false);
+                                }else{
+                                    asyncCallback(false);
+
                                 }
                             },
                             function (err) {
@@ -388,19 +392,20 @@ Invoices.prototype.generatePDF = function(req,callback){
                     if(err){
                         retObj.messages.push("error in finding party details"+JSON.stringify(err));
                     }else{
-                        if(party.anjanaPartyType === 'forAnjanaTransport'){
-                            templateName = 'anjanaTransportInvoice.html'
-                        }
-                        else if(party.anjanaPartyType === 'forAnjanaLogistics'){
-                            templateName = 'anjanaLogisticsInvoice.html'
-                        }else{
-                            console.log("else...........");
-                            templateName = 'invoice.html'
-                        }
-                        result.invoiceDate = dateToStringFormat(new Date());
-                        result.partyName = party.name;
-                        result.partyAddress = party.city;
-                        result.gstNo = party.gstNo;
+                            if(party.anjanaPartyType === 'forAnjanaTransport'){
+                                templateName = 'anjanaTransportInvoice.html'
+                            }
+                            else if(party.anjanaPartyType === 'forAnjanaLogistics'){
+                                templateName = 'anjanaLogisticsInvoice.html'
+                            }else{
+                                console.log("else...........");
+                                templateName = 'invoice.html'
+                            }
+                            result.partyName = party.name;
+                            result.partyAddress = party.city;
+                            result.gstNo = party.gstNo;
+                            result.invoiceDate = dateToStringFormat(new Date());
+
                         if(result.accountDetails.cgst && result.accountDetails.sgst && result.accountDetails.igst){
                             result.cgstAmount = (result.accountDetails.cgst/100)*result.invoiceDetails.totalAmount;
                             result.sgstAmount = (result.accountDetails.sgst/100)*result.invoiceDetails.totalAmount;
