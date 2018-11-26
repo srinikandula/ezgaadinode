@@ -1186,7 +1186,7 @@ var gpsFencesReportSchema=new mongoose.Schema({
 var invoicesSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     partyId:String,
-    tripId:String,
+    tripId:Number,
     lrNo:String,
     consignorInvoiceNo:String,
     gatePassNo:String,
@@ -1275,7 +1275,7 @@ var tripSheetsSchema =  new mongoose.Schema({
     unloadingPoint:String,
     driverName:String,
     partyId:String,
-    tripId:String
+    tripId:Number
 }, {timestamps: true});
 
 var loadingPointsSchema=new mongoose.Schema({
