@@ -80,7 +80,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         if(reportParamsValidation()) {
             // console.log("sldkhlasdljhfg", $scope.reportParams)
             GpsService.getTruckReport($scope.reportParams, function (success) {
-                if (success.data.status) {
+                if (success && success.data && success.data.status) {
                     $scope.truckReports = success.data.results;
                 } else {
                     $scope.truckReports = [];
