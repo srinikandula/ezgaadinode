@@ -133,7 +133,7 @@
                        ng-change="getValues(sheet.tripId,$index)">
             </td>
             <td class="col-sm-2">
-                <ui-select ng-model="sheet.partyId._id" theme="select2" title="Choose a Party"
+                <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
                            append-to-body="true" style="width: 250px;"
                            ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips' || sheet.loadingPoint === 'Not unloaded'">
                     <ui-select-match placeholder=" Select a Party" class="form-control"
