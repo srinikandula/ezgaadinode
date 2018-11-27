@@ -618,7 +618,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     $scope.selectParty = function (party) {
-        console.log("party", party);
         $scope.partyType = party.partyId.partyType;
         $scope.tripLanes = party.partyId.tripLanes;
 
@@ -1073,7 +1072,6 @@ app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', functi
 app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state', function ($scope, Upload, Notification, $state) {
     $scope.file = undefined;
     $scope.uploadTrips = function () {
-        console.log("filess");
         if (!$scope.file) {
             Notification.error("Please select file");
         } else {

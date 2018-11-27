@@ -91,9 +91,6 @@
             <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
             <td class="col-sm-2">
                 <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                     <select class="form-control" ng-model="sheet.loadingPoint">
                         <option value="" selected>--Loading--</option>
                         <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
@@ -104,9 +101,6 @@
             </td>
             <td class="col-sm-2">
                 <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                     <select class="form-control" ng-model="sheet.unloadingPoint"
                             ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips' || sheet.loadingPoint === 'Not unloaded'">
                         <option value="" selected>--Unloading--</option>
@@ -118,9 +112,6 @@
             </td>
             <td>
                 <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                     <select class="form-control" ng-model="sheet.driverName"
                             ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips' || sheet.loadingPoint === 'Not unloaded'">
                         <option value="" selected>Select Driver</option>

@@ -22,7 +22,6 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
             }).then(success, error);
         },
         getCount: function (params, success, error) {
-            console.log("paramsSercie", params)
             $http({
                 url: '/v1/invoices/count',
                 method: "GET",
@@ -116,7 +115,6 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
         InvoiceService.printInvoice($stateParams.id, function (success) {
             if (success.data.status) {
                 $scope.invoicePDF = success.data.data;
-                console.log("invoice", $scope.invoicePDF);
             }
 
         }, function (error) {
@@ -558,7 +556,6 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         params.fromDate = $scope.query.fromDate;
         params.toDate = $scope.query.toDate;
         params.partyId = $scope.query.party._id;
-        console.log("getInvocie.......", params);
         InvoiceService.getInnvoiceByParty(params, function (success) {
                 if (success.data.status) {
                     $scope.invoices = success.data.data;
