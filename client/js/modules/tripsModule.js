@@ -1220,6 +1220,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     $scope.saveAll = function () {
         var params = $scope.tripSheets;
+        params.partyId = $scope.tripSheets._id;
         TripServices.updateTripSheet(params, function (success) {
             if (success.data.status) {
                 swal("Good job!", "Trip Sheet Updated Successfully!", "success");
