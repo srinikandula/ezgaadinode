@@ -463,7 +463,9 @@ app.controller('JobsListController', ['$scope', '$state', 'JobsService', 'Notifi
                 } else {
                     params.inventory = $scope.query.inventory._id;
                 }
+                console.log("Jobs pasrams--------", params);
                 loadTableData(params);
+
             }
         });
 
@@ -490,6 +492,7 @@ app.controller('JobsListController', ['$scope', '$state', 'JobsService', 'Notifi
         });
     };
     $scope.getCount();
+
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
             $scope.trucks = successCallback.data.trucks;

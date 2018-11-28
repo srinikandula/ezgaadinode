@@ -28,19 +28,16 @@ Invoices.prototype.getCount = function (jwt, params, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
+    var condition = {accountId: jwt.accountId};
     if (params.fromDate && params.toDate) {
-        condition = {
-            accountId: jwt.accountId,
-            createdAt: {
+
+        condition.createdAt = {
                 $gte: new Date(params.fromDate),
                 $lte: new Date(params.toDate)
             }
-        };
-    } else {
-        condition = {
-            accountId: jwt.accountId
-        };
+    }
+    if(params.partyId) {
+        condition.partyId=params.partyId;
     }
     InvoicesColl.count(condition, function (err, count) {
         if (err) {
@@ -134,20 +131,19 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
+    var printTotal=0;
+    var condition = { accountId: jwt.accountId};
     if (params.fromDate && params.toDate) {
-        condition = {
-            accountId: jwt.accountId,
-            createdAt: {
+        condition.createdAt = {
                 $gte: new Date(params.fromDate),
                 $lte: new Date(params.toDate)
             }
-        };
-    } else {
-        condition = {
-            accountId: jwt.accountId
-        };
+
     }
+    if(params.partyId) {
+        condition.partyId = params.partyId
+    }
+
     var skipNumber = params.page ? (params.page - 1) * params.size : 0;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ?
@@ -168,6 +164,13 @@ Invoices.prototype.getAllInvoices = function (jwt, params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.data = invoices;
+                for(var i=0;i<invoices.length;i++)
+                {
+                    if(invoices[i].totalAmount) {
+                        printTotal += invoices[i].totalAmount;
+                    }
+                }
+                retObj.PrintTotalAmount=printTotal;
                 callback(retObj);
             }
         });
@@ -358,7 +361,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                             else if(party.anjanaPartyType === 'forAnjanaLogistics'){
                                 templateName = 'anjanaLogisticsInvoice.html'
                             }else{
-                                console.log("else...........");
+                                // console.log("else...........");
                                 templateName = 'invoice.html'
                             }
                             result.partyName = party.name;
@@ -433,7 +436,7 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
                                 var party = _.find(parties, function (party) {
                                     return party._id.toString() === invoice.partyId;
                                 });
-                                invoice.partyId = party.name;
+                                invoice.partyName = party.name;
                                 asyncCallback(false);
                             }
                         },
@@ -455,7 +458,7 @@ Invoices.prototype.invoiceByParty = function (jwt, params, callback) {
                                     }
                                 }
                                 retObj.PrintTotalAmount=printTotal;
-                                console.log("invoicesbyparty",retObj);
+                                // console.log("invoicesbyparty",retObj);
 
                                 callback(retObj);
                             }

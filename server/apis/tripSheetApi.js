@@ -150,7 +150,6 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         if (tripGroups.hasOwnProperty(key)) keys.push(key);
     }
     async.map(tripSheets,function(tripSheet,asyncCallback){
-        if(tripSheet.partyId && tripSheet.partyId !== undefined) {
             //hack to extract partyId from tripSheet
             if (tripSheet.partyId && tripSheet.partyId._id !== undefined) {
                 tripSheet.partyId = tripSheet.partyId._id;
@@ -190,9 +189,6 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
                     asyncCallback(false);
                 }
             });
-        } else {
-            asyncCallback(false);
-        }
     },function(err){
         if(err){
             retObj.status = false;

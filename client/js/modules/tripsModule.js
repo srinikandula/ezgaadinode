@@ -618,7 +618,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     $scope.selectParty = function (party) {
-        console.log("party", party);
         $scope.partyType = party.partyId.partyType;
         $scope.tripLanes = party.partyId.tripLanes;
 
@@ -1073,7 +1072,6 @@ app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', functi
 app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state', function ($scope, Upload, Notification, $state) {
     $scope.file = undefined;
     $scope.uploadTrips = function () {
-        console.log("filess");
         if (!$scope.file) {
             Notification.error("Please select file");
         } else {
@@ -1167,7 +1165,23 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
           },function(errorCallback){})
     };
 
-    $scope.getAllTripssheets = function (date) {
+        function getParties() {
+            PartyService.getAllPartiesByTransporter(function (success) {
+                if (success.data.status) {
+                    $rootScope.parties = success.data.parties;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            });
+        }
+        getParties();
+
+
+        $scope.getAllTripssheets = function (date) {
         var date = new Date(date);
         $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
         TripServices.getAllTripSheets($scope.today, function (success) {
@@ -1175,7 +1189,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 $scope.tripSheets = success.data.data;
                 for(var i=0;i<$scope.tripSheets.length;i++){
                    if($scope.tripSheets[i].partyId){
-                       var party = _.find($scope.parties,function(party){
+                       var party = _.find($rootScope.parties,function(party){
                            return party._id.toString() === $scope.tripSheets[i].partyId;
                        });
                        if(party){
@@ -1187,21 +1201,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         })
     };
 
-    function getParties() {
-        PartyService.getAllPartiesByTransporter(function (success) {
-            if (success.data.status) {
-                $scope.parties = success.data.parties;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (error) {
 
-        });
-    }
-
-    getParties();
 
     $scope.getAllTrucks = function () {
         TrucksService.getAllTrucksForFilter(function (success) {
@@ -1220,11 +1220,12 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     $scope.saveAll = function () {
         var params = $scope.tripSheets;
+        params.partyId = $scope.tripSheets._id;
         TripServices.updateTripSheet(params, function (success) {
             if (success.data.status) {
                 swal("Good job!", "Trip Sheet Updated Successfully!", "success");
             }else{
-                swal("Good job!", "Trip Sheet Updated Successfully!", "success");
+                swal("Error!", "!", "error");
             }
         })
     };

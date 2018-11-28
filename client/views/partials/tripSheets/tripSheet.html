@@ -91,9 +91,6 @@
             <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
             <td class="col-sm-2">
                 <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                     <select class="form-control" ng-model="sheet.loadingPoint">
                         <option value="" selected>--Loading--</option>
                         <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
@@ -104,9 +101,6 @@
             </td>
             <td class="col-sm-2">
                 <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                     <select class="form-control" ng-model="sheet.unloadingPoint"
                             ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips' || sheet.loadingPoint === 'Not unloaded'">
                         <option value="" selected>--Unloading--</option>
@@ -118,9 +112,6 @@
             </td>
             <td>
                 <div class=" pos-relative">
-                        <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                     <select class="form-control" ng-model="sheet.driverName"
                             ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips' || sheet.loadingPoint === 'Not unloaded'">
                         <option value="" selected>Select Driver</option>
@@ -145,6 +136,9 @@
                         </div>
                     </ui-select-choices>
                 </ui-select>
+               <!-- <select ng-model="sheet.partyId" class="form-control">
+                    <option ng-repeat="party in parties" value="{{party._id}}">{{party.name}}</option>
+                </select>-->
             </td>
         </tr>
     </table>
@@ -172,7 +166,7 @@
                     <div class="row">
                         <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
 
-                        <h4 class="modal-title col-sm-5"><b>Trip Sheet Report</b></h4>
+                        <h4 class="modal-title col-sm-5"><b>Trip Sheet Report - <b>{{tripSheetReports[0].registrationNo || uppercase}}</b></b></h4>
                         <div class="pall-zero col-sm-5">
                             <b> <a href="#"
                                    ng-click="downloadTripSheetReport(tripSheets.registrationNo._id, fromDate, toDate );">Download
@@ -188,7 +182,7 @@
                            ng-show="validateTable">
                         <tr>
                             <th>S No</th>
-                            <th>Registration No</th>
+                            <th>Date</th>
                             <th>loading Point</th>
                             <th>Unloading Point</th>
                             <th>Driver</th>
@@ -197,7 +191,7 @@
                         <tr ng-repeat="report in tripSheetReports"
                             style="text-align: center;">
                             <td class="col-sm-1">{{$index+1}}</td>
-                            <td class="col-sm-1">{{report.registrationNo | uppercase}}</td>
+                            <td>{{report.date}}</td>
                             <td class="col-sm-2">
                                 {{report.loadingPoint || '---'}}
                             </td>

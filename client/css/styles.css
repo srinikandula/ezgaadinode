@@ -3435,3 +3435,6 @@ textarea.form-control {
 .control-label{
     padding: 5px;
 }
+.pos-relative select{
+    -webkit-appearance: menulist !important;
+}
