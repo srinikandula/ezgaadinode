@@ -1076,6 +1076,7 @@ var userSchema = new mongoose.Schema({
     lastLogin: Date,
     contactPhone: Number,
     updatedBy: String,
+    admin:{type: Boolean, default: true},
     createdBy: String,
     role: String,
     userPermissions:[],
