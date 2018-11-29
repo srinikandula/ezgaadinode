@@ -393,9 +393,6 @@
                     <div class="form-group col-xs-12">
                         <label class="col-sm-5 control-label">Loading Point:</label>
                         <div class="col-sm-7 pos-relative">
-                             <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                            </span>
                             <select class="form-control" ng-model="newTrip.loadingPoint">
                                 <option value="" selected>--Loading--</option>
                                 <option ng-repeat="loadingPoint in loadingPoints"
@@ -408,9 +405,6 @@
                     <div class="form-group col-xs-12">
                         <label class="col-sm-5 control-label">Unloading Point:</label>
                         <div class="col-sm-7 pos-relative">
-                             <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
                             <select class="form-control" ng-model="newTrip.unloadingPoint">
                                 <option value="" selected>--Unloading--</option>
                                 <option ng-repeat="loadingPoint in unloadingPoints"
@@ -422,10 +416,7 @@
                     </div>
                     <div class="form-group col-xs-12">
                         <label class="col-sm-5 control-label">Driver:</label>
-                        <div class="col-sm-7">
-                              <span class="bot-arrow">
-                            <i class="fa fa-angle-down" aria-hidden="true"></i>
-                        </span>
+                        <div class="col-sm-7 pos-relative">
                             <select class="form-control" ng-model="newTrip.driverName">
                                 <option value="" selected>Select Driver</option>
                                 <option ng-repeat="driver in presentDrivers">{{driver.driverName}}</option>

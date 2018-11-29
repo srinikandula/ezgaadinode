@@ -45,6 +45,7 @@ app.controller('Add_EditUserController', ['$scope', '$state', 'UsersService', '$
     function ($scope, $state, UsersService, $stateParams, Notification) {
 
         $scope.userId = $stateParams.id;
+        $scope.title = 'Add User';
 
         $scope.user = {
             userPermissions: []
