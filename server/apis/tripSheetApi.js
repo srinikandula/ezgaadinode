@@ -5,6 +5,7 @@ var async = require('async');
 var invoiceColl = require('./../models/schemas').invoicesCollection;
 var partyColl = require('./../models/schemas').PartyCollection;
 var LockColl = require('./../models/schemas').lockColl;
+var userLoginsColl = require('./../models/schemas').userLogins;
 var accountBalanceColl = require('./../models/schemas').accountBalanceColl;
 var Invoices = require('./../apis/invoiceApi');
 var _ = require('underscore');
@@ -389,29 +390,67 @@ TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
         messages:[]
     };
     console.log("token....",jwt);
-    var details={"date":lockDetails.date, accountId:jwt.accountId, locked:true};
-    var doc=new TripSheetsColl(details);
-    AccountsColl.find({"_id":jwt.accountId},function(err,account){
-        if(err){
-            retObj.messages.push("error while getting account details");
-            retObj.status=false;
-            callback(retObj);
-        }else {
-            console.log("Account",account);
-        }
-    })
-    doc.save(function(err,docs){
-        if(err){
-            retObj.status=false;
-            retObj.messages.push("error while locking the data");
-            // retObj.data=err;
-            callback(retObj)
-        }else{
-            retObj.status=true;
-            retObj.messages.push("TripSheet Locked Successfully");
-            callback(retObj);
-        }
-    })
+    var details={"date":lockDetails.date, accountId:jwt.accountId, locked: lockDetails.locked};
+
+    var doc=new LockColl(details);
+    if(lockDetails.locked){
+        doc.save(function(err,lockedData){
+            if(err){
+                retObj.status=true;
+                retObj.messages.push("error while adding locked details");
+                callback(retObj);
+
+            }
+            else{
+                retObj.status=true;
+                retObj.messages.push("lock details added Successfully");
+                retObj.data=lockedData;
+                callback(retObj);
+            }
+        })
+    }else {
+        userLoginsColl.find({"accountId":jwt.accountId},function(err,account){
+            if(err){
+                retObj.messages.push("error while getting account details");
+                retObj.status=false;
+                console.log("error in finding user",err);
+                callback(retObj);
+            }else {
+                console.log("AccountDetailssssssssssss",account);
+                    if(account.admin){
+                        doc.locked=false;
+                        doc.save(function(err,lockedDetails){
+                            if(err){
+                                retObj.status=false;
+                                retObj.messages.push(" error while Updating Lock Details");
+                                console.log("error in saving the lockdetails relocking",err)
+                                callback(retObj);
+                            }else{
+                                retObj.status=true;
+                                retObj.messages.push("  Updated Lock Details");
+                                retObj.data=lockedDetails;
+                                console.log("lockedDetails Last",lockedDetails)
+                                callback(retObj);
+                            }
+                        })
+                    }
+            }
+        })
+
+    }
+
+    // doc.save(function(err,docs){
+    //     if(err){
+    //         retObj.status=false;
+    //         retObj.messages.push("error while locking the data");
+    //         // retObj.data=err;
+    //         callback(retObj)
+    //     }else{
+    //         retObj.status=true;
+    //         retObj.messages.push("TripSheet Locked Successfully");
+    //         callback(retObj);
+    //     }
+    // })
 }
 
 
