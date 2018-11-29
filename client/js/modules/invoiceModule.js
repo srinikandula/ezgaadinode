@@ -433,6 +433,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         InvoiceService.getAllInvoices(pageable, function (successCallback) {
             if (successCallback.data.status) {
                 $scope.invoices = successCallback.data.data;
+                $scope.invoices.PrintTotalAmount=successCallback.data.PrintTotalAmount;
                 tableParams.total(successCallback.totalElements);
                 tableParams.data = $scope.invoices;
                 for (var i = 0; i < $scope.invoices.length; i++) {
