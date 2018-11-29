@@ -1334,6 +1334,12 @@ var accountBalanceSchema = new mongoose.Schema({
     expenditureAmount:{type: Number, default:0},
 }, {timestamps: true});
 
+var lockSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    date: String,
+    locked:{type: Boolean, default: false}
+})
+
 module.exports = {
     CounterCollection:mongoose.model('counter', counterSchema, 'counter'),
     ExpensesSheetColl:mongoose.model('expensesSheet',expensesSheetSchema,'expensesSheet'),
@@ -1406,5 +1412,6 @@ module.exports = {
     driversAttendanceColl:mongoose.model('driversAttendance', driversAttendanceSchema, 'driversAttendance'),
     loadingPointsColl: mongoose.model('loadingPoints', loadingPointsSchema, 'loadingPoints'),
     unloadingPointsColl: mongoose.model('unloadingPoints', unloadingPointsSchema, 'unloadingPoints'),
-    accountBalanceColl:mongoose.model('accountBalance',accountBalanceSchema,'accountBalance')
+    accountBalanceColl:mongoose.model('accountBalance',accountBalanceSchema,'accountBalance'),
+    lockColl:mongoose.model('lock',lockSchema,'lock')
 };

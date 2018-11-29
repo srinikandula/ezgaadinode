@@ -3,7 +3,7 @@
         <div class="col-sm-2">
             <h3>Trip Sheet</h3>
         </div>
-        <div class="col-sm-10">
+        <div class="col-sm-9" style="width: 73%;">
             <div class="col-sm-4">
                 <ui-select ng-model="tripSheets.registrationNo" theme="select2"
                            title="Choose a person" append-to-body="true">
@@ -36,6 +36,19 @@
                     </li>
                 </ul>
             </div>
+        </div>
+        <div class="col-sm-1">
+            <!--<input class="tgl tgl-skewed" id="cb3" type="checkbox"/>-->
+            <!--<label class="tgl-btn" data-tg-off="Unlock" data-tg-on="Lock" for="cb3"></label>-->
+
+            <section class="model-10">
+                <div class="checkbox">
+                    <input type="checkbox" class="toggle-sw" ng-change="toggleDate(checked)" ng-model="checked" ng-value=true aria-label="Toggle ngHide"/>
+                    <label class="toggle-sw-la"></label>
+                </div>
+            </section>
+            <!--<i class="fa fa-lock" aria-hidden="true"></i>-->
+            <!--<i class="fa fa-unlock" aria-hidden="true"></i>-->
         </div>
     </div>
     <div class="col-sm-12 mt-20">
@@ -71,11 +84,40 @@
         </div>
         <div class="">
             <button class="btn btn-primary" data-toggle="modal" data-target="#addingNewTrip">Add Trip</button>
-            <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+            <div class="pull-right" style="">
+                <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+            </div>
         </div>
     </div>
 
-    <table class="table table-bordered table-striped table-condensed table-hover">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-hide="checked">
+        <tr style="background: #5fc0f3">
+            <th>S No</th>
+            <th>Registration No</th>
+            <th>loading Point</th>
+            <th>Unloading Point</th>
+            <th>Driver</th>
+            <th>Trip Id</th>
+            <th>Party Name</th>
+        </tr>
+        <tr ng-repeat="sheet in tripSheets track by $index" style="text-align: center;" ng-if="sheet.partyName !== none" ng-if="sheet.loadingPoint === display">
+            <td class="col-sm-1">{{$index+1}}</td>
+            <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
+            <td class="col-sm-2">{{sheet.loadingPoint}}
+            </td>
+            <td class="col-sm-2">{{sheet.unloadingPoint}}
+            </td>
+            <td>{{sheet.driverName}}
+            </td>
+            <td>
+                {{sheet.tripId}}
+            </td>
+            <td class="col-sm-2">{{sheet.partyName}}
+            </td>
+        </tr>
+    </table>
+
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="checked">
         <tr>
             <th>S No</th>
             <th>Registration No</th>
@@ -97,6 +139,7 @@
                             {{loadingPoint.loadingPoint}}
                         </option>
                     </select>
+
                 </div>
             </td>
             <td class="col-sm-2">
@@ -142,6 +185,8 @@
             </td>
         </tr>
     </table>
+
+
     <div class="center-block" style="width: 60%;">
         <div class="alert alert-danger" role="alert" ng-show="errors.length">
             <ul>

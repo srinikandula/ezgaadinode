@@ -4,6 +4,7 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var async = require('async');
 var invoiceColl = require('./../models/schemas').invoicesCollection;
 var partyColl = require('./../models/schemas').PartyCollection;
+var LockColl = require('./../models/schemas').lockColl;
 var accountBalanceColl = require('./../models/schemas').accountBalanceColl;
 var Invoices = require('./../apis/invoiceApi');
 var _ = require('underscore');
@@ -381,5 +382,37 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
 
 
 }
+
+TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    console.log("token....",jwt);
+    var details={"date":lockDetails.date, accountId:jwt.accountId, locked:true};
+    var doc=new TripSheetsColl(details);
+    AccountsColl.find({"_id":jwt.accountId},function(err,account){
+        if(err){
+            retObj.messages.push("error while getting account details");
+            retObj.status=false;
+            callback(retObj);
+        }else {
+            console.log("Account",account);
+        }
+    })
+    doc.save(function(err,docs){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while locking the data");
+            // retObj.data=err;
+            callback(retObj)
+        }else{
+            retObj.status=true;
+            retObj.messages.push("TripSheet Locked Successfully");
+            callback(retObj);
+        }
+    })
+}
+
 
 module.exports = new TripSheets();

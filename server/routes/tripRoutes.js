@@ -68,6 +68,11 @@ AuthRouter.post('/addTripsheetTrip', function (req, res) {
     });
 });
 
+    AuthRouter.post('/lockDataReport', function (req, res) {
+        Api.lockData(req.jwt,req.body,function (result) {
+            res.send(result);
+        });
+    });
 
 AuthRouter.post('/addTrip', function (req, res) {
     Trips.addTrip(req.jwt, req.body, req, function (result) {
