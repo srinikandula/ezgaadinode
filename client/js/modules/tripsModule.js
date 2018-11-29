@@ -163,12 +163,19 @@ app.factory('TripServices', ['$http', function ($http) {
                 params: params
             }).then(success, error)
         },
-        addNewTripSheet:function (params, success, error) {
+        addNewTripSheet: function (params, success, error) {
             $http({
-                url:'/v1/trips/addTripsheetTrip',
-                method:'POST',
-                data:params
+                url: '/v1/trips/addTripsheetTrip',
+                method: 'POST',
+                data: params
             }).then(success, error)
+        },
+        lockDataReport: function (lockData, success, error) {
+          $http({
+              url: 'v1/trips/lockDataReport',
+              method: 'POST',
+              data: lockData
+          }).then(success, error)
         }
 
     }
@@ -1119,6 +1126,26 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         opened: false
     };
 
+
+
+    $scope.toggleDate = function(checked) {
+        $scope.date = new Date();
+        var params = {};
+        params.date = $scope.date;
+        params.locked = checked;
+        console.log("params--------", params);
+        TripServices.lockDataReport(params , function (success) {
+            if (success.data.status) {
+                // $scope.lockData = success.data.data;
+                // swal("Good job!", "Lock Data Update Successfully!", "Success");
+            } else {
+                // swal("Lock Data NotUpdate Successfully!", "Success");
+            }
+        }, function (error) {
+            
+        })
+    };
+
     $scope.nextDay = function () {
         var dt = $scope.dt;
         dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
@@ -1301,7 +1328,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             if (success.data.status) {
                 $scope.driverSheets = success.data.data;
                 $scope.presentDrivers = [];
-                for(var i=0; i<$scope.driverSheets.length;i++){
+                    for(var i=0; i<$scope.driverSheets.length;i++){
                     if($scope.driverSheets[i].isPresent === true){
                         $scope.presentDrivers.push($scope.driverSheets[i]);
                     }
