@@ -1337,6 +1337,8 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 if (success.data.status) {
                     swal("Good job!", "Trip added Successfully!", "success");
                     $('#addingNewTrip').modal('hide');
+                }else{
+                    swal("Error","Truck already exist for this date", "error");
                 }
             });
         }

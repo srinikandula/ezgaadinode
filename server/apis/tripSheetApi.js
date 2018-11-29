@@ -343,19 +343,42 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
     };
     var tripDetails = req.body;
     tripDetails.accountId = req.jwt.accountId;
-    var tripDoc=new TripSheetsColl(tripDetails);
-        tripDoc.save(function(err,trip)
-        {
-            if(err){
-                retObj.status=false;
-               retObj.messages.push("error while adding trip, try again ");
-               callback(retObj);
-            }else{
-                retObj.status=true;
-                retObj.messages.push("trip added successfully");
-                callback(retObj);
-            }
-        })
+    // console.log("tripDetails",tripDetails);
+    TripSheetsColl.find({"registrationNo":req.body.registrationNo,"date":req.body.date},function (err,trip) {
+        console.log("body",req.body.registrationNo,"date",req.body.date);
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while adding the Trip data",JSON.stringify(err));
+            console.log("fetching data",err);
+            callback(retObj);
+        }else if (trip.length>0) {
+            retObj.status=false;
+            retObj.messages.push("truck allready exist for this date");
+            retObj.data=trip;
+            console.log("trip",retObj);
+            callback(retObj);
+        }else{
+            console.log("output",trip);
+            var tripDoc=new TripSheetsColl(tripDetails);
+            tripDoc.save(function(err,trip)
+            {
+                if(err){
+                    retObj.status=false;
+                    retObj.messages.push("error while adding trip, try again ");
+                    console.log("fetching1 data",err);
+                    callback(retObj);
+                }else{
+                    retObj.status=true;
+                    retObj.messages.push("trip added successfully");
+                    console.log("trip1",trip);
+                    callback(retObj);
+                }
+            })
+        }
+    })
+
+
+
 
 }
 

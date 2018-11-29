@@ -339,23 +339,23 @@ Accounts.prototype.addAccount = function (req, callback) {
             } else {
                 accountInfo.userId = newId.userId;
                 delete accountInfo.__v;
-                userLoginsColl.findOneAndUpdate({"accountId":accountInfo._id},
-                    {$set:{ userName:accountInfo.userName,
-                            contactPhone:accountInfo.contactPhone,
-                            password:accountInfo.password,
-                            role:accountInfo.role}},function(err,updateResult){
-                        if (err) {
-                            retObj.messages.push('Error saving account');
-                            analyticsService.create(req, serviceActions.add_account_err, {
-                                body: JSON.stringify(req.body),
-                                accountId: req.jwt.id,
-                                success: false,
-                                messages: retObj.messages
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        }
-                });
+                // userLoginsColl.findOneAndUpdate({"accountId":accountInfo._id},
+                //     {$set:{ userName:accountInfo.userName,
+                //             contactPhone:accountInfo.contactPhone,
+                //             password:accountInfo.password,
+                //             role:accountInfo.role}},function(err,updateResult){
+                //         if (err) {
+                //             retObj.messages.push('Error saving account');
+                //             analyticsService.create(req, serviceActions.add_account_err, {
+                //                 body: JSON.stringify(req.body),
+                //                 accountId: req.jwt.id,
+                //                 success: false,
+                //                 messages: retObj.messages
+                //             }, function (response) {
+                //             });
+                //             callback(retObj);
+                //         }
+                // });
                 AccountsColl.update(query, accountInfo, {upsert: true},
                     function (errSaved, saved) {
                     if (errSaved) {
@@ -368,7 +368,43 @@ Accounts.prototype.addAccount = function (req, callback) {
                         }, function (response) {
                         });
                         callback(retObj);
-                    } else {
+                    } else{
+                        var userInfo = {}
+                        userInfo.userName = accountInfo.userName;
+                        userInfo.contactPhone = accountInfo.contactPhone;
+                        userInfo.password = accountInfo.password;
+                        userInfo.role = accountInfo.role;
+                        if(!accountInfo._id) {
+                            // console.log("userInfo", userInfo);
+                            userInfo.accountId = saved.upserted[0]._id;
+                            var userDoc = new userLoginsColl(userInfo);
+                            userDoc.save(function (err, user) {
+                                if (err) {
+                                    retObj.status = false;
+                                    retObj.messages.push("error while adding" + JSON.stringify(err));
+                                    console.log("userLoginError", retObj);
+                                     // callback(retObj);
+                                } else {
+                                    retObj.status = true;
+                                    retObj.message = "succeessfully added userLogin";
+                                    console.log("userLoginAdded Successfully", user);
+                                     // callback(retObj);
+                                }
+                            })
+                        }else{
+                            userLoginsColl.findOneAndUpdate({"_id":accountInfo._id},accountInfo,function(err,user){
+                                if(err){
+                                    retObj.messages.push("error while updating userLogins");
+                                    retObj.status=false;
+                                    // callback(retobj);
+                                }else{
+                                    retObj.messages.push("user login updated successfully",user);
+                                    retObj.status=true;
+                                    // callback(retobj);
+                                }
+                            })
+                        }
+
                         async.map(routes, function (route, asynCallback) {
                             var routeQuery = {accountId: query._id};
                             if (route._id) {
