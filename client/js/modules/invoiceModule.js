@@ -241,6 +241,7 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
                 $scope.invoice.attachments = $scope.attachments;
             }
             if ($scope.invoice.tripId) {
+                $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
                 $scope.invoice.partyId = $scope.invoice.tripId.partyId;
                 for (var i = 0; i < $scope.invoice.trip.length; i++) {
                     $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
@@ -435,6 +436,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
                 $scope.invoices = successCallback.data.data;
                 tableParams.total(successCallback.totalElements);
                 tableParams.data = $scope.invoices;
+                $scope.printTotalAmount=successCallback.data.PrintTotalAmount;
                 for (var i = 0; i < $scope.invoices.length; i++) {
                     if ($scope.invoices[i].partyId) {
                         var party = _.find($scope.partiesList, function (party) {
@@ -474,6 +476,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
 
     };
     $scope.getCount = function () {
+
         var params = {};
 
         if($scope.query.fromDate && $scope.query.toDate && $scope.query.party){
@@ -486,6 +489,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
             params.toDate = $scope.query.toDate;
         } else if ($scope.query.party) {
             params.partyId = $scope.query.party._id;
+            $scope.partyName = $scope.query.party.name;
         }else {
             params = {};
         }

@@ -98,7 +98,7 @@
             <tr class="print-style">
                 <th colspan="7" style="text-align: center; border: 1px solid #000000">
                     <h4 style="margin-bottom: 0rem !important;">
-                        <b> {{partyName.party.name}}</b>
+                        <b> {{partyName}}</b>
                     </h4>
                 </th>
             </tr>
@@ -131,15 +131,15 @@
                     invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
                 <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</td>
                 <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
-                <td style="border: 1px solid #000000">{{invoice.rate * invoice.quantity}}</td>
+                <td style="border: 1px solid #000000;text-align: right;">{{invoice.rate * invoice.quantity}}</td>
             </tr>
             <tr class="print-style">
                 <th colspan="6" style="text-align:right; border: 1px solid #000000">Total:</th>
-                <th style="text-align: center; border: 1px solid #000000;">{{PrintTotalAmount}}</th>
+                <th style="text-align: center; border: 1px solid #000000;text-align: right;">{{printTotalAmount}}</th>
             </tr>
             <tr class="print-style">
                 <th colspan="7" style="text-align: left; border: 1px solid #000000">
-                    <b>Ruppees Only: {{PrintTotalAmount | words}}</b>
+                    <b>Rupees Only: {{printTotalAmount | words}}</b>
                 </th>
             </tr>
             <tr class="print-style">
