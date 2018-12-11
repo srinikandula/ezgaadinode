@@ -17,13 +17,7 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
         },
         accountBalance:function(balanceCallback){
             accountBalanceColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,data){
-                if(!data.length) {
-                    accountBalanceColl.find({accountId: req.jwt.accountId}).sort({createdAt:-1}).limit(1).exec(function (err, data) {
-                        balanceCallback(err,data);
-                    });
-                }else{
-                    balanceCallback(err,data);
-                }
+                balanceCallback(err,data);
             });
         }
         },function(err,results){
@@ -46,7 +40,8 @@ ExpenseSheets.prototype.updateExpenseSheet = function(req,callback){
       status:false,
       messages:[]
   };
-  var expenseSheets = req.body.expense;
+
+    var expenseSheets = req.body.expense;
   async.each(expenseSheets,function(expenseSheet,asyncCallback){
       ExpensesSheetColl.findOneAndUpdate({_id:expenseSheet._id},{$set:{
               vehicleNo:expenseSheet.vehicleNo,
@@ -119,64 +114,46 @@ ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
         status:false,
         messages:[]
     };
-    // console.log("save amounts......",req.params.date);
     async.map(amounts,function (amount,asyncCallback) {
         var obj = {
             accountId:req.jwt.accountId,
             date:req.params.date,
-            openingBalance:amount.openingBalance,
             closingBalance:amount.closingBalance,
             advanceAmount:amount.advanceAmount,
-            totalAmount:amount.totalAmount,
-            expenditureAmount:amount.expenditureAmount
+            totalAmount:amount.totalAmount
         };
-        var tomorrow = new Date();
+        if(amount.openingBalance != undefined){
+            obj.openingBalance = amount.openingBalance;
+        }
+        if(amount.expenditureAmount != undefined){
+            obj.expenditureAmount = amount.expenditureAmount;
+        }
+        var tomorrow = new Date(req.params.date);
         var date = new Date(tomorrow.setDate(tomorrow.getDate() + 1));
         var datePlusOne = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-        console.log("date...", datePlusOne);
-
         if(amount._id){
-            console.log("if.......",amount);
             accountBalanceColl.findOneAndUpdate({_id:amount._id},{$set:obj},function(err,result){
                 if(err){
                     asyncCallback(err);
-                } else{
-                    accountBalanceColl.findOne({date:datePlusOne},function (err,data) {
-                        if(err){
-                            asyncCallback(err);
-                        }else if(!data){
-                            var obj = {
-                                accountId:req.jwt.accountId,
-                                date:datePlusOne,
-                                openingBalance:amount.closingBalance
-                            };
-                            var doc = new accountBalanceColl(obj);
-                            doc.save(function(err,result){
-                                if(err){
-                                    asyncCallback(err);
-
-                                }else{
-                                    asyncCallback(null);
-
-                                }
-                            });
+                }else{
+                    var obj = {
+                        accountId:req.jwt.accountId,
+                        date:datePlusOne,
+                        openingBalance:amount.closingBalance
+                    };
+                    accountBalanceColl.update({accountId:req.jwt.accountId,date:datePlusOne},obj,{upsert: true},
+                        function (errSaved, saved) {
+                        if(errSaved){
+                            asyncCallback(errSaved);
                         }else{
-                            accountBalanceColl.update({date:datePlusOne},{openingBalance:amount.closingBalance},function (err,update) {
-                                if(err){
-                                    asyncCallback(err);
-
-                                }else{
-                                    asyncCallback(null);
-
-                                }
-                            });
+                            asyncCallback(null);
                         }
                     });
                 }
             });
         }else{
             var doc = new accountBalanceColl(obj);
-        doc.save(function(err,result){
+            doc.save(function(err,result){
             if(err){
                 retObj.status = false;
                 retObj.messages.push("error"+JSON.stringify(err));
@@ -200,7 +177,6 @@ ExpenseSheets.prototype.saveAmounts = function(amounts,req,callback){
             }
         });
         }
-
     },function(err){
         if(err){
             retObj.status = false;

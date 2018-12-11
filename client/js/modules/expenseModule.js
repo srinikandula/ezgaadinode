@@ -662,10 +662,9 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
 
         $scope.saveAll = function () {
             console.log("total amounts", $scope.totalAmounts);
-            var date = new Date();
-            var dt = new Date(date);
-            $scope.today = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate();
-                ExpenseService.updateExpensesSheet($scope.expensesSheetsDetails, $scope.totalAmounts, $scope.today, function (success){
+            var date = new Date($scope.dt);
+            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            ExpenseService.updateExpensesSheet($scope.expensesSheetsDetails, $scope.totalAmounts, $scope.today, function (success){
                     if (success.data.status) {
                         swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
                     } else {
