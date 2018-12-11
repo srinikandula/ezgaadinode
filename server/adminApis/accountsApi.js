@@ -382,24 +382,26 @@ Accounts.prototype.addAccount = function (req, callback) {
                                 if (err) {
                                     retObj.status = false;
                                     retObj.messages.push("error while adding" + JSON.stringify(err));
-                                    console.log("userLoginError", retObj);
+                                    // console.log("userLoginError", retObj);
                                      // callback(retObj);
                                 } else {
                                     retObj.status = true;
                                     retObj.message = "succeessfully added userLogin";
-                                    console.log("userLoginAdded Successfully", user);
+                                    // console.log("userLoginAdded Successfully", user);
                                      // callback(retObj);
                                 }
                             })
                         }else{
-                            userLoginsColl.findOneAndUpdate({"_id":accountInfo._id},accountInfo,function(err,user){
+                            userLoginsColl.findOneAndUpdate({"accountId":accountInfo._id},userInfo,function(err,user){
                                 if(err){
                                     retObj.messages.push("error while updating userLogins");
                                     retObj.status=false;
+                                    // console.log("error in userLogins update",err);
                                     // callback(retobj);
                                 }else{
                                     retObj.messages.push("user login updated successfully",user);
                                     retObj.status=true;
+                                    // console.log('user in updating userLogins',user);
                                     // callback(retobj);
                                 }
                             })
