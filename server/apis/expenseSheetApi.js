@@ -17,6 +17,16 @@ ExpenseSheets.prototype.getExpenseSheets = function(req,callback){
         },
         accountBalance:function(balanceCallback){
             accountBalanceColl.find({accountId:req.jwt.accountId,date:req.params.date},function(err,data){
+                if(!data.length){
+                    var obj = {
+                        closingBalance:0,
+                        advanceAmount:0,
+                        totalAmount:0,
+                        expenditureAmount:0,
+                        openingBalance:0
+                    };
+                    data.push(obj);
+                }
                 balanceCallback(err,data);
             });
         }

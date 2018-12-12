@@ -553,13 +553,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             opened: false
         };
 
-        $scope.totalAmounts = {
-            openingBalance: 0,
-            closingBalance: 0,
-            advanceAmount: 0,
-            totalAmount: 0,
-            expenditureAmount: 0
-        };
 
         $scope.fullAmounts = function () {
             $scope.totalAmounts[0].totalAmount = $scope.totalAmounts[0].advanceAmount + $scope.totalAmounts[0].openingBalance;
@@ -612,31 +605,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                 if (success.data.status) {
                     $scope.expensesSheetsDetails = success.data.data;
                     $scope.totalAmounts = success.data.amounts;
-                    $scope.dieselTotal = 0;
-                    $scope.cashTotal = 0;
-                    for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
-                        if ($scope.expensesSheetsDetails[i].partyId) {
-                            var party = _.find($scope.parties, function (party) {
-                                return party._id.toString() === $scope.expensesSheetsDetails[i].partyId;
-                            });
-                            if (party) {
-                                $scope.expensesSheetsDetails[i].partyName = party.name;
-                            }
-                        }
-                        if ($scope.expensesSheetsDetails[i].dieselAmount) {
-                            $scope.dieselTotal += $scope.expensesSheetsDetails[i].dieselAmount;
-                        }
-                        if ($scope.expensesSheetsDetails[i].cash) {
-                            if ($scope.expensesSheetsDetails[i].throughOnline === true) {
-                                $scope.cashTotalTrue = $scope.expensesSheetsDetails[i].cash;
-                            } else if ($scope.expensesSheetsDetails[i].throughOnline === false) {
-                                $scope.cashTotal += $scope.expensesSheetsDetails[i].cash;
-                                $scope.totalAmounts[0].expenditureAmount = $scope.cashTotal;
-                            }
-                        }
-                    }
-                    $scope.totalAmounts[0].totalAmount = $scope.totalAmounts[0].advanceAmount + $scope.totalAmounts[0].openingBalance;
-                    $scope.totalAmounts[0].closingBalance = $scope.totalAmounts[0].totalAmount - $scope.totalAmounts[0].expenditureAmount;
                 }
             })
         };
@@ -663,7 +631,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             cash: 0
         };
 
-        $scope.saveAll = function () {
+        $scope.saveAllExpenses = function () {
             if ($scope.nextDate) {
                 $scope.getByDate = $scope.nextDate.getFullYear() + '-' + ($scope.nextDate.getMonth() + 1) + '-' + $scope.nextDate.getDate();
             } else if ($scope.previousDate) {
@@ -673,6 +641,33 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                 var dt = new Date(date);
                 $scope.getByDate = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate();
             }
+
+            $scope.dieselTotal = 0;
+            $scope.cashTotal = 0;
+            for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
+                if ($scope.expensesSheetsDetails[i].partyId) {
+                    var party = _.find($scope.parties, function (party) {
+                        return party._id.toString() === $scope.expensesSheetsDetails[i].partyId;
+                    });
+                    if (party) {
+                        $scope.expensesSheetsDetails[i].partyName = party.name;
+                    }
+                }
+                if ($scope.expensesSheetsDetails[i].dieselAmount) {
+                    $scope.dieselTotal += $scope.expensesSheetsDetails[i].dieselAmount;
+                }
+                if ($scope.expensesSheetsDetails[i].cash) {
+                    if ($scope.expensesSheetsDetails[i].throughOnline === true) {
+                        $scope.cashTotalTrue = $scope.expensesSheetsDetails[i].cash;
+                    } else if ($scope.expensesSheetsDetails[i].throughOnline === false) {
+                        $scope.cashTotal += $scope.expensesSheetsDetails[i].cash;
+                        $scope.totalAmounts[0].expenditureAmount = $scope.cashTotal;
+                    }
+                }
+            }
+
+            $scope.totalAmounts[0].totalAmount = $scope.totalAmounts[0].advanceAmount + $scope.totalAmounts[0].openingBalance;
+            $scope.totalAmounts[0].closingBalance = $scope.totalAmounts[0].totalAmount - $scope.totalAmounts[0].expenditureAmount;
             ExpenseService.updateExpensesSheet($scope.expensesSheetsDetails, $scope.totalAmounts, $scope.getByDate, function (success) {
                 if (success.data.status) {
                     swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
@@ -682,7 +677,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             });
         }
         ;
-
         $scope.validateFilters = function (truckId, fromDate, toDate) {
             var params = {};
             params.truckId = truckId;
