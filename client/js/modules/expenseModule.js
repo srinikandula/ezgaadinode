@@ -123,7 +123,7 @@ app.factory('ExpenseService', ['$http', function ($http) {
             $http({
                 url: '/v1/expense/updateExpensesSheet/' + today,
                 method: "PUT",
-                data:{expense, amounts}
+                data: {expense, amounts}
             }).then(success, error)
         },
         saveOpeningBalance: function (params, success, error) {
@@ -140,11 +140,11 @@ app.factory('ExpenseService', ['$http', function ($http) {
                 params: params
             }).then(success, error)
         },
-        addNewExpenseSheet:function (params, success, error) {
+        addNewExpenseSheet: function (params, success, error) {
             $http({
-                url:'/v1/expense/addNewExpense',
-                method:'POST',
-                data:params
+                url: '/v1/expense/addNewExpense',
+                method: 'POST',
+                data: params
             }).then(success, error)
         }
     }
@@ -533,7 +533,7 @@ app.controller('UploadExpanseCtrl', ['$scope', 'Upload', 'Notification', '$state
 
 }]);
 
-app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '$state', 'TrucksService', 'ExpenseService', 'NgTableParams','PartyService',
+app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '$state', 'TrucksService', 'ExpenseService', 'NgTableParams', 'PartyService',
     function ($scope, Upload, Notification, $state, TrucksService, ExpenseService, NgTableParams, PartyService) {
 
         $scope.today = function () {
@@ -554,14 +554,14 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         };
 
         $scope.totalAmounts = {
-            openingBalance:0,
-            closingBalance:0,
-            advanceAmount:0,
-            totalAmount:0,
-            expenditureAmount:0
+            openingBalance: 0,
+            closingBalance: 0,
+            advanceAmount: 0,
+            totalAmount: 0,
+            expenditureAmount: 0
         };
 
-        $scope.fullAmounts = function(){
+        $scope.fullAmounts = function () {
             $scope.totalAmounts[0].totalAmount = $scope.totalAmounts[0].advanceAmount + $scope.totalAmounts[0].openingBalance;
             $scope.totalAmounts[0].closingBalance = $scope.totalAmounts[0].totalAmount - $scope.totalAmounts[0].expenditureAmount;
         };
@@ -596,6 +596,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
 
             });
         }
+
         getParties();
 
 
@@ -645,33 +646,42 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
             $scope.dt.setTime(dt.getTime());
             $scope.dt = new Date($scope.dt);
+            $scope.nextDate = $scope.dt;
             $scope.getAllExpensesSheets($scope.dt);
-            console.log("$scope.dt",$scope.dt);
         };
 
         $scope.previousDay = function () {
             var dt = $scope.dt;
             dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
+            $scope.dt.setTime(dt.getTime());
             $scope.dt = new Date($scope.dt);
+            $scope.previousDate = $scope.dt;
             $scope.getAllExpensesSheets($scope.dt);
         };
         $scope.expensesSheetsDetails = {
-            dieselAmount:0,
-            cash:0
+            dieselAmount: 0,
+            cash: 0
         };
 
         $scope.saveAll = function () {
-            console.log("total amounts", $scope.totalAmounts);
-            var date = new Date($scope.dt);
-            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-            ExpenseService.updateExpensesSheet($scope.expensesSheetsDetails, $scope.totalAmounts, $scope.today, function (success){
-                    if (success.data.status) {
-                        swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
-                    } else {
-                        swal("Error!", "Error in Updating Expense Sheet", "error");
-                    }
-                });
-            };
+            if ($scope.nextDate) {
+                $scope.getByDate = $scope.nextDate.getFullYear() + '-' + ($scope.nextDate.getMonth() + 1) + '-' + $scope.nextDate.getDate();
+            } else if ($scope.previousDate) {
+                $scope.getByDate = $scope.previousDate.getFullYear() + '-' + ($scope.previousDate.getMonth() + 1) + '-' + $scope.previousDate.getDate();
+            } else {
+                var date = new Date();
+                var dt = new Date(date);
+                $scope.getByDate = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate();
+            }
+            ExpenseService.updateExpensesSheet($scope.expensesSheetsDetails, $scope.totalAmounts, $scope.getByDate, function (success) {
+                if (success.data.status) {
+                    swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
+                } else {
+                    swal("Error!", "Error in Updating Expense Sheet", "error");
+                }
+            });
+        }
+        ;
 
         $scope.validateFilters = function (truckId, fromDate, toDate) {
             var params = {};
@@ -681,18 +691,18 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             ExpenseService.expensesSheetReport(params, function (success) {
                 if (success.data.status) {
                     $scope.expenseSheetReports = success.data.data;
-                    for(var i=0;i<$scope.expenseSheetReports.length;i++){
-                        if($scope.expenseSheetReports[i].partyId){
-                            var party = _.find($scope.parties,function(party){
+                    for (var i = 0; i < $scope.expenseSheetReports.length; i++) {
+                        if ($scope.expenseSheetReports[i].partyId) {
+                            var party = _.find($scope.parties, function (party) {
                                 return party._id.toString() === $scope.expenseSheetReports[i].partyId;
                             });
-                            if(party){
+                            if (party) {
                                 $scope.expenseSheetReports[i].partyName = party.name;
                             }
                         }
                     }
                     $scope.validateTable = true;
-                }else {
+                } else {
                     console.log("error");
                 }
             })
@@ -701,14 +711,14 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         $scope.newExpense = {};
         $scope.saveNewExpense = function () {
             var params = $scope.newExpense;
-                var date = new Date();
-                params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-                ExpenseService.addNewExpenseSheet($scope.newExpense, function (success) {
-                    if (success.data.status) {
-                        swal("Good job!", "Expense added Successfully!", "success");
-                        $('#createNewExpense').modal('hide');
-                    }
-                });
+            var date = new Date();
+            params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+            ExpenseService.addNewExpenseSheet($scope.newExpense, function (success) {
+                if (success.data.status) {
+                    swal("Good job!", "Expense added Successfully!", "success");
+                    $('#createNewExpense').modal('hide');
+                }
+            });
 
         }
     }]);
