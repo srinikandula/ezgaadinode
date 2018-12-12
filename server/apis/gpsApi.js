@@ -486,7 +486,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                             });
 
                             if (positions.length > 0) {
-                                async.eachSeries(positions,function(position,asyncCallback){
+                                /*async.eachSeries(positions,function(position,asyncCallback){
                                     if(position.address === '{address}'){
                                         getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
                                             if (addResp.status) {
@@ -506,7 +506,8 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                                                 asyncCallback(err);
                                             }
                                         });
-                                    }else{
+                                    }
+                                    else{
                                         asyncCallback(false);
                                     }
                                 },function(err) {
@@ -541,7 +542,34 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                                         };
                                         callback(retObj)
                                     }
-                                });
+                                });*/
+
+
+                                var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
+                                var diffDays = timeDiff / (1000 * 3600 * 24);
+                                var speedValues = _.pluck(positions, 'speed');
+                                var topSpeed = Math.max.apply(Math, speedValues);
+                                var sum = 0, counter = 0, distance = 0;
+                                for (var i = 0; i < speedValues.length; i++) {
+                                    if (Number(speedValues[i]) !== 0.0) {
+                                        sum = sum + Number(speedValues[i]);
+                                        counter++;
+                                    }
+                                    distance += positions[i].distance;
+                                }
+                                averageSpeed = (sum / counter);
+                                retObj.status = true;
+                                retObj.messages.push('Success');
+                                retObj.results = {
+                                    positions: positions,
+                                    distanceTravelled: distance,
+                                    timeTravelled: (diffDays * 24),
+                                    topSpeed: topSpeed,
+                                    registrationNo:truckId,
+                                    averageSpeed: averageSpeed,
+                                    overSpeedLimit: overSpeedLimit
+                                };
+                                callback(retObj)
                             } else {
                                 retObj.status = false;
                                 retObj.messages.push('No records found for that period');
