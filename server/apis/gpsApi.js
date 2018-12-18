@@ -461,123 +461,67 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                     overSpeedLimit = settings.results.overSpeedLimit;
                 }
             });
-            devicePostions.find({accountId:truckDetails.accountId.toString(),
-                uniqueId: truckDetails.deviceId,
-                createdAt:{$gte: startDate, $lte: endDate}
-            }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
-                if (err) {
-                    retObj.status = false;
-                    callback(retObj);
-                } else {
+            async.parallel({
+                devicePositions: function (devicePositionsCallback) {
+                    devicePostions.find({accountId:truckDetails.accountId.toString(),uniqueId: truckDetails.deviceId,
+                        createdAt:{$gte: startDate, $lte: endDate}})
+                        .sort({deviceTime: 1}).lean().exec(function (err, devicePositions) {
+                            devicePositionsCallback(err,devicePositions);
+                        });
+                },
+                archiveDevicePositions:function(archivePositionsCallback){
                     archivedDevicePositions.find({accountId:truckDetails.accountId.toString(),
                         uniqueId: truckDetails.deviceId,
-                        createdAt:{$gte: startDate, $lte: endDate}}).sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
-                        if (err) {
-                            retObj.status = false;
-                            retObj.messages.push('Error fetching truck positions');
-                            callback(retObj);
-                        } else {
-                            positions = positions.concat(archivedPositions);
-                            //take only positions that have totalDistance changed
-                            positions = _.uniq(positions, 'totalDistance');
-                            //sort the positions based of deviceTime
-                            positions = _.sortBy(positions, function (position) {
-                                return position.deviceTime;
-                            });
-
-                            if (positions.length > 0) {
-                                /*async.eachSeries(positions,function(position,asyncCallback){
-                                    if(position.address === '{address}'){
-                                        getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
-                                            if (addResp.status) {
-                                                var zipCodeArr = addResp.address.match( numberPattern );
-                                                if(zipCodeArr){
-                                                    for(var i=0;i<zipCodeArr.length;i++){
-                                                        if(zipCodeArr[i].length == 6){
-                                                            position.zipcode = zipCodeArr[i];
-                                                        }
-                                                    }
-                                                }
-                                                position.address = addResp.address;
-                                                devicePostions.findOneAndUpdate({_id:position._id},{$set:{address:addResp.address,zipcode:position.zipcode}},function(err,position){});
-                                                archivedDevicePositions.findOneAndUpdate({_id:position._id},{$set:{address:addResp.address,zipcode:position.zipcode}},function(err,position){});
-                                                asyncCallback(false);
-                                            }else{
-                                                asyncCallback(err);
-                                            }
-                                        });
-                                    }
-                                    else{
-                                        asyncCallback(false);
-                                    }
-                                },function(err) {
-                                    if (err) {
-                                        retObj.status = false;
-                                        retObj.messages.push('Error fetching truck positions');
-                                        callback(retObj);
-                                    }else{
-                                        var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
-                                        var diffDays = timeDiff / (1000 * 3600 * 24);
-                                        var speedValues = _.pluck(positions, 'speed');
-                                        var topSpeed = Math.max.apply(Math, speedValues);
-                                        var sum = 0, counter = 0, distance = 0;
-                                        for (var i = 0; i < speedValues.length; i++) {
-                                            if (Number(speedValues[i]) !== 0.0) {
-                                                sum = sum + Number(speedValues[i]);
-                                                counter++;
-                                            }
-                                            distance += positions[i].distance;
-                                        }
-                                        averageSpeed = (sum / counter);
-                                        retObj.status = true;
-                                        retObj.messages.push('Success');
-                                        retObj.results = {
-                                            positions: positions,
-                                            distanceTravelled: distance,
-                                            timeTravelled: (diffDays * 24),
-                                            topSpeed: topSpeed,
-                                            registrationNo:truckId,
-                                            averageSpeed: averageSpeed,
-                                            overSpeedLimit: overSpeedLimit
-                                        };
-                                        callback(retObj)
-                                    }
-                                });*/
-
-
-                                var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
-                                var diffDays = timeDiff / (1000 * 3600 * 24);
-                                var speedValues = _.pluck(positions, 'speed');
-                                var topSpeed = Math.max.apply(Math, speedValues);
-                                var sum = 0, counter = 0, distance = 0;
-                                for (var i = 0; i < speedValues.length; i++) {
-                                    if (Number(speedValues[i]) !== 0.0) {
-                                        sum = sum + Number(speedValues[i]);
-                                        counter++;
-                                    }
-                                    distance += positions[i].distance;
-                                }
-                                averageSpeed = (sum / counter);
-                                retObj.status = true;
-                                retObj.messages.push('Success');
-                                retObj.results = {
-                                    positions: positions,
-                                    distanceTravelled: distance,
-                                    timeTravelled: (diffDays * 24),
-                                    topSpeed: topSpeed,
-                                    registrationNo:truckId,
-                                    averageSpeed: averageSpeed,
-                                    overSpeedLimit: overSpeedLimit
-                                };
-                                callback(retObj)
-                            } else {
-                                retObj.status = false;
-                                retObj.messages.push('No records found for that period');
-                                callback(retObj);
-                            }
-                        }
+                        createdAt:{$gte: startDate, $lte: endDate}})
+                        .sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
+                        archivePositionsCallback(err,archivedPositions);
                     });
                 }
+                },function (err, results) {
+                    if(err){
+                        retObj.status = false;
+                        retObj.messages.push('Error',JSON.stringify(err));
+                        callback(retObj);
+                    }else{
+                        var positions = results.devicePositions.concat(results.archiveDevicePositions);
+                        //take only positions that have totalDistance changed
+                        positions = _.uniq(positions, 'totalDistance');
+                        //sort the positions based of deviceTime
+                        positions = _.sortBy(positions, function (position) {
+                            return position.deviceTime;
+                        });
+                        if (positions.length > 0) {
+                            var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
+                            var diffDays = timeDiff / (1000 * 3600 * 24);
+                            var speedValues = _.pluck(positions, 'speed');
+                            var topSpeed = Math.max.apply(Math, speedValues);
+                            var sum = 0, counter = 0, distance = 0;
+                            for (var i = 0; i < speedValues.length; i++) {
+                                if (Number(speedValues[i]) !== 0.0) {
+                                    sum = sum + Number(speedValues[i]);
+                                    counter++;
+                                }
+                                distance += positions[i].distance;
+                            }
+                            averageSpeed = (sum / counter);
+                            retObj.status = true;
+                            retObj.messages.push('Success');
+                            retObj.results = {
+                                positions: positions,
+                                distanceTravelled: distance,
+                                timeTravelled: (diffDays * 24),
+                                topSpeed: topSpeed,
+                                registrationNo:truckId,
+                                averageSpeed: averageSpeed,
+                                overSpeedLimit: overSpeedLimit
+                            };
+                            callback(retObj)
+                        } else {
+                            retObj.status = false;
+                            retObj.messages.push('No records found for that period');
+                            callback(retObj);
+                        }
+                    }
             });
         } else {
             retObj.status = false;
