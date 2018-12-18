@@ -67,7 +67,7 @@
 
         <div class="pull-right">
             <button class="btn btn-primary" data-toggle="modal" data-target="#createNewExpense">New Expense</button>
-            <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+            <button class="btn btn-primary" ng-click="saveAllExpenses()"> Save</button>
         </div>
     </div>
 
@@ -99,10 +99,10 @@
                 <input type="text" class="form-control" ng-model="expensesSheet.dieselSlip">
             </td>
             <td class="col-sm-1">
-                <input type="number" class="form-control" ng-model="expensesSheet.dieselAmount" value="0" min="0">
+                <input type="number" class="form-control" ng-model="expensesSheet.dieselAmount">
             </td>
             <td class="col-sm-2">
-                <input type="number" class="form-control" ng-model="expensesSheet.cash" value="0" min="0">
+                <input type="number" class="form-control" ng-model="expensesSheet.cash">
             </td>
             <td class="col-sm-1">
                 <label><input type="checkbox" ng-model="expensesSheet.throughOnline" value=""/>
@@ -120,15 +120,6 @@
         </tr>
         <tr ng-if="expensesSheetsDetails.length == 0">
             <td colspan="13">No Records Found</td>
-        </tr>
-        <tr>
-            <td colspan="7"><b>Total</b></td>
-            <td><b>{{dieselTotal}}</b></td>
-            <td><b>{{cashTotal}}</b></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
         </tr>
     </table>
     </div>
@@ -152,14 +143,10 @@
                 <li>ClosingBalance</li>
             </ul>
             <ul class="col-sm-6 mb-7">
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled
-                           min="0"></li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled min="0">
-                </li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount" disabled min="0">
-                </li>
-                <li><input type="number" class="form-control" ng-model="totalAmounts[0].expenditureAmount" disabled>
-                </li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].openingBalance" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].advanceAmount" disabled></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].totalAmount"  disabled ></li>
+                <li><input type="number" class="form-control" ng-model="totalAmounts[0].expenditureAmount" disabled></li>
                 <li><input type="number" class="form-control" ng-model="totalAmounts[0].closingBalance" disabled></li>
             </ul>
         </div>
@@ -174,7 +161,7 @@
 
     <div class="col-sm-12">
         <div class="pull-right">
-            <button class="btn btn-primary" ng-click="saveAll()">Save</button>
+            <button class="btn btn-primary" ng-click="saveAllExpenses()">Save</button>
         </div>
     </div>
 
