@@ -54,6 +54,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('receiptsEnabled',success.data.receiptsEnabled);
                     $cookies.put('paymentsEnabled',success.data.paymentsEnabled);
                     $cookies.put('isPartiesForAnjana',success.data.isPartiesForAnjana);
+                    $cookies.put('admin',success.data.admin);
 
                     var permissions = [];
                     $scope.loginRes.forEach(permission => {

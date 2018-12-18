@@ -73,6 +73,11 @@ AuthRouter.post('/addTripsheetTrip', function (req, res) {
             res.send(result);
         });
     });
+AuthRouter.get('/getLockStatus/:date', function (req, res) {
+    Api.getLockStatus(req,function (result) {
+        res.json(result);
+    });
+});
 
 AuthRouter.post('/addTrip', function (req, res) {
     Trips.addTrip(req.jwt, req.body, req, function (result) {

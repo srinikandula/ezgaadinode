@@ -32,6 +32,7 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
         status: false,
         messages: []
     };
+    console.log("userDetailssssssssss",user);
     retObj.status = true;
     retObj._id = user._id;
     retObj.userName = userName;
@@ -55,6 +56,7 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
     retObj.permissions = accessPermissions;
     retObj.type = user.type;
     retObj.role = user.role;
+    retObj.admin=user.admin;
 
 
     var obj = {

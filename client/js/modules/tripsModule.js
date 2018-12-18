@@ -160,7 +160,7 @@ app.factory('TripServices', ['$http', function ($http) {
             $http({
                 url: '/v1/trips/tripSheetReport',
                 method: 'GET',
-                params: params
+                data: params
             }).then(success, error)
         },
         addNewTripSheet: function (params, success, error) {
@@ -176,6 +176,12 @@ app.factory('TripServices', ['$http', function ($http) {
               method: 'POST',
               data: lockData
           }).then(success, error)
+        },
+        getLockStatus: function (date,success, error) {
+            $http({
+                url: 'v1/trips/getLockStatus/'+date,
+                method: 'GET'
+            }).then(success, error)
         }
 
     }
@@ -1104,8 +1110,8 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 }]);
 
 
-app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', 'DriverService', '$rootScope',
-    function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService, DriverService, $rootScope) {
+app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', 'DriverService', '$rootScope','$cookies',
+    function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService, DriverService, $rootScope,$cookies) {
 
     $scope.validateTable = false;
 
@@ -1125,16 +1131,38 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     $scope.popup2 = {
         opened: false
     };
+// $scope.userLock=function(checked){
+//     if($cookies.get('admin')&& checked){
+//          $scope.value=true;
+//     }
+//
+// }
+// $scope.userLock();
 
-
-
+        // $scope.addSegments = function() {
+        //     angular.element(document.getElementById('modalCreateBtn'))[0].disabled = !userLogins.admin.true;
+        // }
+        $scope.userType=$cookies.get('admin');
     $scope.toggleDate = function(checked) {
-        $scope.date = new Date();
+       // $scope.userType=$cookies.get('admin');
+        console.log("User Typeeeeeeee.......", $scope.userType);
+        $scope.condtion=$scope.userType;
+            if ($scope.userType === 'true') {
+                $scope.value = false;
+                console.log("Ifeeeeeeeeeeeeeeeeeeeeeeee.......");
+            } else {
+                $scope.value = true;
+                console.log("elseeeeeeeeeeeeeeeeeeeee.........");
+                console.log("value",$scope.value);
+                console.log("hiiii");
+            }
+
+        var date = new Date();
         var params = {};
-        params.date = $scope.date;
+        params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
         params.locked = checked;
-        console.log("params--------", params);
-        TripServices.lockDataReport(params , function (success) {
+
+        TripServices.lockDataReport(params, function (success) {
             if (success.data.status) {
                 // $scope.lockData = success.data.data;
                 // swal("Good job!", "Lock Data Update Successfully!", "Success");
@@ -1142,9 +1170,75 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 // swal("Lock Data NotUpdate Successfully!", "Success");
             }
         }, function (error) {
-            
+
+        })
+
+    };
+
+$scope.result=[];
+    $scope.getLockStatus= function (date) {
+        var date = new Date(date);
+        $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        console.log("unlockStatus date",$scope.today);
+        TripServices.getLockStatus($scope.today,function(success){
+            if(success.data.status){
+                $scope.result=success.data.data;
+                //console.log("typeeeeeeeeeee",$scope.result[0].locked);
+                //console.log("condition",$scope.value);
+               // console.log("checked",success.data.data[0].locked);
+              if($scope.userType === 'true'){
+                  // console.log("typeeeeeeeeeeeif",typeof ($scope.result[0].locked));
+                  $scope.checked=success.data.data[0].locked;
+
+              }else{
+                  $scope.checked=success.data.data[0].locked;
+                  $scope.value=success.data.data[0].locked;
+              }
+
+             //$scope.value=success.data.data[0].locked;
+            }
+            // else{
+            //     success.data.messages.forEach(function (message) {
+            //         Notification.error({message: message});
+            //     });
+            // }
+            },
+            function(error){
+
         })
     };
+
+
+    // $scope.show = function () {
+    //     $scope.userType=$cookies.get('admin');
+    //     console.log("kgjbnlkjgdb", $scope.userType);
+    //     if ((userLogins.admin == true) == "toggleAdminS") {
+    //         $("div.toggleAdminS").show();
+    //     }
+    //
+    //     if ((!userLogins.admin == false) == "toggleAdminH") {
+    //         $("div.toggleAdminH").hidden;
+    //     }
+    //
+    //     if ((userLogins.user == false) == "toggleUserS") {
+    //         $("div.toggleUserS").show();
+    //     }
+    //
+    //     if ((!userLogins.user == true) == "toggleUserH") {
+    //         $("div.toggleUserSH").hidden;
+    //     }
+    // }
+
+    // $scope.hidden = function () {
+    //     $scope.userType=$cookies.get('admin');
+    //     console.log("kgjbnlkjgdb", $scope.userType);
+    //     if (userLogins.admin.false == "toggleAdminH") {
+    //         $("div.toggleAdminH").hidden();
+    //     }
+    //     if (userLogins.user.true == "toggleUserH") {
+    //         $("div.toggleUserSH").hidden();
+    //     }
+    // }
 
     $scope.nextDay = function () {
         var dt = $scope.dt;
@@ -1211,6 +1305,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         $scope.getAllTripssheets = function (date) {
         var date = new Date(date);
         $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        console.log("tripsheet date",$scope.today);
         TripServices.getAllTripSheets($scope.today, function (success) {
             if (success.data.status) {
                 $scope.tripSheets = success.data.data;
@@ -1339,6 +1434,8 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         })
     };
     $scope.getAllDriversAttendance(new Date());
+
+    $scope.getLockStatus(new Date());
     $scope.getValues = function(value,index){
         for(var i=0;i<index;i++){
             if($scope.tripSheets[i].tripId == value){
@@ -1359,6 +1456,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             swal("Error", "Please select Party","error" );
         }else {
             var date = new Date();
+
             params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
             TripServices.addNewTripSheet($scope.newTrip, function (success) {
                 if (success.data.status) {

@@ -507,6 +507,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
 
     $scope.goToEditPage = function (id) {
         $state.go('invoiceEdit', {
+            
             id: id
         });
     };
