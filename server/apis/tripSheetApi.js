@@ -85,6 +85,7 @@ TripSheets.prototype.getTripSheets = function (req, callback) {
         status: false,
         messages: []
     };
+    console.log("gettripsheetDate",req.params.date);
     TripSheetsColl.find({accountId: req.jwt.accountId, date: req.params.date}).sort({tripId:1}).exec(function (err, tripSheets) {
         if (err) {
             retObj.status = false;
@@ -386,58 +387,96 @@ TripSheets.prototype.downloadTripSheetData = function(req,callback){
 
 TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
     var retObj = {
-        status:false,
-        messages:[]
+        status: false,
+        messages: []
     };
-    console.log("token....",jwt);
-    var details={"date":lockDetails.date, accountId:jwt.accountId, locked: lockDetails.locked};
-
-    var doc=new LockColl(details);
-    if(lockDetails.locked){
-        doc.save(function(err,lockedData){
-            if(err){
-                retObj.status=true;
-                retObj.messages.push("error while adding locked details");
+    console.log("token....", jwt);
+    var details = {"date": lockDetails.date, accountId: jwt.accountId, locked: lockDetails.locked};
+    var query = {"accountId": jwt.accountId, "date": lockDetails.date};
+    console.log("lockdate",lockDetails.date);
+    LockColl.update(query, details, {upsert: true}, function (err, result) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("error while getting locking Details", JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("locking details added successfully");
+            retObj.data = result;
+            callback(retObj);
+        }
+    });
+}
+    TripSheets.prototype.getLockStatus = function (req, callback) {
+        var retObj = {
+            status: false,
+            messages: []
+        };
+        // console.log("token....", jwt);
+        // var details={"date":lockDetails.date, accountId:jwt.accountId, locked: lockDetails.locked};
+        // var query = {"accountId": req.jwt.accountId, "date": date};
+        console.log("date::::",req.params.date);
+        LockColl.find({"accountId": req.jwt.accountId, "date": req.params.date}, function (err, result) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("error while getting locking Details", JSON.stringify(err));
                 callback(retObj);
-
-            }
-            else{
-                retObj.status=true;
-                retObj.messages.push("lock details added Successfully");
-                retObj.data=lockedData;
+            } else {
+                retObj.status = true;
+                retObj.messages.push("locking details get successfully");
+                retObj.data = result;
+                console.log("result11111111",result);
+                console.log("result of LockDetails", result);
                 callback(retObj);
-            }
-        })
-    }else {
-        userLoginsColl.find({"accountId":jwt.accountId},function(err,account){
-            if(err){
-                retObj.messages.push("error while getting account details");
-                retObj.status=false;
-                console.log("error in finding user",err);
-                callback(retObj);
-            }else {
-                console.log("AccountDetailssssssssssss",account);
-                    if(account.admin){
-                        doc.locked=false;
-                        doc.save(function(err,lockedDetails){
-                            if(err){
-                                retObj.status=false;
-                                retObj.messages.push(" error while Updating Lock Details");
-                                console.log("error in saving the lockdetails relocking",err)
-                                callback(retObj);
-                            }else{
-                                retObj.status=true;
-                                retObj.messages.push("  Updated Lock Details");
-                                retObj.data=lockedDetails;
-                                console.log("lockedDetails Last",lockedDetails)
-                                callback(retObj);
-                            }
-                        })
-                    }
             }
         })
-
     }
+
+    // if(lockDetails.locked){
+    //     doc.save(function(err,lockedData){
+    //         if(err){
+    //             retObj.status=true;
+    //             retObj.messages.push("error while adding locked details");
+    //             callback(retObj);
+    //
+    //         }
+    //         else{
+    //             retObj.status=true;
+    //             retObj.messages.push("lock details added Successfully");
+    //             retObj.data=lockedData;
+    //             callback(retObj);
+    //         }
+    //     })
+    // }else {
+    //     userLoginsColl.find({"accountId":jwt.accountId},function(err,account){
+    //         if(err){
+    //             retObj.messages.push("error while getting account details");
+    //             retObj.status=false;
+    //             // console.log("error in finding user",err);
+    //             callback(retObj);
+    //         }else {
+    //             console.log("AccountDetailssssssssssss",account);
+    //                 if(account[0].admin){
+    //                     doc.locked=false;
+    //                     doc.save(function(err,lockedDetails){
+    //                         if(err){
+    //                             retObj.status=false;
+    //                             retObj.messages.push(" error while Updating Lock Details");
+    //                             // console.log("error in saving the lockdetails relocking",err)
+    //                             callback(retObj);
+    //                         }else{
+    //                             retObj.status=true;
+    //                             retObj.messages.push("  Updated Lock Details");
+    //                             retObj.data=lockedDetails;
+    //                             // console.log("lockedDetails Last",lockedDetails)
+    //                             callback(retObj);
+    //                         }
+    //                     })
+    //                 }
+    //         }
+    //     })
+    //
+    // }
 
     // doc.save(function(err,docs){
     //     if(err){
@@ -451,7 +490,7 @@ TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
     //         callback(retObj);
     //     }
     // })
-}
+
 
 
 module.exports = new TripSheets();

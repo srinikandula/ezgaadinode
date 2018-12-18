@@ -43,12 +43,10 @@
 
             <section class="model-10">
                 <div class="checkbox">
-                    <input type="checkbox" class="toggle-sw" ng-change="toggleDate(checked)" ng-model="checked" ng-value=true aria-label="Toggle ngHide"/>
+                    <input type="checkbox" class="toggle-sw" ng-change="toggleDate(checked)" ng-model="checked" ng-disabled="value" />
                     <label class="toggle-sw-la"></label>
                 </div>
             </section>
-            <!--<i class="fa fa-lock" aria-hidden="true"></i>-->
-            <!--<i class="fa fa-unlock" aria-hidden="true"></i>-->
         </div>
     </div>
     <div class="col-sm-12 mt-20">
@@ -76,7 +74,7 @@
             <button type="button" class="btn btn-default" ng-click="createTripSheet(dt)"><span
                     class="glyphicon glyphicon-refresh"></span></button>
         </div>
-        <div class="col-sm-6" style="width: 42%;">
+        <div class="col-sm-6" style="width: 42%; text-align: right;">
             <ul class="list-inline add-load">
                 <li><a href="#" ng-click="saveLoadingPoint()">Add Loading Point</a></li>
                 <li><a href="#" ng-click="saveUnloadingPoint()">Add Unloading Point</a></li>
@@ -90,7 +88,7 @@
         </div>
     </div>
 
-    <table class="table table-bordered table-striped table-condensed table-hover" ng-hide="checked">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="checked" ng-if="!usarLogins.admin">
         <tr style="background: #5fc0f3">
             <th>S No</th>
             <th>Registration No</th>
@@ -117,7 +115,7 @@
         </tr>
     </table>
 
-    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="checked">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-hide="checked" ng-if="!usarLogins.admin">
         <tr>
             <th>S No</th>
             <th>Registration No</th>
