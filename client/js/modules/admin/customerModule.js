@@ -1422,7 +1422,7 @@ app.controller('addEditTruckCntrl', ['$scope', '$state', '$uibModalInstance', 'N
         if (!params.registrationNo) {
             params.errorMessage.push('Enter your Vehicle number');
         }
-        if(!params.truckType){v
+        if(!params.truckType){
             params.errorMessage.push('Select Truck Type');
         }
         if (params.errorMessage.length > 0) {
