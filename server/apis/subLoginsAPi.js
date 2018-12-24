@@ -61,6 +61,7 @@ Users.prototype.addUser = function(jwt,info,req,callback){
                 info.createdBy = jwt.id;
                 info.accountId = jwt.accountId;
                 info.type = "account";
+                info.admin=false;
                 var insertDoc = new userLoginsCollection(info);
                 insertDoc.save(function (err, result) {
                     if (err) {

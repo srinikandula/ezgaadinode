@@ -1144,20 +1144,14 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         // }
         $scope.userType=$cookies.get('admin');
     $scope.toggleDate = function(checked) {
-       // $scope.userType=$cookies.get('admin');
-        console.log("User Typeeeeeeee.......", $scope.userType);
         $scope.condtion=$scope.userType;
             if ($scope.userType === 'true') {
                 $scope.value = false;
-                console.log("Ifeeeeeeeeeeeeeeeeeeeeeeee.......");
             } else {
                 $scope.value = true;
-                console.log("elseeeeeeeeeeeeeeeeeeeee.........");
-                console.log("value",$scope.value);
-                console.log("hiiii");
             }
-
-        var date = new Date();
+;
+        var date=$scope.dt;
         var params = {};
         params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
         params.locked = checked;
@@ -1172,7 +1166,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         }, function (error) {
 
         })
-
     };
 
 $scope.result=[];
@@ -1183,16 +1176,21 @@ $scope.result=[];
         TripServices.getLockStatus($scope.today,function(success){
             if(success.data.status){
                 $scope.result=success.data.data;
-                //console.log("typeeeeeeeeeee",$scope.result[0].locked);
-                //console.log("condition",$scope.value);
-               // console.log("checked",success.data.data[0].locked);
               if($scope.userType === 'true'){
                   // console.log("typeeeeeeeeeeeif",typeof ($scope.result[0].locked));
-                  $scope.checked=success.data.data[0].locked;
-
+                  console.log("lengthhh",success.data.data.length)
+                  if(success.data.data.length == 0){
+                    $scope.checked=false;
+                  }else{
+                      $scope.checked=success.data.data[0].locked;
+                  }
               }else{
+                  if(success.data.data.length == 0){
+                      $scope.checked=false;
+                  }else{
                   $scope.checked=success.data.data[0].locked;
                   $scope.value=success.data.data[0].locked;
+                  }
               }
 
              //$scope.value=success.data.data[0].locked;
@@ -1247,6 +1245,8 @@ $scope.result=[];
         $scope.dt = new Date($scope.dt);
         $scope.getAllTripssheets($scope.dt);
         $scope.getAllDriversAttendance($scope.dt);
+        $scope.getLockStatus($scope.dt);
+
     };
 
     $scope.previousDay = function () {
@@ -1255,6 +1255,7 @@ $scope.result=[];
         $scope.dt = new Date($scope.dt);
         $scope.getAllTripssheets($scope.dt);
         $scope.getAllDriversAttendance($scope.dt);
+        $scope.getLockStatus($scope.dt);
     };
 
     $scope.getAllLoadingPoints = function () {
