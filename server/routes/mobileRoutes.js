@@ -5,7 +5,7 @@ var OpenRouter = express.Router();
 var mobile = require('../apis/mobileApis');
 
 AuthRouter.get('/getTruckLocations', function (req, res) {
-    mobile.getAllVehiclesLocation(req.jwt, req, function (result) {
+    mobile.getTruckLocations(req.jwt, req, function (result) {
         res.send(result);
     });
 });
