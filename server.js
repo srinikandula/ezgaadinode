@@ -49,6 +49,8 @@ var Loading = require('./server/routes/loadingRoutes');
 var Unloading = require('./server/routes/unloadingRoutes');
 
 
+var Mobile = require('./server/routes/mobileRoutes');
+
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
@@ -104,6 +106,7 @@ app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', ErpPayments.AuthRouter);
 app.use('/v1/receipts', Receipts.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
+app.use('/v1/mobile', Mobile.AuthRouter);
 app.use('/v1/notifications', pushNotifications.AuthRouter);
 app.use('/v1/cpanel/customers', Customers.AuthRouter);
 app.use('/v1/cpanel/settings', Settings.AuthRouter);
