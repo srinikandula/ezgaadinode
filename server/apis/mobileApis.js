@@ -163,7 +163,6 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             truckInfo.longitude = trucksData[i].attrs.latestLocation.longitude;
                             truckInfo.speedValue = latestLocation.speed;
                             truckInfo.speed = parseFloat(latestLocation.speed)* 1.82 +" km/hr";
-
                             var d = new Date(trucksData[i].attrs.latestLocation.deviceTime);
                             truckInfo.date_time = d.getDate()+"-"+(d.getMonth()+1)+"-"+(d.getYear() -100) + " "+ d.getHours()+"-"+d.getMinutes();
                             truckInfo.odometer = latestLocation.totalDistance;
@@ -182,6 +181,16 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                                 truckInfo.momentMsg = "GPS Connection Lost.Contact Support!";
                             }
                             truckInfo.address = latestLocation.address;
+                        } else{
+                            truckInfo.address = "Unknown";
+                            truckInfo.momentStatus = "Long Stop";
+                            truckInfo.momentMsg = "GPS Connection Lost.Contact Support!";
+                            truckInfo.odometer = 0;
+                            truckInfo.speed = 0;
+                            truckInfo.speedValue = 0;
+                            var d = new Date();
+                            truckInfo.date_time = d.getDate()+"-"+(d.getMonth()+1)+"-"+(d.getYear() -100) + " "+ d.getHours()+"-"+d.getMinutes();
+
                         }
                         response.push(truckInfo);
                     }
