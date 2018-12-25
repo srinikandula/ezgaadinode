@@ -675,8 +675,8 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     swal("Error!", "Error in Updating Expense Sheet", "error");
                 }
             });
-        }
-        ;
+        };
+
         $scope.validateFilters = function (truckId, fromDate, toDate) {
             var params = {};
             params.truckId = truckId;
@@ -703,15 +703,16 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
         };
 
         $scope.newExpense = {};
-        $scope.saveNewExpense = function () {
+        $scope.saveNewExpense = function (dt) {
             var params = $scope.newExpense;
-            var date = new Date();
+            var date = dt;
             params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
             ExpenseService.addNewExpenseSheet($scope.newExpense, function (success) {
                 if (success.data.status) {
                     swal("Good job!", "Expense added Successfully!", "success");
                     $('#createNewExpense').modal('hide');
                 }
+                location.reload();
             });
 
         }
