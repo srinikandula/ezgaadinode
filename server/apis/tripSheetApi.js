@@ -146,6 +146,7 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         errors:[]
     };
     var tripSheets = req.body;
+    console.log("tripSheets",tripSheets);
     var tripGroups = _.groupBy(tripSheets, 'tripId');
     //Group trips with same tripId
     var keys = [];
@@ -393,7 +394,7 @@ TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
     console.log("token....", jwt);
     var details = {"date": lockDetails.date, accountId: jwt.accountId, locked: lockDetails.locked};
     var query = {"accountId": jwt.accountId, "date": lockDetails.date};
-    console.log("lockdate",lockDetails.date);
+    console.log("lockdateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",lockDetails.date);
     LockColl.update(query, details, {upsert: true}, function (err, result) {
         if (err) {
             retObj.status = false;
@@ -415,7 +416,7 @@ TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
         // console.log("token....", jwt);
         // var details={"date":lockDetails.date, accountId:jwt.accountId, locked: lockDetails.locked};
         // var query = {"accountId": req.jwt.accountId, "date": date};
-        console.log("date::::",req.params.date);
+        // console.log("date::::",req.params.date);
         LockColl.find({"accountId": req.jwt.accountId, "date": req.params.date}, function (err, result) {
             if (err) {
                 retObj.status = false;
@@ -425,8 +426,8 @@ TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
                 retObj.status = true;
                 retObj.messages.push("locking details get successfully");
                 retObj.data = result;
-                console.log("result11111111",result);
-                console.log("result of LockDetails", result);
+                // console.log("result11111111",result);
+                // console.log("result of LockDetails", result);
                 callback(retObj);
             }
         })
