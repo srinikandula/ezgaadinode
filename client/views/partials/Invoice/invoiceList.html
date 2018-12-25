@@ -52,7 +52,7 @@
             </td>
             <td data-title="'To'" sortable="'trip'">
                 {{invoice.trip[0].to}}
-            </td>
+            </td>previousDay()
             <td data-title="'Truck No'" sortable="'vehicleNo'" class="clickable-item">{{
                 invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo ||
                 invoice.trip[invoice.trip.length-1].vehicleNo}}
@@ -91,14 +91,14 @@
     </div>
 
 
-    <div class="report_left_inner" style="margin: 10px 0px; display:none;">
+    <div class="report_left_inner" style="margin: 10px 0px; display: none;">
         <table class="table" style="border: 1px solid #000000; border-collapse: collapse;width: 100%;">
         <table class="table" style="width:100%;border: 1px solid #000000; border-collapse: collapse;">
             <thead>
             <tr class="print-style">
                 <th colspan="7" style="text-align: center; border: 1px solid #000000">
                     <h4 style="margin-bottom: 0rem !important;">
-                        <b> {{partyName}}</b>
+                        <b> {{query.party.name}}</b>
                     </h4>
                 </th>
             </tr>

@@ -1132,17 +1132,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     $scope.popup2 = {
         opened: false
     };
-// $scope.userLock=function(checked){
-//     if($cookies.get('admin')&& checked){
-//          $scope.value=true;
-//     }
-//
-// }
-// $scope.userLock();
 
-        // $scope.addSegments = function() {
-        //     angular.element(document.getElementById('modalCreateBtn'))[0].disabled = !userLogins.admin.true;
-        // }
         $scope.userType=$cookies.get('admin');
     $scope.toggleDate = function(checked) {
         $scope.condtion=$scope.userType;
@@ -1190,51 +1180,12 @@ $scope.result=[];
                   $scope.value=success.data.data[0].locked;
                   }
               }
-
-             //$scope.value=success.data.data[0].locked;
             }
-            // else{
-            //     success.data.messages.forEach(function (message) {
-            //         Notification.error({message: message});
-            //     });
-            // }
             },
             function(error){
 
         })
     };
-
-
-    // $scope.show = function () {
-    //     $scope.userType=$cookies.get('admin');
-    //     console.log("kgjbnlkjgdb", $scope.userType);
-    //     if ((userLogins.admin == true) == "toggleAdminS") {
-    //         $("div.toggleAdminS").show();
-    //     }
-    //
-    //     if ((!userLogins.admin == false) == "toggleAdminH") {
-    //         $("div.toggleAdminH").hidden;
-    //     }
-    //
-    //     if ((userLogins.user == false) == "toggleUserS") {
-    //         $("div.toggleUserS").show();
-    //     }
-    //
-    //     if ((!userLogins.user == true) == "toggleUserH") {
-    //         $("div.toggleUserSH").hidden;
-    //     }
-    // }
-
-    // $scope.hidden = function () {
-    //     $scope.userType=$cookies.get('admin');
-    //     console.log("kgjbnlkjgdb", $scope.userType);
-    //     if (userLogins.admin.false == "toggleAdminH") {
-    //         $("div.toggleAdminH").hidden();
-    //     }
-    //     if (userLogins.user.true == "toggleUserH") {
-    //         $("div.toggleUserSH").hidden();
-    //     }
-    // }
 
     $scope.nextDay = function () {
         var dt = $scope.dt;
