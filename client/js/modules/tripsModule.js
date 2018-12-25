@@ -1174,7 +1174,8 @@ $scope.result=[];
                   }
               }else{
                   if(success.data.data.length == 0){
-                      $scope.checked=false;
+                       $scope.checked=false;
+                       $scope.value=false;
                   }else{
                   $scope.checked=success.data.data[0].locked;
                   $scope.value=success.data.data[0].locked;
