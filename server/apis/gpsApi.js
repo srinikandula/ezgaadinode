@@ -53,17 +53,6 @@ function resolveAddress(position, callback) {
             console.log('counterEntry.secret   '+ counterEntry.secret);
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
-                if (errlocation) {
-                    console.error("Google error resolving address...err", errlocation, position);
-                    getOSMAddress({latitude:  position.latitude, longitude: position.longitude}, function (resp) {
-                        if (resp.status) {
-                            console.log('OSM resolved address ' + resp.address);
-                            retObj.status = true;
-                            retObj.address = resp.address;
-                            callback(retObj);
-                        }
-                    });
-                }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
                     retObj.status = true;
