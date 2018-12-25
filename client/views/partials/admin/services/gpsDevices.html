@@ -113,7 +113,7 @@
                 <td data-title="'SIM No'" sortable="'simPhoneNumber'" class="clickable-item">
                     {{device.simNumber}}
                 </td>
-                <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
+                <td data-title="'GPS Update'" sortable="'attrs.latestLocation.deviceTime'" class="clickable-item">
                     {{device.attrs.latestLocation.deviceTime ||'---'| date:'dd-MM-yyyy HH:mm'}}
                 </td>
                 <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
