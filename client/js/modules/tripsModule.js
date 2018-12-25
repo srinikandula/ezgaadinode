@@ -1254,6 +1254,7 @@ $scope.result=[];
 
 
         $scope.getAllTripssheets = function (date) {
+            $scope.getLockStatus(date);
         var date = new Date(date);
         $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
         TripServices.getAllTripSheets($scope.today, function (success) {
