@@ -114,7 +114,7 @@
                     {{device.simNumber}}
                 </td>
                 <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
-                    {{device.updatedAt ||'---'| date:'dd-MM-yyyy HH:mm'}}
+                    {{device.attrs.latestLocation.updatedAt ||'---'| date:'dd-MM-yyyy HH:mm'}}
                 </td>
                 <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
                     {{device.expiryTime | date:'dd-MM-yyyy'}}
@@ -159,7 +159,7 @@
             </p>
             <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.speed | number:0}}
                 KMPH</p>
-            <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.deviceTime
+            <p style="font-size: 15px;"><b>Time.... </b>: {{latestLocation.updatedAt
                 |date:'dd-MM-yyyy HH:mm:ss '}}</p>
         </div>
     </div>
