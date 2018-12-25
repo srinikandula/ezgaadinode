@@ -103,7 +103,7 @@ function resolveAddress(position, callback) {
 }
 
 
-MobileApis.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
+MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
