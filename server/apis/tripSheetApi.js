@@ -85,7 +85,6 @@ TripSheets.prototype.getTripSheets = function (req, callback) {
         status: false,
         messages: []
     };
-    console.log("gettripsheetDate",req.params.date);
     TripSheetsColl.find({accountId: req.jwt.accountId, date: req.params.date}).sort({tripId:1}).exec(function (err, tripSheets) {
         if (err) {
             retObj.status = false;
@@ -146,7 +145,6 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         errors:[]
     };
     var tripSheets = req.body;
-    console.log("tripSheets",tripSheets);
     var tripGroups = _.groupBy(tripSheets, 'tripId');
     //Group trips with same tripId
     var keys = [];
@@ -391,10 +389,8 @@ TripSheets.prototype.lockData = function (jwt, lockDetails, callback) {
         status: false,
         messages: []
     };
-    console.log("token....", jwt);
     var details = {"date": lockDetails.date, accountId: jwt.accountId, locked: lockDetails.locked};
     var query = {"accountId": jwt.accountId, "date": lockDetails.date};
-    console.log("lockdateeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",lockDetails.date);
     LockColl.update(query, details, {upsert: true}, function (err, result) {
         if (err) {
             retObj.status = false;

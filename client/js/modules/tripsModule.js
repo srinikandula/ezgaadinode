@@ -157,10 +157,11 @@ app.factory('TripServices', ['$http', function ($http) {
             }).then(success, error)
         },
         tripsSheetReport: function (params, success, error) {
+            console.log("params", params);
             $http({
                 url: '/v1/trips/tripSheetReport',
                 method: 'GET',
-                data: params
+                params: params
             }).then(success, error)
         },
         addNewTripSheet: function (params, success, error) {
@@ -1172,13 +1173,10 @@ $scope.result=[];
     $scope.getLockStatus= function (date) {
         var date = new Date(date);
         $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-        console.log("unlockStatus date",$scope.today);
         TripServices.getLockStatus($scope.today,function(success){
             if(success.data.status){
                 $scope.result=success.data.data;
               if($scope.userType === 'true'){
-                  // console.log("typeeeeeeeeeeeif",typeof ($scope.result[0].locked));
-                  console.log("lengthhh",success.data.data.length)
                   if(success.data.data.length == 0){
                     $scope.checked=false;
                   }else{
@@ -1306,7 +1304,6 @@ $scope.result=[];
         $scope.getAllTripssheets = function (date) {
         var date = new Date(date);
         $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-        console.log("tripsheet date",$scope.today);
         TripServices.getAllTripSheets($scope.today, function (success) {
             if (success.data.status) {
                 $scope.tripSheets = success.data.data;
@@ -1424,9 +1421,11 @@ $scope.result=[];
             if (success.data.status) {
                 $scope.driverSheets = success.data.data;
                 $scope.presentDrivers = [];
-                    for(var i=0; i<$scope.driverSheets.length;i++){
-                    if($scope.driverSheets[i].isPresent === true){
-                        $scope.presentDrivers.push($scope.driverSheets[i]);
+                if( $scope.driverSheets ) {
+                    for (var i = 0; i < $scope.driverSheets.length; i++) {
+                        if ($scope.driverSheets[i].isPresent === true) {
+                            $scope.presentDrivers.push($scope.driverSheets[i]);
+                        }
                     }
                 }
             }
@@ -1449,20 +1448,21 @@ $scope.result=[];
     };
 
     $scope.newTrip = {};
-    $scope.saveNewTrip = function () {
+    $scope.saveNewTrip = function (date) {
         var params = $scope.newTrip;
         if(!params.registrationNo){
             swal("Error", "Please enter Registration","error" );
         }else if(!params.partyId){
             swal("Error", "Please select Party","error" );
         }else {
-            var date = new Date();
-
+            var date = date;
+            console.log("dateeeeeeeeee", date);
             params.date = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
             TripServices.addNewTripSheet($scope.newTrip, function (success) {
                 if (success.data.status) {
                     swal("Good job!", "Trip added Successfully!", "success");
                     $('#addingNewTrip').modal('hide');
+                    location.reload();
                 }else{
                     swal("Error","Truck already exist for this date", "error");
                 }
