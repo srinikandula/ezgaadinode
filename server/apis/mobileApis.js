@@ -167,8 +167,8 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             truckInfo.speed = parseFloat(latestLocation.speed) +" km/hr";
                             var d = new Date(trucksData[i].attrs.latestLocation.deviceTime);
                             truckInfo.date_time = d.getDate()+"-"+(d.getMonth()+1)+"-"+(d.getYear() -100) + " "+ d.getHours()+"-"+d.getMinutes();
-                            truckInfo.odometer = latestLocation.totalDistance;
-                            truckInfo.todayOdo = latestLocation.totalDistance;
+                            truckInfo.odometer = latestLocation.totalDistance.toFixed(2);
+                            truckInfo.todayOdo = latestLocation.totalDistance.toFixed(2);
                             const millisecondsPerMinute = 60000;
                             if(truckInfo.speedValue == 0.00){
                                 if(latestLocation.createdAt < -  new Date().getTime()-millisecondsPerMinute*30){
