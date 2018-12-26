@@ -631,17 +631,22 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
             cash: 0
         };
 
-        $scope.saveAllExpenses = function () {
+        $scope.saveAllExpenses = function (date) {
             if ($scope.nextDate) {
                 $scope.getByDate = $scope.nextDate.getFullYear() + '-' + ($scope.nextDate.getMonth() + 1) + '-' + $scope.nextDate.getDate();
+                 console.log("next",$scope.getByDate);
             } else if ($scope.previousDate) {
                 $scope.getByDate = $scope.previousDate.getFullYear() + '-' + ($scope.previousDate.getMonth() + 1) + '-' + $scope.previousDate.getDate();
-            } else {
-                var date = new Date();
-                var dt = new Date(date);
-                $scope.getByDate = dt.getFullYear() + '-' + (dt.getMonth() + 1) + '-' + dt.getDate();
+                 console.log("previous", $scope.getByDate);
+            } else if(date) {
+                $scope.dt = date;
+                $scope.getByDate = $scope.dt.getFullYear() + '-' + ($scope.dt.getMonth() + 1) + '-' + $scope.dt.getDate();
+                console.log("selected", $scope.getByDate);
+            }else{
+                $scope.dt = date;
+                $scope.getByDate = $scope.dt.getFullYear() + '-' + ($scope.dt.getMonth() + 1) + '-' + $scope.dt.getDate();
+                console.log("default", $scope.getByDate);
             }
-
             $scope.dieselTotal = 0;
             $scope.cashTotal = 0;
             for (var i = 0; i < $scope.expensesSheetsDetails.length; i++) {
@@ -668,6 +673,7 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
 
             $scope.totalAmounts[0].totalAmount = $scope.totalAmounts[0].advanceAmount + $scope.totalAmounts[0].openingBalance;
             $scope.totalAmounts[0].closingBalance = $scope.totalAmounts[0].totalAmount - $scope.totalAmounts[0].expenditureAmount;
+            console.log("$scope.getByDate", $scope.getByDate);
             ExpenseService.updateExpensesSheet($scope.expensesSheetsDetails, $scope.totalAmounts, $scope.getByDate, function (success) {
                 if (success.data.status) {
                     swal("Good job!", "Expenses Sheet Updated Successfully!", "success");
@@ -712,7 +718,6 @@ app.controller('expensesSheetController', ['$scope', 'Upload', 'Notification', '
                     swal("Good job!", "Expense added Successfully!", "success");
                     $('#createNewExpense').modal('hide');
                 }
-                location.reload();
             });
 
         }
