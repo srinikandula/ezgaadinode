@@ -161,14 +161,16 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             var latestLocation = trucksData[i].attrs.latestLocation;
                             truckInfo.latitude = trucksData[i].attrs.latestLocation.latitude;
                             truckInfo.longitude = trucksData[i].attrs.latestLocation.longitude;
+                            latestLocation.speed = Math.ceil(parseFloat(latestLocation.speed)* 1.82);
+                            latestLocation.speed = latestLocation.speed;
                             truckInfo.speedValue = latestLocation.speed;
-                            truckInfo.speed = parseFloat(latestLocation.speed)* 1.82 +" km/hr";
+                            truckInfo.speed = parseFloat(latestLocation.speed) +" km/hr";
                             var d = new Date(trucksData[i].attrs.latestLocation.deviceTime);
                             truckInfo.date_time = d.getDate()+"-"+(d.getMonth()+1)+"-"+(d.getYear() -100) + " "+ d.getHours()+"-"+d.getMinutes();
-                            truckInfo.odometer = latestLocation.totalDistance;
-                            truckInfo.todayOdo = latestLocation.totalDistance;
+                            truckInfo.odometer =  Math.ceil(latestLocation.totalDistance);
+                            truckInfo.todayOdo =  truckInfo.odometer;
                             const millisecondsPerMinute = 60000;
-                            if(truckInfo.speedValue === 0){
+                            if(truckInfo.speedValue == 0.00){
                                 if(latestLocation.createdAt < -  new Date().getTime()-millisecondsPerMinute*30){
                                     truckInfo.momentStatus = "Long Stop";
                                 } else {
@@ -177,7 +179,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             } else {
                                 truckInfo.momentStatus = "Running";
                             }
-                            if(latestLocation.createdAt < -  new Date().getTime()-millisecondsPerMinute*30*6){
+                            if(latestLocation.createdAt < -  new Date().getTime()-millisecondsPerMinute*30*4){
                                 truckInfo.momentMsg = "GPS Connection Lost.Contact Support!";
                             }
                             truckInfo.address = latestLocation.address;
@@ -187,7 +189,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             truckInfo.momentMsg = "GPS Connection Lost.Contact Support!";
                             truckInfo.odometer = 0;
                             truckInfo.speed = 0;
-                            truckInfo.speedValue = 0;
+                            truckInfo.speedValue = "0 km/hr";
                             var d = new Date();
                             truckInfo.date_time = d.getDate()+"-"+(d.getMonth()+1)+"-"+(d.getYear() -100) + " "+ d.getHours()+"-"+d.getMinutes();
 
