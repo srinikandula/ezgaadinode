@@ -624,7 +624,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
     var condition = {};
     var params = req.query;
     if (jwt.type === "account") {
-        if(params.registrationNo !== '{}'){
+        if(params.registrationNo && params.registrationNo !== '{}'){
             condition = {accountId: jwt.accountId,deviceId: {$ne: null},registrationNo:params.registrationNo};
         }else{
             condition = {accountId: jwt.accountId, deviceId: {$ne: null}};
