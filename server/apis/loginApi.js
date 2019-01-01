@@ -32,7 +32,6 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
         status: false,
         messages: []
     };
-    console.log("userDetailssssssssss",user);
     retObj.status = true;
     retObj._id = user._id;
     retObj.userName = userName;
