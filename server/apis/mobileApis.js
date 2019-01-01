@@ -172,7 +172,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             var hours = d.getHours() < 10? "0"+ d.getHours(): d.getHours();
                             var minute = d.getMinutes() < 10 ? "0"+d.getMinutes() : d.getMinutes();
 
-                            truckInfo.date_time = date+"-"+ month+"-"+year + ":"+ hours+"-"+minute;
+                            truckInfo.date_time = date+"-"+ month+"-"+year + " "+ hours+":"+minute;
                             truckInfo.odometer =  Math.ceil(latestLocation.totalDistance);
                             truckInfo.todayOdo =  truckInfo.odometer;
                             const millisecondsPerMinute = 60000;
