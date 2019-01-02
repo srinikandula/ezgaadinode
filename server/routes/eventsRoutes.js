@@ -213,6 +213,13 @@ OpenRouter.get('/get/accountGroups', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/accountGroupsIntoGroups', function (request, res) {
+    Events.getAccountGroupDataIntoGroups(request,function(results){
+        //console.log(results);
+        // res.json(results);
+    });
+});
+
 OpenRouter.get('/get/mappingGpsStatusToAccount', function (request, res) {
     Events.updateAccountGPSStatus(request,function(results){
         //console.log(results);

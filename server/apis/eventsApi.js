@@ -17,6 +17,7 @@ var pool_crm = mysql.createPool(config.mysql_crm);
 var traccar_mysql = mysql.createPool(config.traccar_mysql);
 var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var groupsColl = require('./../models/schemas').GroupsColl;
 var userLogins=require('./../models/schemas').userLogins;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
@@ -382,6 +383,67 @@ Events.prototype.getAccountGroupData = function (request, callback) {
         }
     });
 }
+
+Events.prototype.getAccountGroupDataIntoGroups = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var accountGroupDataQuery = "select accountID as userName,contactPhone,password,groupID,displayName from DeviceGroup";
+    pool.query(accountGroupDataQuery, function (err, accountGroupDataResults) {
+        if (err) {
+            console.log("GroupsError",err);
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(accountGroupDataResults, function (accountGroupDataIntoGroupsResult, accountGroupDataIntoGroupsCallBack) {
+                  groupsColl.findOne({
+                    userName: accountGroupDataIntoGroupsResult.userName,groupName:accountGroupDataIntoGroupsResult.displayName
+                }, function (findAccountGroupErr, accountGroupFound) {
+                    if (findAccountGroupErr) {
+                        accountGroupDataIntoGroupsCallBack(findAccountGroupErr);
+                    } else if (accountGroupFound) {
+                        accountGroupDataIntoGroupsCallBack(null, 'Account group exists');
+                    } else {
+                        var accountGroupData = {
+                            userName: accountGroupDataIntoGroupsResult.userName,
+                            contactPhone: accountGroupDataIntoGroupsResult.contactPhone,
+                            password: accountGroupDataIntoGroupsResult.password,
+                            groupId:accountGroupDataIntoGroupsResult.groupID,
+                            groupName:accountGroupDataIntoGroupsResult.displayName
+                        };
+                        AccountsColl.findOne({
+                            "userName": accountGroupDataIntoGroupsResult.userName,
+                            "role": "Truck Owner"
+                        }, function (err, account) {
+                            if (account) {
+                                accountGroupData.accountId = account._id;
+                            }
+
+                            var accountGroupDataDoc = new groupsColl(accountGroupData);
+                            accountGroupDataDoc.save(function (err, doc) {
+                                accountGroupDataIntoGroupsCallBack(err, 'saved');
+                            });
+                        });
+                    }
+                });
+            }, function (accountGroupIntoGroupsErr, accountGroupIntoGroupsSaved) {
+                if (accountGroupIntoGroupsErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data 368');
+                    retObj.messages.push(JSON.stringify(planerr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Account groups saved Into Groups succesfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+}
 /**
  * Create trucks data and set accountId on them
  * @param request
@@ -403,6 +465,7 @@ Events.prototype.createTruckFromEGTruck = function (request, accountsData1, call
         "permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join " +
         "eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type ";
     var trucks = [];
+
     pool_crm.query(trucksDataQuery, function (err, truckDataResults) {
         if (err) {
             retObj.status = false;
@@ -475,7 +538,7 @@ Events.prototype.createTruckFromDevices = function (request, accountsData1, call
             retObj.messages.push(JSON.stringify(employeeErr));
             callback(retObj);
         } else {
-            var deviceDataQuery = "select accountId, deviceId, installedById, devicePaymentStatus, currentPlanId, isDamaged, equipmentType, vehicleModel, vehicleId, licenseExpire, insuranceExpire, fitnessExpire, NPExpire, fuelCapacity, installTime, resetTime, expirationTime, serialNumber, simPhoneNumber, simID, imeiNumber, isActive, lastStopTime from Device where installedById<>0";
+            var deviceDataQuery = "select accountId, deviceId, installedById, devicePaymentStatus, currentPlanId, isDamaged, equipmentType, vehicleModel, vehicleId, licenseExpire, insuranceExpire, fitnessExpire, NPExpire, fuelCapacity, installTime, resetTime, expirationTime, serialNumber, simPhoneNumber, simID, imeiNumber, isActive, lastStopTime,groupID from Device where installedById<>0";
             pool.query(deviceDataQuery, function (err, devicesDataResults) {
                 if (err) {
                     retObj.status = false;
@@ -516,7 +579,13 @@ Events.prototype.createTruckFromDevices = function (request, accountsData1, call
                                     if (truckErr) {
                                         truckCallback(truckErr, truck);
                                     } else if (truck) {
-                                        truckCallback(null, "Truck Exists");
+                                            TrucksColl.updateOne({registrationNo: devicesDataResult.vehicleId}, {$set: {groupId:devicesDataResult.groupID}},function(err,doc){
+                                                if(err){
+                                                    truckCallback(null, "Truck Exists");
+                                                }else{
+                                                    truckCallback(null, doc);
+                                                }
+                                            });
                                     } else {
                                         var truckData = {
                                             fitnessExpiry: convertDate(devicesDataResult.fitnessExpire),
@@ -528,7 +597,8 @@ Events.prototype.createTruckFromDevices = function (request, accountsData1, call
                                             userName: devicesDataResult.accountId,
                                             deviceId: devicesDataResult.imeiNumber,
                                             truckType: devicesDataResult.vehicleModel,
-                                            tracking_available: 1
+                                            tracking_available: 1,
+                                            groupId:devicesDataResult.groupID
                                         };
                                         if(thisAccount) {
                                             truckData.accountId = thisAccount._id;
@@ -755,7 +825,7 @@ Events.prototype.devicePlansHistory = function (request, accountsData1, callback
                                             received: plan.received
                                         });
                                         if (ids.accountId) {
-                                            if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
+                                         if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
                                             else planDoc.accountName = ids.accountId.name;
                                         }
                                         planDoc.save(function (err) {
@@ -1216,16 +1286,16 @@ function loadNonAccountData(req, callback){
                     }
                 })
             },
-            thirteen: function (callBackThirteen) {
-                events.getAccountOperatingRoutes(req, function (result) {
-                    console.log('13 Completed', result);
-                    if (result.status) {
-                        callBackThirteen(null, result);
-                    } else {
-                        callBackThirteen(result, null);
-                    }
-                })
-            },
+            // thirteen: function (callBackThirteen) {
+            //     events.getAccountOperatingRoutes(req, function (result) {
+            //         console.log('13 Completed', result);
+            //         if (result.status) {
+            //             callBackThirteen(null, result);
+            //         } else {
+            //             callBackThirteen(result, null);
+            //         }
+            //     })
+            // },
             fourteen: function (callBackFourteen) {
                 events.getTrucksTypeData(req, function (result) {
                     console.log('14 Completed', result);
@@ -1275,16 +1345,16 @@ function loadNonAccountData(req, callback){
                     }
                 })
             },
-            nineteen: function (callBackNineteen) {
-                events.getCustomerOperatingRoutes(req, function (result) {
-                    console.log('19 Completed', result);
-                    if (result.status) {
-                        callBackNineteen(null, result);
-                    } else {
-                        callBackNineteen(result, null);
-                    }
-                })
-            },
+            // nineteen: function (callBackNineteen) {
+            //     events.getCustomerOperatingRoutes(req, function (result) {
+            //         console.log('19 Completed', result);
+            //         if (result.status) {
+            //             callBackNineteen(null, result);
+            //         } else {
+            //             callBackNineteen(result, null);
+            //         }
+            //     })
+            // },
             twenty: function (callBackTwenty) {
                 events.getJunkLeadsData(req, function (result) {
                     console.log('20 Completed', result);
@@ -1292,6 +1362,16 @@ function loadNonAccountData(req, callback){
                         callBackTwenty(null, result);
                     } else {
                         callBackTwenty(result, null);
+                    }
+                })
+            }
+            ,twentyOne: function (callBackTwentyOne) {
+                events.getAccountGroupDataIntoGroups(req, function (result) {
+                    console.log('21 Completed', result);
+                    if (result.status) {
+                        callBackTwentyOne(null, result);
+                    } else {
+                        callBackTwentyOne(result, null);
                     }
                 })
             }
