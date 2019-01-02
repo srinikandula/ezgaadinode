@@ -111,11 +111,11 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
     var condition = {};
     var params = req.query;
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null}};
+        condition = {accountId: jwt.accountId};
     }else {
-        condition = {accountId: jwt.id, deviceId: {$ne: null}};
+        condition = {accountId: jwt.id};
     }
-    TrucksColl.find(condition, function (err, trucksData) {
+    DevicesColl.find(condition, function (err, trucksData) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error retrieving trucks data');
