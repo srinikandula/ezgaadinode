@@ -148,7 +148,9 @@ var operatingRoutesSchema = new mongoose.Schema({
 var groupSchema = new mongoose.Schema({
 
     accountId: {type: ObjectId, ref: 'accounts'},
+    userName:String,
     groupName: String,
+    groupId:Number,
     location: String,
     truckIds: [],
     updatedBy: String,
@@ -216,7 +218,8 @@ var truckSchema = new mongoose.Schema({
     lookingForLoad: {type: Boolean, default: false},
     isIdle: Boolean,
     isStopped: Boolean,
-    vehicleType: String
+    vehicleType: String,
+    groupId:Number
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
