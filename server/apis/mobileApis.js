@@ -1,25 +1,15 @@
 var _ = require('underscore');
 var async = require('async');
+var moment = require('moment');
 var nodeGeocoder = require('node-geocoder');
 var GoogleUrl = require( 'google-url' );
 var devicePostions = require('./../models/schemas').GpsColl;
 var SecretKeysColl = require('./../models/schemas').SecretKeysColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DevicesColl = require('./../models/schemas').DeviceColl;
-var DriversColl = require('./../models/schemas').DriversColl;
-var ShareLinksColl = require('./../models/schemas').ShareLinksColl;
-
-var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
-var AccountsColl = require('./../models/schemas').AccountsColl;
-var analyticsService = require('./../apis/analyticsApi');
-var serviceActions = require('./../constants/constants');
-var mailerApi = require('./../apis/mailerApi');
-var SmsService = require('./smsApi');
 var mongoose = require('mongoose');
 var request = require('request');
-const ObjectId = mongoose.Types.ObjectId;
 var config = require('../config/config');
-var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 var json2xls = require('json2xls');
 var fs = require('fs');
 
@@ -154,7 +144,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                         truckInfo ={
                             "truck_no": trucksData[i].registrationNo,
                             "deviceID": trucksData[i].imei,
-                            "vehicleType": trucksData[i].truckType,
+                            "vehicleType": "TK",
                             "vehicleModel": trucksData[i].truckType
                         }
                         if(trucksData[i].attrs && trucksData[i].attrs.latestLocation){
@@ -165,7 +155,15 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             latestLocation.speed = latestLocation.speed;
                             truckInfo.speedValue = latestLocation.speed;
                             truckInfo.speed = parseFloat(latestLocation.speed) +" km/hr";
-                            truckInfo.date_time = trucksData[i].attrs.latestLocation.updatedAt;
+                            var d = new Date(trucksData[i].attrs.latestLocation.updatedAt);
+                            d.setMinutes(d.getMinutes() + 330);
+                            var date = d.getDate() < 10 ? "0"+d.getDate() : d.getDate();
+                            var month = (d.getMonth() + 1) < 10 ? "0"+(d.getMonth() + 1) : (d.getMonth() + 1);
+                            var year = (d.getYear()-100);
+                            var hours = d.getHours() < 10? "0"+ d.getHours(): d.getHours();
+                            var minute = d.getMinutes() < 10 ? "0"+d.getMinutes() : d.getMinutes();
+
+                            truckInfo.date_time = date+"-"+ month+"-"+year + " "+ hours+":"+minute;
                             truckInfo.odometer =  Math.ceil(latestLocation.totalDistance);
                             truckInfo.todayOdo =  truckInfo.odometer;
                             const millisecondsPerMinute = 60000;
