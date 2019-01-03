@@ -145,6 +145,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             "truck_no": trucksData[i].registrationNo,
                             "deviceID": trucksData[i].imei,
                             "vehicleType": "TK",
+                            "lookingForLoad" : "0",
                             "vehicleModel": trucksData[i].truckType
                         }
                         if(trucksData[i].attrs && trucksData[i].attrs.latestLocation){
