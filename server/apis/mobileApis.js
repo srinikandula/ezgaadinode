@@ -153,7 +153,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                     for(var i = 0; i< trucksData.length; i++){
                         truckInfo ={
                             "truck_no": trucksData[i].registrationNo,
-                            "deviceID": trucksData[i].deviceId,
+                            "deviceID": trucksData[i].imei,
                             "vehicleType": trucksData[i].truckType,
                             "vehicleModel": trucksData[i].truckType
                         }
@@ -165,14 +165,7 @@ MobileApis.prototype.getTruckLocations = function (jwt, req, callback) {
                             latestLocation.speed = latestLocation.speed;
                             truckInfo.speedValue = latestLocation.speed;
                             truckInfo.speed = parseFloat(latestLocation.speed) +" km/hr";
-                            var d = new Date(trucksData[i].attrs.latestLocation.updatedAt);
-                            var date = d.getDate() < 10 ? "0"+d.getDate() : d.getDate();
-                            var month = (d.getMonth() + 1) < 10 ? "0"+(d.getMonth() + 1) : (d.getMonth() + 1);
-                            var year = (d.getYear()-100);
-                            var hours = d.getHours() < 10? "0"+ d.getHours(): d.getHours();
-                            var minute = d.getMinutes() < 10 ? "0"+d.getMinutes() : d.getMinutes();
-
-                            truckInfo.date_time = date+"-"+ month+"-"+year + " "+ hours+":"+minute;
+                            truckInfo.date_time = trucksData[i].attrs.latestLocation.updatedAt;
                             truckInfo.odometer =  Math.ceil(latestLocation.totalDistance);
                             truckInfo.todayOdo =  truckInfo.odometer;
                             const millisecondsPerMinute = 60000;
