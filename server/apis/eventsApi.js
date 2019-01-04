@@ -1894,7 +1894,7 @@ Events.prototype.restoreAccountsFromCustomerTable = function (request, callback)
                         if (!isNaN(customer.mobile)) {
                             customerData.contactPhone = customer.mobile;
                         }
-                        AccountsColl.findOne({"role": {"$ne": "employee"}}, {"userName": customer.gps_account_id}, function (err, account) {
+                        AccountsColl.findOne( {"userName": customer.gps_account_id}, function (err, account) {
                             if (account) {
                                 customerData.accountId = account._id;
                             }
