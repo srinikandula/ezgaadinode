@@ -1343,6 +1343,11 @@ var lockSchema = new mongoose.Schema({
     locked:{type: Boolean, default: false}
 })
 
+var invoiceNoSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    invoiceNo:Number
+})
+
 module.exports = {
     CounterCollection:mongoose.model('counter', counterSchema, 'counter'),
     ExpensesSheetColl:mongoose.model('expensesSheet',expensesSheetSchema,'expensesSheet'),
@@ -1416,5 +1421,6 @@ module.exports = {
     loadingPointsColl: mongoose.model('loadingPoints', loadingPointsSchema, 'loadingPoints'),
     unloadingPointsColl: mongoose.model('unloadingPoints', unloadingPointsSchema, 'unloadingPoints'),
     accountBalanceColl:mongoose.model('accountBalance',accountBalanceSchema,'accountBalance'),
-    lockColl:mongoose.model('lock',lockSchema,'lock')
+    lockColl:mongoose.model('lock',lockSchema,'lock'),
+    invoiceNoColl:mongoose.model('invoiceNo',invoiceNoSchema,'invoiceNo')
 };
