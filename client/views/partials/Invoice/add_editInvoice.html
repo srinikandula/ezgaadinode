@@ -133,7 +133,7 @@
                     </div>
                     <div class=" col-sm-3 form-group col-xs-12">
                         <date-picker id="fromDate1" ng-model="exp.loadedOn"
-                                     class="'custom-form-control'" placeholder="'Loaded On'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'Loaded On'" past-present="'pastPresentDate'"></date-picker>
                     </div>
                     <div class=" col-sm-2 form-group col-xs-12">
                         <div class="styling-input-list">
@@ -144,7 +144,7 @@
                     </div>
                     <div class=" col-sm-3 form-group col-xs-12">
                         <date-picker id="toDate1" ng-model="exp.unloadedOn"
-                                     class="'custom-form-control'" placeholder="'UnLoaded On'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'UnLoaded On'" past-present="'pastPresentDate'"></date-picker>
                     </div>
                     <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndTo()"
                                               ng-show="$index==0">
@@ -208,7 +208,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
+           <!--     <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
                             <input type="text" class="form-control custom-form-control" ng-model="invoice.noOfpallets"/>
@@ -232,16 +232,33 @@
                             <label class="focus-effect-for-input" aria-hidden="true">Rate/Trip</label>
                         </div>
                     </div>
-                </div>
-                <div class="form-group col-xs-12">
+                </div>-->
+
+                    <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control"
-                                   ng-model="invoice.ratePerTonne"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Rate Per Tonne</label>
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.despatchedThrough"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Dispatched Through</label>
                         </div>
                     </div>
                 </div>
+                  <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.tonnage"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
+                        </div>
+                    </div>
+                </div>
+                  <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.amount"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Amount</label>
+                        </div>
+                    </div>
+                </div>
+
                 <!--<div class="form-group col-xs-12">-->
                 <!--<div class="styling-input-list">-->
                 <!--<label  >Temparature Cargo</label>-->
@@ -272,15 +289,8 @@
                                      class="'custom-form-control'" placeholder="'Gate Pass Date'" past-present="'pastPresent'"></date-picker>
                     </div>
                 <!--</div>-->
-                <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.despatchedThrough"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">despatched Through</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group col-xs-12">
+
+ <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
                             <input type="text" class="form-control custom-form-control" ng-model="invoice.quantity"/>
@@ -288,32 +298,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.tonnage"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
-                        </div>
-                    </div>
-                </div>
 
                  <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.amount"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Amount</label>
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="invoice.ratePerTonne"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Rate Per Tonne</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.specialInstructions"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Special Instructions</label>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="form-group col-xs-12">
                         <div style="margin-top:25px">
@@ -340,6 +335,7 @@
                         </div>
                     </div>
                  </div>
+
                     <div class="form-group col-sm-6 col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
@@ -364,14 +360,14 @@
                     <!--<div ng-repeat="attch in invoice.attachments">-->
 
                               <tr >
-                                  <th style="border: none"><h4><b>FileName<b><h4></th>
-                                  <th style="border: none"><h4><b>Delete<b><h4></th>
+                                  <th style="border: none"><h4><b>FileName</b></h4></th>
+                                  <th style="border: none"><h4><b>Delete</b></h4></th>
                               </tr>
                              <tr ng-repeat="attch in invoice.attachments">
                               <td style="border: none"><label class="cursor-pointer"
                                          ng-click="viewAttachment(attch.key)">{{attch.fileName}}</label></td>
                                <td style="border: none" align="center"><button class="btn btn-danger btn-xs"
-                                                          ng-click="deleteImage('license',attch.key,$index);">x
+                                                          ng-click="deleteImage($index);">x
                               </button></td>
                             </tr>
                             <tr>

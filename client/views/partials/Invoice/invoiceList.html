@@ -13,7 +13,7 @@
             </li>
             <li class="col-sm-3 pall-zero">
                 <div class="select-box erp-box">
-                    <ui-select ng-model="query.party" theme="select2" title="Choose a person" append-to-body="true">
+                    <ui-select ng-model="query.party" theme="select2" title="Choose a Party" append-to-body="true">
                         <ui-select-match placeholder="Select a Party" class="form-control ui-select-control">
                             {{$select.selected.name || name}}
                         </ui-select-match>
@@ -57,9 +57,9 @@
                 invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo ||
                 invoice.trip[invoice.trip.length-1].vehicleNo}}
             </td>
-            <td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{
-                invoice.rate}}
-            </td>
+            <!--<td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{-->
+                <!--invoice.rate}}-->
+            <!--</td>-->
             <td data-title="'No of Trips'" sortable="'No of Trips'" class="clickable-item">{{
                 invoice.quantity}}
             </td>
