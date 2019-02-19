@@ -1,6 +1,7 @@
 app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
     return {
         addInvoice: function (invoiceDetails, success, error) {
+            console.log("Invocie Details", invoiceDetails);
             $http({
                 url: '/v1/invoices/addInvoice',
                 method: "POST",
@@ -48,6 +49,7 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
             }).then(success, error);
         },
         updateInvoice: function (invoiceDetails, success, error) {
+            console.log("Update Invocie Details", invoiceDetails);
             $http({
                 url: '/v1/invoices/updateInvoice',
                 method: "POST",
@@ -230,75 +232,81 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
 
     };
     $scope.add_editInvoice = function () {
-        if ($stateParams.id) {
-            if ($scope.invoice.attachments.length > 0) {
-                $scope.attachments.forEach(function (file) {
-                    if (file.key) {
-                        $scope.invoice.attachments.push(file);
+        if($scope.invoice.trip[0].vehicleNo === undefined){
+            swal('Error', 'Please select Vehicle', 'error')
+        }else if(!$scope.invoice.partyId){
+            swal('Error', 'Please select a Party', 'error')
+        }else {
+            if ($stateParams.id) {
+                if ($scope.invoice.attachments.length > 0) {
+                    $scope.attachments.forEach(function (file) {
+                        if (file.key) {
+                            $scope.invoice.attachments.push(file);
+                        }
+                    });
+                } else {
+                    $scope.invoice.attachments = $scope.attachments;
+                }
+                if ($scope.invoice.tripId) {
+                    $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
+                    $scope.invoice.partyId = $scope.invoice.tripId.partyId;
+                    for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                        $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
                     }
+                } else {
+                    $scope.invoice.partyId = $scope.invoice.partyId._id;
+                    $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
+                    for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                        if ($scope.invoice.trip[i].vehicleNo.registrationNo) {
+                            $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
+                        }
+                    }
+                }
+                InvoiceService.updateInvoice($scope.invoice, function (successCallback) {
+                    if (successCallback.data.status) {
+                        Notification.success({
+                            message: "Updated Successfully"
+                        });
+                        $state.go('invoice');
+                    } else {
+                        successCallback.data.messages.forEach(function (message) {
+                            Notification.error({
+                                message: message
+                            });
+                        });
+                    }
+                }, function (errorCallback) {
                 });
             } else {
-                $scope.invoice.attachments = $scope.attachments;
-            }
-            if ($scope.invoice.tripId) {
-                $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
-                $scope.invoice.partyId = $scope.invoice.tripId.partyId;
-                for (var i = 0; i < $scope.invoice.trip.length; i++) {
-                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
-                }
-            } else {
-                $scope.invoice.partyId = $scope.invoice.partyId._id;
-                $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
-                for (var i = 0; i < $scope.invoice.trip.length; i++) {
-                    if ($scope.invoice.trip[i].vehicleNo.registrationNo) {
+                if ($scope.invoice.tripId) {
+                    $scope.invoice.partyId = $scope.invoice.tripId.partyId;
+                    for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                        $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
+                    }
+                } else {
+                    $scope.invoice.partyId = $scope.invoice.partyId._id;
+                    $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
+                    for (var i = 0; i < $scope.invoice.trip.length; i++) {
                         $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
                     }
                 }
-            }
-            InvoiceService.updateInvoice($scope.invoice, function (successCallback) {
-                if (successCallback.data.status) {
-                    Notification.success({
-                        message: "Updated Successfully"
-                    });
-                    $state.go('invoice');
-                } else {
-                    successCallback.data.messages.forEach(function (message) {
-                        Notification.error({
-                            message: message
+                $scope.invoice.attachments = $scope.attachments;
+                InvoiceService.addInvoice($scope.invoice, function (successCallback) {
+                    if (successCallback.data.status) {
+                        Notification.success({
+                            message: "Added Successfully"
                         });
-                    });
-                }
-            }, function (errorCallback) {
-            });
-        } else {
-            if ($scope.invoice.tripId) {
-                $scope.invoice.partyId = $scope.invoice.tripId.partyId;
-                for (var i = 0; i < $scope.invoice.trip.length; i++) {
-                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
-                }
-            } else {
-                $scope.invoice.partyId = $scope.invoice.partyId._id;
-                $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
-                for (var i = 0; i < $scope.invoice.trip.length; i++) {
-                    $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
-                }
-            }
-            $scope.invoice.attachments = $scope.attachments;
-            InvoiceService.addInvoice($scope.invoice, function (successCallback) {
-                if (successCallback.data.status) {
-                    Notification.success({
-                        message: "Added Successfully"
-                    });
-                    $state.go('invoice');
-                } else {
-                    successCallback.data.messages.forEach(function (message) {
-                        Notification.error({
-                            message: message
+                        $state.go('invoice');
+                    } else {
+                        successCallback.data.messages.forEach(function (message) {
+                            Notification.error({
+                                message: message
+                            });
                         });
-                    });
-                }
-            }, function (errorCallback) {
-            });
+                    }
+                }, function (errorCallback) {
+                });
+            }
         }
 
     };
@@ -363,6 +371,10 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
         w.document.write(document.getElementsByClassName('invoice_Container')[0].innerHTML);
         w.print();
         w.close();
+    }
+
+    $scope.deleteImage = function (index) {
+        $scope.invoice.attachments.splice(index, 1);
     }
 }]);
 app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
@@ -507,7 +519,6 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
 
     $scope.goToEditPage = function (id) {
         $state.go('invoiceEdit', {
-            
             id: id
         });
     };
@@ -580,7 +591,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
 
     };
 
-    $scope.getCount();
+    // $scope.getCount();
 
     $scope.getInvoice();
 

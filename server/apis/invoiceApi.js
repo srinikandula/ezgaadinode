@@ -103,7 +103,7 @@ function IncrementInvoiceNo( invoiceDetails,callback) {
 
 };
 
-Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
+Invoices.prototype.addInvoice =  function (jwt, invoiceDetails, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -111,7 +111,7 @@ Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
     invoiceDetails.accountId = jwt.accountId;
     IncrementInvoiceNo(invoiceDetails,function (data) {
         if(data){
-            invoiceDetails.invoiceNo = "IN-"+data.invoiceNo;
+            invoiceDetails.invoiceNo = "TS-"+data.invoiceNo;
             saveInvoice(invoiceDetails,function(saveCallback){
                 callback(saveCallback);
             });
@@ -311,6 +311,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                         if(doc.gatePassDate){
                             doc.gatePassDate=  dateFormat(doc.gatePassDate,"dd/mm/yyyy");
                         }
+                        doc.dcCharges = doc.DCamount*doc.noOfDays;
                         doc.pdfTotalAmount=nanToZero(doc.amount)+nanToZero(doc.DCamount*doc.noOfDays);
                         doc.pdfTotalAmountWords=converter.toWords(doc.pdfTotalAmount);
                         doc.amount=nanToZero(doc.amount);
