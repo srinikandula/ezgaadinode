@@ -12,6 +12,8 @@ var TrucksColl = require('./../models/schemas').TrucksColl;
 var dateFormat=require('dateformat');
 var converter= require('number-to-words');
 var CounterCollection = require('./../models/schemas').CounterCollection;
+var InvoiceNoCollection = require('./../models/schemas').invoiceNoColl;
+
 
 var Invoices = function () {};
 
@@ -70,34 +72,55 @@ function saveInvoice(invoiceDetails,callback){
         }
     });
 };
+function IncrementInvoiceNo( invoiceDetails,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var invoiceNo;
+    InvoiceNoCollection.findOneAndUpdate({accountId:invoiceDetails.accountId},{$inc:{invoiceNo:1}},{new:true},function(err,data){
+        if(err){
+            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+            callback(retObj);
+        }else if(!data){
+            var countObj = {
+                accountId:invoiceDetails.accountId
+            };
+            var doc=new InvoiceNoCollection(countObj);
+            doc.save(function (err,data) {
+                if(err){
+                    retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                    callback(retObj);
+                }else{
+                    callback(data);
+                }
+            });
+
+        }else{
+            callback(data);
+        }
+    });
+
+};
 
 Invoices.prototype.addInvoice = function (jwt, invoiceDetails, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var countObj = {name:'a'};
     invoiceDetails.accountId = jwt.accountId;
-    CounterCollection.findOneAndUpdate({name:'a'},{$inc:{count:1}},{new:true},function(err,data){
-        if(err){
-            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-            callback(retObj);
-        }else if(!data){
-            countObj.count = 100;
-            var doc =  new CounterCollection(countObj);
-            doc.save(function(err,result){
-                invoiceDetails.invoiceNo = "IN-"+result.count;
-                saveInvoice(invoiceDetails,function(saveCallback){
-                    callback(saveCallback);
-                });
-            });
-        }else{
-            invoiceDetails.invoiceNo = "IN-"+data.count;
+    IncrementInvoiceNo(invoiceDetails,function (data) {
+        if(data){
+            invoiceDetails.invoiceNo = "IN-"+data.invoiceNo;
             saveInvoice(invoiceDetails,function(saveCallback){
                 callback(saveCallback);
             });
+        }else{
+            retObj.messages.push("Error saving invoice,");
+            callback(retObj);
         }
     });
+
 };
 Invoices.prototype.updateInvoice = function (jwt, invoiceDetails, callback) {
     var retObj = {
