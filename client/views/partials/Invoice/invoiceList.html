@@ -52,7 +52,7 @@
             </td>
             <td data-title="'To'" sortable="'trip'">
                 {{invoice.trip[0].to}}
-            </td>previousDay()
+            </td>
             <td data-title="'Truck No'" sortable="'vehicleNo'" class="clickable-item">{{
                 invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo ||
                 invoice.trip[invoice.trip.length-1].vehicleNo}}
@@ -89,7 +89,6 @@
             <a href="#" ui-sref="invoiceEdit"><img src="images/Add_Payments.png" alt="Add Invoice" title="Add Invoice"></a>
         </figure>
     </div>
-
 
     <div class="report_left_inner" style="margin: 10px 0px; display: none;">
         <table class="table" style="border: 1px solid #000000; border-collapse: collapse;width: 100%;">

@@ -1345,7 +1345,7 @@ var lockSchema = new mongoose.Schema({
 
 var invoiceNoSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    invoiceNo:Number
+    invoiceNo:{type:Number, default:2600}
 })
 
 module.exports = {

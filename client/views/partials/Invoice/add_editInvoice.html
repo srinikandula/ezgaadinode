@@ -2,12 +2,6 @@
 
     <div class="col-xs-12 account-edit">
         <div class="col-sm-11"><h2 class="title-name">{{pageTitle}} </h2></div>
-        <!--<div class="col-sm-1">-->
-            <!--<a href="#" class="btn" ng-click="printInvoice()">-->
-                <!--<i class="glyphicon glyphicon-print fa-2x" aria-hidden="true"></i>-->
-            <!--</a>-->
-        <!--</div>-->
-
         <form class="mt-10">
             <div class="col-sm-12 col-xs-12 mt-10" style="margin-bottom: 10px; margin-right: 15px">
                 <div class="checkbox">
@@ -102,12 +96,14 @@
                     <div ng-if="invoice.tripSheetId.length>0">
                      <div class=" col-sm-2 form-group col-xs-12">
                         <div class="styling-input-list">
-                            <input type="text"  class="form-control custom-form-control"  ng-model="exp.vehicleNo" readonly/>
+                            <input type="text" class="form-control custom-form-control" ng-model="exp.vehicleNo"
+                                   readonly/>
                             <label class="focus-effect-for-input" aria-hidden="true">Vehicle No</label>
                         </div>
                     </div>
                 </div>
-                     <div class="form-group col-sm-6 col-xs-12" style="margin-left: 20px" ng-hide="invoice.tripSheetId.length>0">
+                     <div class="form-group col-sm-6 col-xs-12" style="margin-left: 20px"
+                          ng-hide="invoice.tripSheetId.length>0">
                                 <div class="styling-input-list">
                                     <ui-select ng-model="exp.vehicleNo" theme="select2"
                                                title="Choose a Truck" append-to-body="true">
@@ -115,11 +111,11 @@
                                             {{$select.selected.registrationNo || truckRegNo[$index]}}
                                         </ui-select-match>
                                         <ui-select-choices
-                                                        repeat="truck in trucks| propsFilter: {registrationNo: $select.search}">
+                                                repeat="truck in trucks| propsFilter: {registrationNo: $select.search}">
                                             <div ng-bind-html="truck.registrationNo| highlight: $select.search"></div>
                                         </ui-select-choices>
                                     </ui-select>
-                                    <label class="focus-effect-for-input">Vehicle No</label>
+                                    <label class="focus-effect-for-input">Vehicle No *</label>
                                 </div>
                      </div>
                     <div class="col-sm-12 col-xs-12 mt-10">
@@ -133,7 +129,8 @@
                     </div>
                     <div class=" col-sm-3 form-group col-xs-12">
                         <date-picker id="fromDate1" ng-model="exp.loadedOn"
-                                     class="'custom-form-control'" placeholder="'Loaded On'" past-present="'pastPresentDate'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'Loaded On'"
+                                     past-present="'pastPresentDate'"></date-picker>
                     </div>
                     <div class=" col-sm-2 form-group col-xs-12">
                         <div class="styling-input-list">
@@ -144,7 +141,8 @@
                     </div>
                     <div class=" col-sm-3 form-group col-xs-12">
                         <date-picker id="toDate1" ng-model="exp.unloadedOn"
-                                     class="'custom-form-control'" placeholder="'UnLoaded On'" past-present="'pastPresentDate'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'UnLoaded On'"
+                                     past-present="'pastPresentDate'"></date-picker>
                     </div>
                     <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndTo()"
                                               ng-show="$index==0">
@@ -161,7 +159,7 @@
                 <div ng-if="invoice.tripSheetId.length>0">
                      <div class=" col-sm-2 form-group col-xs-12">
                         <div class="styling-input-list">
-                            <input type="text"  class="form-control custom-form-control"  ng-model="partyName" readonly/>
+                            <input type="text" class="form-control custom-form-control" ng-model="partyName" readonly/>
                             <label class="focus-effect-for-input" aria-hidden="true">Party*</label>
                         </div>
                     </div>
@@ -208,36 +206,37 @@
                         </div>
                     </div>
                 </div>
-           <!--     <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.noOfpallets"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">No of Pallets</label>
-                        </div>
-                    </div>
-                </div><div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.ewayBill"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Eway Bill</label>
-                        </div>
-                    </div>
-                </div>
+                <!--     <div class="form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <div class="styling-input-list">
+                                 <input type="text" class="form-control custom-form-control" ng-model="invoice.noOfpallets"/>
+                                 <label class="focus-effect-for-input" aria-hidden="true">No of Pallets</label>
+                             </div>
+                         </div>
+                     </div><div class="form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <div class="styling-input-list">
+                                 <input type="text" class="form-control custom-form-control" ng-model="invoice.ewayBill"/>
+                                 <label class="focus-effect-for-input" aria-hidden="true">Eway Bill</label>
+                             </div>
+                         </div>
+                     </div>
 
 
-                <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.rate"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Rate/Trip</label>
-                        </div>
-                    </div>
-                </div>-->
+                     <div class="form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <div class="styling-input-list">
+                                 <input type="text" class="form-control custom-form-control" ng-model="invoice.rate"/>
+                                 <label class="focus-effect-for-input" aria-hidden="true">Rate/Trip</label>
+                             </div>
+                         </div>
+                     </div>-->
 
                     <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.despatchedThrough"/>
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="invoice.despatchedThrough"/>
                             <label class="focus-effect-for-input" aria-hidden="true">Dispatched Through</label>
                         </div>
                     </div>
@@ -258,37 +257,23 @@
                         </div>
                     </div>
                 </div>
-
-                <!--<div class="form-group col-xs-12">-->
-                <!--<div class="styling-input-list">-->
-                <!--<label  >Temparature Cargo</label>-->
-                <!--<input type="radio"  ng-model="invoice.temparatureCargo" ng-value="true">Yes-->
-                <!--<input type="radio"  ng-model="invoice.temparatureCargo" value="false">No-->
-
-
-                <!--</div>-->
-                <!--</div>-->
-
             </div>
             <div class="col-sm-6 col-xs-12 mt-10">
-                <!--<div class="form-group col-xs-12">-->
                     <div class=" col-sm-12 form-group col-xs-12">
                         <date-picker id="lrDate" ng-model="invoice.lrDate"
-                                     class="'custom-form-control'" placeholder="'LR Date'" past-present="'pastPresent'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'LR Date'"
+                                     past-present="'pastPresent'"></date-picker>
                     </div>
-                <!--</div>-->
-                <!--<div class="form-group col-xs-12">-->
                     <div class=" col-sm-12 form-group col-xs-12">
                         <date-picker id="consignorDate" ng-model="invoice.consignorInvoiceDate"
-                                     class="'custom-form-control'" placeholder="'Consignor Invoice Date'" past-present="'pastPresent'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'Consignor Invoice Date'"
+                                     past-present="'pastPresent'"></date-picker>
                     </div>
-                <!--</div>-->
-                <!--<div class="form-group col-xs-12">-->
-                    <div class=" col-sm-12 form-group col-xs-12">                                                                                                                                                                                                                                                                                                       
+                    <div class=" col-sm-12 form-group col-xs-12">
                         <date-picker id="gatePassDate" ng-model="invoice.gatePassDate"
-                                     class="'custom-form-control'" placeholder="'Gate Pass Date'" past-present="'pastPresent'"></date-picker>
+                                     class="'custom-form-control'" placeholder="'Gate Pass Date'"
+                                     past-present="'pastPresent'"></date-picker>
                     </div>
-                <!--</div>-->
 
  <div class="form-group col-xs-12">
                     <div class="styling-input-list">
@@ -346,50 +331,32 @@
                 </div>
                 </div>
                 </div>
-                <!--<div class="form-group col-xs-6 col-xs-12">-->
-                <!--<div class=" styling-input-list">-->
-                <!--<p>File Upload :</p>-->
-                <!--<customized-file-upload ng-model="attachments" folder="'invoices'"-->
-                <!--class="'custom-form-control'" >-->
-                <!--</customized-file-upload>-->
-                <!--</div>-->
-                <!--</div>-->
                 <div class="form-group col-sm-6 col-xs-12  ">
-                    <!--<div class=" panel panel-default ">-->
-                      <table class="table panel panel-default" >
-                    <!--<div ng-repeat="attch in invoice.attachments">-->
-
-                              <tr >
+                      <table class="table panel panel-default">
+                              <tr>
                                   <th style="border: none"><h4><b>FileName</b></h4></th>
                                   <th style="border: none"><h4><b>Delete</b></h4></th>
                               </tr>
-                             <tr ng-repeat="attch in invoice.attachments">
+                             <tr ng-repeat="attch in invoice.attachments" ng-show="attch.fileName">
                               <td style="border: none"><label class="cursor-pointer"
-                                         ng-click="viewAttachment(attch.key)">{{attch.fileName}}</label></td>
+                                                              ng-click="viewAttachment(attch.key)">{{attch.fileName}}</label></td>
                                <td style="border: none" align="center"><button class="btn btn-danger btn-xs"
-                                                          ng-click="deleteImage($index);">x
+                                                                               ng-click="deleteImage($index);">x
                               </button></td>
                             </tr>
                             <tr>
                               <td style="border: none " colspan="2">
-                                  <!--<div class="form-group col-sm-6 col-xs-12">-->
                                   <div class=" styling-input-list">
                                     <span>File Upload :</span>
                                     <customized-file-upload ng-model="attachments" folder="'invoices'"
                                                             class="'custom-form-control'">
                                    </customized-file-upload>
                                   </div>
-                                  <!--</div>-->
                               </td>
-                              <!--<td style="border: none"></td>-->
                            </tr>
-
-                          <!--</div>-->
                       </table>
-                    <!--</div>-->
-            <!--</span>-->
-                         </div>
-                         <!--</div>-->
+                </div>
+            </span>
         </form>
 
         <div class="col-xs-12">
@@ -416,338 +383,3 @@
     </div>
 </script>
 
-    <!--<div class="invoice_Container" ng-show="false" style="line-height: 1.6;">-->
-        <!--<div>-->
-            <!--<table class="table1" style="width: 100%;border-collapse: collapse;margin-top: -8px;line-height: 1.6;">-->
-                <!--<tr>-->
-                    <!--<th style="border:none">-->
-                        <!--<h3 style="color: green;text-decoration: underline;text-align: left;margin-top: -10px;margin: 0%;"><b>SRI ANJANA TRANSPORT</b></h3>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">PLOT NO.506/9, DATATREYA NAGAR COLONY,</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">YELLAMMA BANDA, KUKATPALLY,</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">HYDERABAD-72</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">MOBILE NO:9848799473</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">PAN NO.ABVFS5272J</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">GSTIN CODE:36ABVFS5272J1ZD</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> <a href="srianjanatransport@redifmail.com">srianjanatransport@redifmail.com</a></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> <a href="http://www.srianjanatransport.com">http://www.srianjanatransport.com</a> </p>-->
-                    <!--</th>-->
-                    <!--<th style=" border: none; float: right; padding-left: 300px">-->
-                        <!--<h3 style="color: green;text-decoration: underline;text-align: left;margin-top: -10px;margin: 0%;">INVOICE</h3>-->
-                        <!--<h3 style="color: green; text-decoration: underline;text-align: left;margin-top: 5px;margin-bottom: 0%;">RTGS DETAILS:</h3>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">HDFC BANK LTD.</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">VIVEKANANDA NAGAR, KUKATPALLY</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">IFSC-HDFC0001639</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">CURRENT A/C.#16392000002774</p>-->
-
-                    <!--</th>-->
-                <!--</tr>-->
-            <!--</table>-->
-
-
-            <!--<div class="container">-->
-                <!--<div style="margin: 10px 0px;">-->
-                    <!--<table class="table1" style="margin-bottom:-6px !important;width: 100%;border-bottom: 2px solid black;border-collapse: collapse;margin-top: -8px;">-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th colspan="3" style="font-size: 12px;text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<b>INVOICE</b>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr>-->
-                            <!--<td rowspan="7" scope="row" style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<b>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> SRI ANJANA TRANSPORT</p>-->
-                                <!--</b> <br>-->
-                                <!--<small>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> Pol No: 506/9, DATTATREYA COLONY,</p>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> YELLAMMABANDA, KUKATPALLY, HYDERABAD-72,</p>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> GSTIN: 36ABVFS5272J1ZD </p>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;" > Email:<a href="#">srianjanatransport@rediffmail.com</a></p>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;" > <a href="#">http://www.srianjanatransport.com</a></p>-->
-                                    <!--<p style="text-align: left;margin: 0%;font-size: 12PX;" > PH NO: 9848799473, 9573009187 </p>-->
-                                <!--</small>-->
-                            <!--</td>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Invoice No</p>-->
-                            <!--</th>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Dated</p>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-
-
-                        <!--<tr >-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;font-size: 8px ">{{invoicePDF.invoiceNo}}</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{date | date:'dd.MM.yyyy'}}</p>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">LR No:<p>-->
-                            <!--</th>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Dated<p>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.lrNo}}<p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.lrDate | date:'dd.MM.yyyy'}}</p>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Consignor INVOICE No.</p>-->
-                            <!--</th>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Dated</p>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.consignorInvoiceNo}}</p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.consignorInvoiceDate | date:'dd.MM.yyyy'}}</p>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Gate Pass No</p>-->
-                            <!--</th>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Dated</p>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;border: 1px solid black;border-collapse: collapse;" rowspan="5" scope="row">-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Buyer</p>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> <b>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">{{invoicePDF.partyName}}</p>-->
-                                <!--</b>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">{{invoicePDF.partyAddress}}</p>-->
-                                <!--&lt;!&ndash;{{#each invoiceDetails.trip}}&ndash;&gt;-->
-
-                                <!--&lt;!&ndash;{{/each}}&ndash;&gt;-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> <b>GSTIN: {{invoicePDF.gstNo}}</b></p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.gatePassNo}}</p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.gatePassDate | date:'dd.MM.yyyy'}}</p>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">No of Pallets</p>-->
-                            <!--</th>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Despatched through</p>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.pallets}}</p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">By Road</p>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Departure</p>-->
-                            <!--</th>-->
-                            <!--<th style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: center;font-size: 12PX;">Destination</p>-->
-                            <!--</th>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-
-                                <!--<p style="text-align: center;font-size: 12PX;">{{invoice.trip[0].from}}</p>-->
-                                <!--&lt;!&ndash;{{/each}}&ndash;&gt;-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-
-                                 <!--<p style="text-align: center;font-size: 12PX;">{{invoice.trip[0].to}}</p>-->
-                                 <!--&lt;!&ndash;{{/each}}&ndash;&gt;-->
-                            <!--</td>-->
-                        <!--</tr>-->
-
-                        <!--</tbody>-->
-                    <!--</table>-->
-                    <!--<table class="table2" style="margin-bottom:-10px !important;width: 100%;margin-top: 5px;border: 1px solid black;border-collapse: collapse;line-height: 1.6;">-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th style="font-size: 12px">S.No.</th>-->
-                            <!--<th colspan="" style="font-size: 12px">Particulars</th>-->
-                            <!--<th style="font-size: 12px">Quantity</th>-->
-                            <!--<th style="font-size: 12px">Amount</th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;" scope="row"><p style="font-size:12px;text-align: center">1</p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;" colspan="">-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b>Vehicle No:{{this.vehicleNo}}</b></p>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> {{invoicePDF.invoiceDetails.temparatureCargo}}</p>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> {{invoice.pallets}} Pallets</p>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Loading Date:{{invoice.trip[0].loadedOn}}</p>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Unloading Date:{{invoice.trip[0].unloadedOn}}</p>-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"> {{ invoice.trip[0].from}},<b>To</b>{{ invoice.trip[0].to}}</p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;"><p style="font-size:12px;text-align: center">{{invoicePDF.invoiceDetails.quantity}}</p></td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;"><p style="font-size:12px;text-align: center">{{invoicePDF.invoiceDetails.amount}}</p></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;" scope="row"><p style="font-size:12px;text-align: center">2</p></td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">-->
-                                <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Detention Charges</p>-->
-                            <!--</td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;" colspan="">-->
-                                <!--<table style="border:1px solid black;width: 102%;border-collapse: collapse;margin: -2px;">-->
-                                    <!--<tr>-->
-                                        <!--<td>-->
-                                            <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">No. Days</p>-->
-                                        <!--</td>-->
-                                        <!--<td>-->
-                                            <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Amount</p>-->
-                                        <!--</td>-->
-                                    <!--</tr>-->
-                                    <!--<tr>-->
-                                        <!--<td style="font-size: 12px;text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">{{invoice.noOfDays}}</td>-->
-                                        <!--<td style="font-size: 12px;text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;">&nbsp;{{invoice.DCamount}}</td>-->
-                                    <!--</tr>-->
-                                <!--</table>-->
-                            <!--</td>-->
-                            <!--<td></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td colspan="3" style="text-align: right;font-size:12px;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse; "> <p style="text-align: right;font-size:12px">Total</p> </td>-->
-                            <!--<td style="text-align: center;-->
-            <!--border: 1px solid black;-->
-            <!--border-collapse: collapse;"><p style="font-size:12px;text-align: center">-->
-
-                                <!--{{invoicePDF.invoiceDetails.pdfTotalAmount }}</p>-->
-                            <!--</td>-->
-                        <!--</tr>-->
-                        <!--</tbody>-->
-                    <!--</table>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<table style="width:100%;border:1px solid black;border-collapse: collapse;line-height:1.6;">-->
-                <!--<tr>-->
-                    <!--<td style="border:none;text-align: center;-->
-            <!--border-collapse: collapse;">-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b>Company's PAN:ABVFS5272J</b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b><u> Declaration:</u></b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b>Transporter is not liable to pay Goods and Service Tax:</b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b>(1)Goods and Service tax is paid on reverse charge mechanism-->
-                            <!--under sub-section(4) of section 9 of Goods and Service Tax Act.</b></p>-->
-                        <!--<b><p style="text-align: left;margin: 0%;font-size: 12PX;">(2)No deductions from the freight bill will be permitted unless supported by advance debit-->
-                            <!--note.</b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b>(3)Exempted vide Sr.No 22of notifications no 12/2017-Central Tax(Rate)Dated 28<sup>th</sup>-->
-                            <!--june 2017</b>,</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;"><b>and as notified by state under GST Law.Classification of supply Exempted</b></p>-->
-                    <!--</td>-->
-                    <!--<td style=" border:none;float: right; padding-left:200px;text-align: center;-->
-            <!--border-collapse: collapse;">-->
-                        <!--<p style="padding-left: 210px;text-align: left;margin: 0%;font-size: 12PX;">E&O.E</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Company's Bank DETAILS:</p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Bank Name:<b>HDFC BANK</b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">A/C No.:<b>16392000002774</b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">IFSC:<b>HDFC0001639</b></p>-->
-                        <!--<p style="text-align: left;margin: 0%;font-size: 12PX;">Branch:<b>Vivekananda nagar</b></p>-->
-                        <!--<div style="border: 1px solid black; margin-right: -2px; margin-top: 10px; margin-bottom: -3px; ">-->
-                            <!--<p style="margin-right: 20px; text-align: center;">for<h4 style="color: green;text-align: center;margin-top: 5px;margin-bottom: 0%;"><b> SRI ANJANA TRANSPORT </b></h4>-->
-                            <!--<br>-->
-                            <!--<br>-->
-                            <!--<br>-->
-                            <!--<p style="margin-right: 20px; text-align: center;font-size: 12px"><b>Authorised Signature</b></p>-->
-                        <!--</div>-->
-
-
-                    <!--</td>-->
-                <!--</tr>-->
-            <!--</table>-->
-
-        <!--</div>-->

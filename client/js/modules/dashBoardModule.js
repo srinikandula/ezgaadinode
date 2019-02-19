@@ -394,7 +394,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                     }).on('click', '.ui-sref', function () {
                         var data = $scope.table.row($(this).parents('tr')).data();
-                        $state.go('revenueByvehicleId', {vehicleId: data.attrs.truckName, id: data.registrationNo});
+                        if(data) {
+                            $state.go('revenueByvehicleId', {vehicleId: data.attrs.truckName, id: data.registrationNo});
+                        }
                     })
 
 
