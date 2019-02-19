@@ -67,7 +67,6 @@
 <div class="container-main">
     <div class="table1">
         <table>
-            {{invoiceDetails}}
             <tr>
                 <th style="border:none">
                     <h3><b>SRI&nbsp;ANJANA&nbsp;TRANSPORT</b></h3>
@@ -285,18 +284,16 @@
                                 <tr>
                                     <td style="font-size: 10px">&nbsp;{{invoiceDetails.noOfDays}}</td>
                                     <td style="font-size: 10px">&nbsp;{{invoiceDetails.DCamount}}</td>
-                                    <td style="font-size: 10px;">{{invoiceDetails.dcCharges}}</td>
                                 </tr>
                             </table>
                         </td>
-                        <td></td>
+                        <td style="font-size: 10px;">{{invoiceDetails.dcCharges}}</td>
                     </tr>
 
                     <tr>
                         <td colspan="3" style="text-align: right;font-size: 10px">Total</td>
                         <td><p style="font-size:10px;text-align: center">
                             {{invoiceDetails.pdfTotalAmount }}
-                            {{invoiceDetails.dcCharges}}
                             <!--{{#each invoiceDetails.trip}}-->
                             <!--{{this.amountPerTonne}}-->
                             <!--{{/each}}</p>-->
