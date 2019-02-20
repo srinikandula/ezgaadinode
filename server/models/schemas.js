@@ -1212,6 +1212,7 @@ var invoicesSchema=new mongoose.Schema({
     vehicleNo:String,
     rate:String,
     quantity:Number,
+    quantityType:String,
     totalAmount:Number,
     tonnage:String,
     ratePerTonne:String,
