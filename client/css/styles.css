@@ -3632,3 +3632,11 @@ section {
 .model-10 .checkbox .toggle-sw:checked + .toggle-sw-la:after {
     left: 26px;
 }
+.invoice-right{
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.invoice-form-control{
+
+}

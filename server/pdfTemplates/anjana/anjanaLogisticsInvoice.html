@@ -191,12 +191,12 @@
                             <p style="text-align: center;">&nbsp;{{invoiceDetails.gatePassDate}}</p>
                         </td>
                     </tr>
-                    <tr>
+                <!--    <tr>
                         <th>
                             <p style="text-align: center;">No of Drums</p>
                         </th>
                         <th>
-                            <p style="text-align: center;">Despatched through</p>
+                            <p style="text-align: center;">Dispatched through</p>
                         </th>
                     </tr>
                     <tr>
@@ -206,7 +206,7 @@
                         <td>
                             <p style="text-align: center;">&nbsp;By Road</p>
                         </td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <th>
                             <p style="text-align: center;">Departure</p>
@@ -249,7 +249,7 @@
                             {{/each}}
                             <p style="float: right;">{{specialInstructions}}</p>
                             <p> {{invoiceDetails.temparatureCargo}} </p>
-                            <p> {{invoiceDetails.pallets}} Drums</p>
+                            <p> {{invoiceDetails.quantityType}} </p>
                             {{#each invoiceDetails.trip}}
                             <p>Loading Date:{{this.loadedOn}}</p>
                             {{/each}}

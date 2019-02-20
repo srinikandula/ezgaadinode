@@ -1,7 +1,6 @@
 app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
     return {
         addInvoice: function (invoiceDetails, success, error) {
-            console.log("Invocie Details", invoiceDetails);
             $http({
                 url: '/v1/invoices/addInvoice',
                 method: "POST",
@@ -49,7 +48,6 @@ app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
             }).then(success, error);
         },
         updateInvoice: function (invoiceDetails, success, error) {
-            console.log("Update Invocie Details", invoiceDetails);
             $http({
                 url: '/v1/invoices/updateInvoice',
                 method: "POST",
@@ -161,7 +159,7 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
                 // else if($scope.invoice.consignorInvoiceDate){
                 //     $scope.invoice.consignorInvoiceDate=new Date($scope.invoice.consignorInvoiceDate)
                 // }else if($scope.invoice.gatePassDate){
-                //     $scope.invoice.gatePassDate=new Date($scope.invoice.gatePassDate) 
+                //     $scope.invoice.gatePassDate=new Date($scope.invoice.gatePassDate)
                 // }
             }
         }, function (errorCallback) {
@@ -376,6 +374,25 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
     $scope.deleteImage = function (index) {
         $scope.invoice.attachments.splice(index, 1);
     }
+
+    $scope.getAllLoadingPoints = function () {
+        TripServices.getAllLoadingPoints(function (success) {
+            if (success.data.status) {
+                $scope.loadingPoints = success.data.data;
+            }
+        })
+    };
+
+    $scope.getAllLoadingPoints();
+
+    $scope.getAllUnloadingPoints = function () {
+        TripServices.getAllUnloadingPoints(function (success) {
+            if (success.data.status) {
+                $scope.unloadingPoints = success.data.unloadingPoints;
+            }
+        })
+    };
+    $scope.getAllUnloadingPoints();
 }]);
 app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
     $scope.path = path;
@@ -519,6 +536,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
 
     $scope.goToEditPage = function (id) {
         $state.go('invoiceEdit', {
+
             id: id
         });
     };
@@ -591,7 +609,7 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
 
     };
 
-    // $scope.getCount();
+    $scope.getCount();
 
     $scope.getInvoice();
 
