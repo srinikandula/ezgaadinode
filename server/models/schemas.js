@@ -117,7 +117,8 @@ var accountSchema = new mongoose.Schema({
     loadRequestEnabled:{type:Boolean,default:false},
     receiptsEnabled:{type:Boolean,default:false},
     paymentsEnabled:{type:Boolean,default:false},
-    isPartiesForAnjana:{type:Boolean,default:false}
+    isPartiesForAnjana:{type:Boolean,default:false},
+    tripSheetForDeepakEnabled:{type:Boolean,default:false}
     }, {
     timestamps: true
 });

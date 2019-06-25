@@ -351,6 +351,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
 
     $scope.addUpdateAccount = function () {
         var params = $scope.accountDetails;
+        console.log("account edit....",$scope.accountDetails);
         params.errors = [];
         if (!params.userName) {
             params.errors.push('Invalid User Name');

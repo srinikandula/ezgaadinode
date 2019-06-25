@@ -891,6 +891,18 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             access: 'auth',
             partyId: null
         }
+    }).state({
+        name: 'tripsheetfordeepaktransport',
+        url: '/tripsheetfordeepaktransport',
+        templateUrl: 'views/partials/tripSheets/tripSheetForDeepak.html',
+        data: {
+            activeTab: 'tripsheetfor',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth',
+            partyId: null
+        }
     });
     // agentReportstrips
     $urlRouterProvider.otherwise('/login');

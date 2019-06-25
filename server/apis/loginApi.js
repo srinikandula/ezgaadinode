@@ -52,6 +52,7 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
     retObj.paymentsEnabled = user.accountId.paymentsEnabled;
     retObj.receiptsEnabled = user.accountId.receiptsEnabled;
     retObj.isPartiesForAnjana = user.accountId.isPartiesForAnjana;
+    retObj.tripSheetForDeepakEnabled = user.accountId.tripSheetForDeepakEnabled;
     retObj.permissions = accessPermissions;
     retObj.type = user.type;
     retObj.role = user.role;

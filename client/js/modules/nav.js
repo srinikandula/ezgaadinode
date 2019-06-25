@@ -40,6 +40,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $scope.paymentsEnabled = $cookies.get('paymentsEnabled');
         $scope.receiptsEnabled = $cookies.get('receiptsEnabled');
         $scope.isPartiesForAnjana = $cookies.get('isPartiesForAnjana');
+        $scope.tripSheetForDeepakEnabled = $cookies.get('tripSheetForDeepakEnabled');
         return $cookies.get('token') != undefined;
     };
 
