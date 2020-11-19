@@ -235,7 +235,7 @@
                     <tr>
                         <th style="font-size: 12px">S.No.</th>
                         <th colspan="" style="font-size: 12px">Particulars</th>
-                        <th style="font-size: 12px">Quantity</th>
+                        <th style="font-size: 12px">{{invoiceDetails.quantityType}}</th>
                         <th style="font-size: 12px">Amount</th>
                     </tr>
                     </thead>
@@ -249,7 +249,7 @@
                             {{/each}}
                             <p style="float: right;">{{specialInstructions}}</p>
                             <p> {{invoiceDetails.temparatureCargo}} </p>
-                            <p> {{invoiceDetails.quantityType}} </p>
+                            <!--<p> {{invoiceDetails.quantityType}} </p>-->
                             {{#each invoiceDetails.trip}}
                             <p>Loading Date:{{this.loadedOn}}</p>
                             {{/each}}
